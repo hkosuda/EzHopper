@@ -11,6 +11,14 @@ public class CursorManager : MonoBehaviour
 
     void Update()
     {
-        
+        if (Timer.Paused)
+        {
+            Cursor.lockState = CursorLockMode.None;
+        }
+
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
     }
 }

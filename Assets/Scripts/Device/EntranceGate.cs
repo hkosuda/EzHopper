@@ -26,7 +26,8 @@ public class EntranceGate : MonoBehaviour
         var entranceRotY = parent.transform.eulerAngles.y;
         var exitRotY = exitGate.transform.eulerAngles.y;
 
-        var deltaRotY = entranceRotY - exitRotY + 180.0f;
+        var deltaRotY = exitRotY - entranceRotY + 180.0f;
+
         PM_Camera.Rotate(deltaRotY);
         PM_Main.RotVelocity(deltaRotY);
 

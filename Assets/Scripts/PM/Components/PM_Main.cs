@@ -41,19 +41,39 @@ public class PM_Main : MonoBehaviour
         {
             component.Initialize();
         }
+
+        SetEvent(1);
     }
 
-    void Update()
+    private void OnDestroy()
     {
-        var dt = Time.deltaTime;
+        SetEvent(-1);
+    }
 
+    static void SetEvent(int indicator)
+    {
+        if (indicator > 0)
+        {
+            Timer.Updated += UpdateMethod;
+            Timer.LateUpdated += LateUpdateMethod;
+        }
+
+        else
+        {
+            Timer.Updated -= UpdateMethod;
+            Timer.LateUpdated -= LateUpdateMethod;
+        }
+    }
+
+    static void UpdateMethod(object obj, float dt)
+    {
         foreach (var component in ControllerComponents)
         {
             component.Update(dt);
         }
     }
 
-    private void LateUpdate()
+    static void LateUpdateMethod(object obj, bool mute)
     {
         foreach (var component in ControllerComponents)
         {

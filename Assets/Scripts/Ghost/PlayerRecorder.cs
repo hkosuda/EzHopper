@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class PlayerRecorder : MonoBehaviour
 {
+    static public EventHandler<List<float[]>> EndRecording { get; set; }
+
     static public readonly int dataSize = 10;
 
     static List<float[]> dataList;
@@ -84,6 +86,7 @@ public class PlayerRecorder : MonoBehaviour
         if (!replay) { return; }
 
         Ghost.BeginReplay(dataList, demoMode);
+        EndRecording?.Invoke(null, new List<float[]>(dataList));
 
         dataList = new List<float[]>();
     }
