@@ -6,10 +6,14 @@ public class GameSystem : MonoBehaviour
 {
     static bool autoJump;
 
+    private void Awake()
+    {
+        Kernel.Initialize();
+    }
+
     void Start()
     {
-        //QualitySettings.vSyncCount = 0;
-        //Application.targetFrameRate = 45;
+        Kernel.Reset();
     }
 
     void Update()

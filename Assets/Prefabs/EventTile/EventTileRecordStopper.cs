@@ -12,6 +12,6 @@ public class EventTileRecordStopper : MonoBehaviour
 
     void FinishRecording()
     {
-        PlayerRecorder.FinishRecording(true, false);
+        PlayerRecorder.FinishRecording();
     }
 }

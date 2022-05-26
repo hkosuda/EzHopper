@@ -6,11 +6,8 @@ public class Keyconfig : MonoBehaviour
 {
     public class Key
     {
-        static public readonly int reverb = 2; 
-
         public KeyCode keyCode;
         public float wheelDelta;
-        public int reverbRemain;
 
         public Key(KeyCode keyCode, float wheelDelta = 1.0f)
         {
@@ -65,38 +62,6 @@ public class Keyconfig : MonoBehaviour
         { KeyAction.console, new Key(KeyCode.F3) },
     };
 
-    private void Start()
-    {
-        SetEvent(1);
-    }
-
-    private void OnDestroy()
-    {
-        SetEvent(-1);
-    }
-
-    static void SetEvent(int indicator)
-    {
-        if (indicator > 0)
-        {
-            Timer.Updated += UpdateMethod;
-        }
-
-        else
-        {
-            Timer.Updated -= UpdateMethod;
-        }
-    }
-
-    static void UpdateMethod(object obj, float dt)
-    {
-        foreach(var keybind in KeybindList.Values)
-        {
-            keybind.reverbRemain--;
-            if (keybind.reverbRemain < 0) { keybind.reverbRemain = 0; }
-        }
-    }
-
     static public void SetDefault()
     {
         KeybindList = new Dictionary<KeyAction, Key>(DefaultKeybindList);
@@ -121,12 +86,6 @@ public class Keyconfig : MonoBehaviour
             {
                 if (Input.GetKeyDown(keybind.keyCode))
                 {
-                    keybind.reverbRemain = Key.reverb;
-                    return true;
-                }
-
-                else if (keybind.reverbRemain > 0)
-                {
                     return true;
                 }
             }
@@ -135,7 +94,6 @@ public class Keyconfig : MonoBehaviour
             {
                 if (Input.GetKey(keybind.keyCode))
                 {
-                    keybind.reverbRemain = Key.reverb;
                     return true;
                 }
             }
@@ -150,12 +108,6 @@ public class Keyconfig : MonoBehaviour
             {
                 if (Input.mouseScrollDelta.y > 0)
                 {
-                    keybind.reverbRemain = Key.reverb;
-                    return true;
-                }
-
-                else if (keybind.reverbRemain > 0)
-                {
                     return true;
                 }
             }
@@ -163,12 +115,6 @@ public class Keyconfig : MonoBehaviour
             else
             {
                 if (Input.mouseScrollDelta.y < 0)
-                {
-                    keybind.reverbRemain = Key.reverb;
-                    return true;
-                }
-
-                else if (keybind.reverbRemain > 0)
                 {
                     return true;
                 }

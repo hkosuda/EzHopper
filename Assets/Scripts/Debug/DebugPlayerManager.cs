@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class DebugPlayerManager : MonoBehaviour
 {
+#if UNITY_EDITOR
     [SerializeField] bool active;
 
     static GameObject player;
@@ -22,4 +23,5 @@ public class DebugPlayerManager : MonoBehaviour
             player.transform.position = new Vector3(-15.0f, 0.9f, 15.0f);
         }
     }
+#endif
 }

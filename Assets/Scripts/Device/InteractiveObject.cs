@@ -6,11 +6,24 @@ public class InteractiveObject : MonoBehaviour
 {
     void Start()
     {
-        
+        SetEvent(1);
     }
 
-    void Update()
+    private void OnDestroy()
     {
-        
+        SetEvent(-1);
+    }
+
+    void SetEvent(int indicator)
+    {
+        if (indicator > 0)
+        {
+
+        }
+
+        else
+        {
+
+        }
     }
 }

@@ -13,6 +13,20 @@ public class ConsoleInputField : MonoBehaviour
     private void Awake()
     {
         inputField = gameObject.GetComponent<InputField>();
+        ActivateInputField();
+
+        inputField.onValueChanged.AddListener(OnValueUpdatedMethod);
+        inputField.onEndEdit.AddListener(OnEndEditMethod);
+    }
+
+    static void OnValueUpdatedMethod(string value)
+    {
+        ValueUpdated?.Invoke(null, value);
+    }
+
+    static void OnEndEditMethod(string value)
+    {
+        CommandReceiver.RequestCommand(value, true);
     }
 
     void Start()
@@ -44,5 +58,13 @@ public class ConsoleInputField : MonoBehaviour
         {
             inputField.text = "";
         }
+
+        ActivateInputField();
+    }
+
+    static public void ActivateInputField()
+    {
+        if (inputField == null) { return; }
+        inputField.ActivateInputField();
     }
 }

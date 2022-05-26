@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerRecorder : MonoBehaviour
+public class PlayerRecorder : IKernelManager
 {
-    static public EventHandler<List<float[]>> EndRecording { get; set; }
+    static public EventHandler<bool> RecordingBegin { get; set; }
+    static public EventHandler<List<float[]>> RecordingEnd { get; set; }
 
     static public readonly int dataSize = 10;
 
@@ -14,14 +15,19 @@ public class PlayerRecorder : MonoBehaviour
 
     static float pastTime;
 
-    void Start()
+    public void Initialize()
     {
         SetEvent(1);
     }
 
-    private void OnDestroy()
+    public void Shutdown()
     {
         SetEvent(-1);
+    }
+
+    public void Reset()
+    {
+
     }
 
     static void SetEvent(int indicator)
@@ -73,26 +79,27 @@ public class PlayerRecorder : MonoBehaviour
 
     static public void BeginRecording()
     {
+        RecordingBegin?.Invoke(null, false);
+
         dataList = new List<float[]>();
         recording = true;
         pastTime = 0.0f;
     }
 
-    static public void FinishRecording(bool replay, bool demoMode)
+    static public void FinishRecording()
     {
         if (!recording) { return; }
-
         recording = false;
-        if (!replay) { return; }
 
-        Ghost.BeginReplay(dataList, demoMode);
-        EndRecording?.Invoke(null, new List<float[]>(dataList));
+        Ghost.BeginReplay(dataList, false);
 
+        RecordingEnd?.Invoke(null, new List<float[]>(dataList));
         dataList = new List<float[]>();
     }
 
     static public int RecordSize()
     {
+        if (dataList == null) { return 0; }
         return dataList.Count;
     }
 }

@@ -4,13 +4,60 @@ using UnityEngine;
 
 public class Console : MonoBehaviour
 {
-    void Start()
+    static GameObject canvas;
+
+    private void Awake()
     {
-        Timer.Pause();
+        canvas = gameObject.transform.GetChild(0).gameObject;
     }
 
-    void Update()
+    private void Start()
+    {
+        SetEvent(1);
+        ConsoleMessage.Initialize();
+
+        CloseConsole();
+    }
+
+    private void OnDestroy()
+    {
+        SetEvent(-1);
+        ConsoleMessage.Shutdown();
+    }
+
+    static void SetEvent(int indicator)
+    {
+        if (indicator > 0)
+        {
+            Timer.Updated += UpdateMethod;
+        }
+
+        else
+        {
+            Timer.Updated -= UpdateMethod;
+        }
+    }
+
+
+    static void UpdateMethod(object obj, float dt)
+    {
+        if (!canvas.activeSelf && Keyconfig.CheckInput(Keyconfig.KeyAction.console, true))
+        {
+            OpenConsole();
+        }
+    }
+
+    static public void CloseConsole()
+    {
+        Timer.Resume();
+        canvas.SetActive(false);
+    }
+
+    static public void OpenConsole()
     {
         Timer.Pause();
+        canvas.SetActive(true);
+
+        ConsoleInputField.ActivateInputField();
     }
 }
