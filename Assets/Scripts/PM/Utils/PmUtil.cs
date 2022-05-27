@@ -6,10 +6,12 @@ public class PmUtil
 {
     // constants
     static readonly float _maxSpeedOnTheGround = 9.5f;
-    static readonly float _maxSpeedInTheAir = 0.5f;
-    static readonly float _accelOnTheGround = 120.0f;
+    static readonly float _maxSpeedInTheAir = 0.6f;
+    static readonly float _accelOnTheGround = 80.0f;
     static readonly float _accelInTheAir = 100.0f;
-    static readonly float _draggingAccel = 70.0f;
+    static readonly float _draggingAccel = 50.0f;
+
+    // daccel = 30.0 - 35.0 ?
 
     static public Vector2 AddVector { get; private set; }
 

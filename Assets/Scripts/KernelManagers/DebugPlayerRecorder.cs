@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class DebugPlayerRecorder : IKernelManager
 {
-#if UNITY_EDITOR
     static public List<float[]> CachedDataList { get; private set; }
 
     public void Initialize()
@@ -39,5 +38,4 @@ public class DebugPlayerRecorder : IKernelManager
     {
         CachedDataList = new List<float[]>(dataList);
     }
-#endif
 }
