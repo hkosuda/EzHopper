@@ -8,8 +8,6 @@ public class PM_PlaneVector : ControllerComponent
 
     public override void Update(float dt)
     {
-        if (Ghost.DemoMode) { return; }
-
         var landingIndicator = PM_Landing.LandingIndicator;
 
         var currentVector = CurrentVector();

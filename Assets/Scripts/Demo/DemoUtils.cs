@@ -1,138 +1,60 @@
-using System;
-using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 static public class DemoUtils
 {
-    static public List<float[]> FullText2DataList(string fullText)
+    static public float[] Interpolate(List<float[]> dataList, float pastTime)
     {
-        var splitted = fullText.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-        if (splitted == null) { return new List<float[]>(); }
+        if (dataList == null || dataList.Count == 0) { return new float[2] { 0.0f, 0.0f }; }
 
-        var dataList = new List<float[]>();
-        var valuesBegin = false;
+        var indexes = GetIndexes(dataList, pastTime);
+        if (indexes[0] == indexes[1]) { return dataList[indexes[0]]; }
 
-        foreach (var _line in splitted)
+        var rate = GetRate(indexes, dataList, pastTime);
+        var interpolatedData = new float[PlayerRecorder.dataSize];
+
+        for (var n = 0; n < PlayerRecorder.dataSize; n++)
         {
-            var line = _line.Trim();
-
-            if (line == "values") { valuesBegin = true; continue; }
-            if (valuesBegin && line == "end") { return dataList; }
-
-            var data = Line2Data(line);
-            if (data == null) { return new List<float[]>(); }
-
-            dataList.Add(data);
+            interpolatedData[n] = dataList[indexes[0]][n] * rate[0] + dataList[indexes[1]][n] * rate[1];
         }
 
-        return new List<float[]>();
-    }
-    static public void SaveFile(string filepath, List<float[]> dataList)
-    {
-        CreateDirectory();
+        return interpolatedData;
 
-        try
+        // - inner function
+        static int[] GetIndexes(List<float[]> dataList, float pastTime)
         {
-            using (StreamWriter sw = new StreamWriter(filepath, false))
+            if (dataList == null || dataList.Count == 0)
             {
-                var content = CreateFileContent(dataList);
-                sw.WriteLine(content);
-            }
-        }
-
-        catch
-        {
-            Debug.Log("ファイルの作成に失敗しました．");
-        }
-    }
-
-    static string CreateFileContent(List<float[]> dataList)
-    {
-        var content = "";
-
-        content += "values\n";
-        content += DataList2DataLines(dataList);
-        content += "end";
-
-        return content;
-    }
-
-    static string DataList2DataLines(List<float[]> dataList)
-    {
-        var dataLines = "";
-
-        foreach(var data in dataList)
-        {
-            var text = Data2Line(data);
-            dataLines += "\t" + text + "\n";
-        }
-
-        return dataLines;
-    }
-
-    static string Data2Line(float[] data)
-    {
-        var line = "";
-
-        foreach(var value in data)
-        {
-            line += value.ToString() + ",";
-        }
-
-        return line;
-    }
-
-    static float[] Line2Data(string line)
-    {
-        var splitted = line.Trim().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-        var data = new float[splitted.Length];
-
-        for(var n = 0; n < data.Length; n++)
-        {
-            var s = splitted[n];
-
-            if (float.TryParse(s, out var num))
-            {
-                data[n] = num;
+                return new int[2] { 0, 0 };
             }
 
-            else
+            for (var n = 0; n < dataList.Count; n++)
             {
-                return null;
+                var data = dataList[n];
+                if (data[0] < pastTime) { continue; }
+                if (n == 0) { return new int[2] { 0, 0 }; }
+                return new int[2] { n - 1, n };
             }
+
+            var lastIndex = dataList.Count - 1;
+            return new int[2] { lastIndex, lastIndex };
         }
 
-        return data;
-    }
-
-    static public string FilePath(string filename, bool addExtension)
-    {
-        if (addExtension) { return FileDirectory() + filename + ".ghost.txt"; }
-
-        return FileDirectory() + filename;
-    }
-
-    static public string FileDirectory()
-    {
-        return Application.dataPath + "/bh_ghost/";
-    }
-
-    static void CreateDirectory()
-    {
-        if (!Directory.Exists(FileDirectory()))
+        // - inner function
+        static float[] GetRate(int[] indexes, List<float[]> dataList, float pastTime)
         {
-            try
-            {
-                Debug.Log("フォルダを作成しました．");
-                Directory.CreateDirectory(FileDirectory());
-            }
+            if (indexes[0] == indexes[1]) { return new float[2] { 0.5f, 0.5f }; }
 
-            catch
-            {
-                Debug.Log("フォルダの作成に失敗しました．");
-            }
+            var t0 = dataList[indexes[0]][0];
+            var t1 = dataList[indexes[1]][0];
+
+            var dt = t1 - t0;
+
+            var rate0 = Calcf.SafetyDiv(t1 - pastTime, dt, 0.0f);
+            var rate1 = 1.0f - rate0;
+
+            return new float[2] { rate0, rate1 };
         }
     }
 }

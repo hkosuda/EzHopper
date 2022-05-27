@@ -13,9 +13,9 @@ public class PM_Landing : ControllerComponent
     static public int LandingIndicator { get; private set; }
 
     // constants
-    static readonly int landingFrameBuffer = 5;
-    static readonly float sphereRadius = 0.1f;
-    static readonly float landingHeightEpsilon = 0.001f;
+    static public readonly int landingFrameBuffer = 5;
+    static public readonly float sphereRadius = 0.1f;
+    static public readonly float landingHeightEpsilon = 0.001f;
 
     // valiables
     static int landingFrameBufferRemain;

@@ -24,8 +24,6 @@ public class PM_Camera : ControllerComponent
 
     public override void Update(float dt)
     {
-        if (Ghost.DemoMode) { return; }
-
         var dx = Input.GetAxis("Mouse Y") * ClientParams.MouseSensi;
         var dy = Input.GetAxis("Mouse X") * ClientParams.MouseSensi;
 
@@ -47,6 +45,11 @@ public class PM_Camera : ControllerComponent
     static public Vector3 EulerAngles()
     {
         return CameraTr.eulerAngles;
+    }
+
+    static public void SetEulerAngles(Vector3 euler)
+    {
+        CameraTr.eulerAngles = euler;
     }
 
     static public void Rotate(float _degRotY)

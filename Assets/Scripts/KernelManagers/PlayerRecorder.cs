@@ -46,8 +46,6 @@ public class PlayerRecorder : IKernelManager
     static void UpdateMethod(object obj, float dt)
     {
         if (!recording) { return; }
-        if (Ghost.DemoMode) { return; }
-
         if (dataList == null) { dataList = new List<float[]>(); }
 
         pastTime += dt;
@@ -91,7 +89,7 @@ public class PlayerRecorder : IKernelManager
         if (!recording) { return; }
         recording = false;
 
-        Ghost.BeginReplay(dataList, false);
+        Ghost.BeginReplay(dataList);
 
         RecordingEnd?.Invoke(null, new List<float[]>(dataList));
         dataList = new List<float[]>();

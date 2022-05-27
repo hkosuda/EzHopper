@@ -36,12 +36,16 @@ public class PlayerSound : MonoBehaviour
         if (indicator > 0)
         {
             PM_Landing.Landed += PlayLandingSound;
+            PM_Demo.Landed += PlayLandingSoundDemo;
+
             Timer.Updated += UpdateMethod;
         }
 
         else
         {
             PM_Landing.Landed -= PlayLandingSound;
+            PM_Demo.Landed -= PlayLandingSoundDemo;
+
             Timer.Updated -= UpdateMethod;
         }
     }
@@ -84,5 +88,20 @@ public class PlayerSound : MonoBehaviour
             footstepIntervalRemain = footstepInterval;
             audioSource.PlayOneShot(footstepSound);
         }
+    }
+
+    static void PlayLandingSoundDemo(object obj, bool mute)
+    {
+        if (PM_Main.Rb.velocity.y < -2.0f)
+        {
+            audioSource.volume = 0.5f;
+        }
+
+        else
+        {
+            audioSource.volume = 0.3f;
+        }
+
+        audioSource.PlayOneShot(landingSound);
     }
 }

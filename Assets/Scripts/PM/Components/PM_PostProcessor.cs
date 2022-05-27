@@ -6,8 +6,6 @@ public class PM_PostProcessor : ControllerComponent
 {
     public override void Update(float dt)
     {
-        if (Ghost.DemoMode) { return; }
-
         var pvec = PM_PlaneVector.PlaneVector;
 
         if (PM_Jumping.JumpingBegin)

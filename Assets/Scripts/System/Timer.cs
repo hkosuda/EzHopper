@@ -33,11 +33,13 @@ public class Timer : MonoBehaviour
 
     static public void Pause()
     {
+        //Time.timeScale = 0.0f;
         Paused = true;
     }
 
     static public void Resume()
     {
+        Time.timeScale = 1.0f;
         Paused = false;
     }
 }

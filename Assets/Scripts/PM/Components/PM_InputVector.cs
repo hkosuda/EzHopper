@@ -8,8 +8,6 @@ public class PM_InputVector : ControllerComponent
 
     public override void Update(float dt)
     {
-        if (Ghost.DemoMode) { return; }
-
         var vm = 0.0f;
         var vl = 0.0f;
 

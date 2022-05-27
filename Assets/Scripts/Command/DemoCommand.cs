@@ -22,8 +22,22 @@ public class DemoCommand : Command
         if (values.Count < 2) { return; }
         var filename = values[1];
 
-        var dataList = DemoManager.GetDataList(filename);
+        var dataList = GetDataList(filename);
 
-        Ghost.BeginReplay(dataList, false);
+        DemoManager.BeginDemo(dataList);
+
+        // - inner function
+        static List<float[]> GetDataList(string filename)
+        {
+            foreach (var demoData in DemoManager.DemoDataList)
+            {
+                if (demoData.filename == filename)
+                {
+                    return demoData.DataList();
+                }
+            }
+
+            return new List<float[]>();
+        }
     }
 }

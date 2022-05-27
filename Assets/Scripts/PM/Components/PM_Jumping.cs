@@ -15,8 +15,6 @@ public class PM_Jumping : ControllerComponent
 
     public override void Update(float dt)
     {
-        if (Ghost.DemoMode) { return; }
-
         if (PM_Landing.LandingIndicator < 0) 
         {
             JumpingFrameBufferRemain--;

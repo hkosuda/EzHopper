@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class PM_Main : MonoBehaviour
 {
-    
-
     static public readonly float centerY = 0.9f;
     static public readonly float playerRadius = 0.5f;
 
@@ -14,6 +12,7 @@ public class PM_Main : MonoBehaviour
     
 
     static List<ControllerComponent> ControllerComponents;
+    static ControllerComponent pmDemo;
 
     private void Awake()
     {
@@ -33,6 +32,8 @@ public class PM_Main : MonoBehaviour
 
             new PM_PostProcessor(),
         };
+
+        pmDemo = new PM_Demo();
     }
 
     void Start()
@@ -56,12 +57,16 @@ public class PM_Main : MonoBehaviour
         {
             Timer.Updated += UpdateMethod;
             Timer.LateUpdated += LateUpdateMethod;
+
+            DemoTimer.Updated += DemoUpdateMethod;
         }
 
         else
         {
             Timer.Updated -= UpdateMethod;
             Timer.LateUpdated -= LateUpdateMethod;
+
+            DemoTimer.Updated -= DemoUpdateMethod;
         }
     }
 
@@ -79,6 +84,11 @@ public class PM_Main : MonoBehaviour
         {
             component.LateUpdate();
         }
+    }
+
+    static void DemoUpdateMethod(object obj, float dt)
+    {
+        pmDemo.Update(dt);
     }
 
     static public void RotVelocity(float degRotY)

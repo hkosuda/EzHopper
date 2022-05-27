@@ -31,14 +31,14 @@ public class DRecorderCommand : Command
 
         if (values.Count > 2)
         {
-            var filepath = DemoUtils.FilePath(Filename(values[2]), true);
-            DemoUtils.SaveFile(filepath, DebugPlayerRecorder.CachedDataList);
+            var filepath = DemoFileUtils.FilePath(Filename(values[2]), true);
+            DemoFileUtils.SaveFile(filepath, DebugPlayerRecorder.CachedDataList);
         }
 
         else
         {
-            var filepath = DemoUtils.FilePath(Filename(""), true);
-            DemoUtils.SaveFile(filepath, DebugPlayerRecorder.CachedDataList);
+            var filepath = DemoFileUtils.FilePath(Filename(""), true);
+            DemoFileUtils.SaveFile(filepath, DebugPlayerRecorder.CachedDataList);
         }
 
         // - inner function
