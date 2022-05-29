@@ -25,6 +25,8 @@ public class PM_Jumping : ControllerComponent
 
         if (Keyconfig.CheckInput(Keyconfig.KeyAction.jump, true) || AutoJump)
         {
+            if (PM_Main.Suspend) { return; }
+
             JumpingFrameBufferRemain = jumpingFrameBuffer;
             JumpingBegin = true;
         }

@@ -26,4 +26,9 @@ public class InvalidArea : MonoBehaviour
             PM_Main.Rb.velocity = Vector3.zero;
         }
     }
+
+    public void SetRespawnPosition(GameObject _respawnPosition)
+    {
+        respawnPosition = _respawnPosition;
+    }
 }

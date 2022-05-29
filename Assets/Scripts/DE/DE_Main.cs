@@ -5,6 +5,7 @@ using UnityEngine;
 public class DE_Main : MonoBehaviour
 {
     static List<ControllerComponent> controllers;
+    static public bool Suspend { get; set; }
 
     private void Awake()
     {

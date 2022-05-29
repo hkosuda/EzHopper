@@ -14,6 +14,7 @@ public class GameSystem : MonoBehaviour
     void Start()
     {
         Kernel.Reset();
+        
     }
 
     void Update()

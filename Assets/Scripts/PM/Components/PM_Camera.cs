@@ -30,6 +30,9 @@ public class PM_Camera : ControllerComponent
         if (Mathf.Abs(dx) / dt > omegaThreshold) { dx = dxPrev; }
         if (Mathf.Abs(dy) / dt > omegaThreshold) { dy = dyPrev; }
 
+        if (degRotX > 90.0f) { degRotX = 90.0f; }
+        if (degRotX < -90.0f) { degRotX = -90.0f; }
+
         degRotX -= dx;
         degRotY += dy;
 

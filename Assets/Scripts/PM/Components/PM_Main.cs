@@ -9,10 +9,11 @@ public class PM_Main : MonoBehaviour
 
     static public GameObject Myself { get; private set; }
     static public Rigidbody Rb { get; private set; }
-    
 
     static List<ControllerComponent> ControllerComponents;
     static ControllerComponent pmDemo;
+
+    static public bool Suspend { get; set; }
 
     private void Awake()
     {

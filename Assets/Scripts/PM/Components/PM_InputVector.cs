@@ -8,6 +8,12 @@ public class PM_InputVector : ControllerComponent
 
     public override void Update(float dt)
     {
+        if (PM_Main.Suspend)
+        {
+            InputVector = Vector2.zero;
+            return;
+        }
+
         var vm = 0.0f;
         var vl = 0.0f;
 
