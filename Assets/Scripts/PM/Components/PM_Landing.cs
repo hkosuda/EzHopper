@@ -33,7 +33,7 @@ public class PM_Landing : ControllerComponent
             return -1;
         }
 
-        if (SphereCastCheck())
+        if (SingleSphereCastCheck())
         {
             return LandingOrHalf();
         }
@@ -66,40 +66,12 @@ public class PM_Landing : ControllerComponent
         return 1;
     }
 
-    static bool SphereCastCheck()
+    static bool SingleSphereCastCheck()
     {
-        var r = PM_Main.playerRadius - sphereRadius;
-        var rbPosition = PM_Main.Rb.position;
-
-        for (var n = 0; n < 6; n++)
-        {
-            var angle = 60.0f * n * Mathf.Deg2Rad;
-
-            var dx = r * Mathf.Sin(angle);
-            var dz = r * Mathf.Cos(angle);
-
-            var origin = rbPosition + new Vector3(dx, 0.0f, dz);
-
-            if (Physics.SphereCast(origin: origin, sphereRadius, Vector3.down, out RaycastHit hit))
-            {
-                var deltaY = rbPosition.y - hit.point.y;
-
-                if (deltaY <= PM_Main.centerY + landingHeightEpsilon)
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    static bool BoxCastCheck()
-    {
-        var half = PM_Main.playerRadius * 0.35f;
+        var radius = PM_Main.playerRadius;
         var rbPosition = PM_Main.Rb.transform.position;
 
-        if (Physics.BoxCast(rbPosition, new Vector3(half, half, half), Vector3.down, hitInfo: out RaycastHit hit))
+        if (Physics.SphereCast(rbPosition, radius, Vector3.down, out RaycastHit hit, Mathf.Infinity, ~(1 << 7)))
         {
             var deltaY = rbPosition.y - hit.point.y;
 

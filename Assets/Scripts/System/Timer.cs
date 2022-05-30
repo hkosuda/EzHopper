@@ -8,7 +8,11 @@ public class Timer : MonoBehaviour
     static public EventHandler<float> Updated;
     static public EventHandler<bool> LateUpdated;
 
+    static public EventHandler<bool> TimerResumed { get; set; }
+    static public EventHandler<bool> TimerPaused { get; set; }
+
     static public bool Paused { get; private set; }
+    static public bool FirstFrame { get; private set; }
 
     static bool lateUpdate;
 
@@ -33,13 +37,17 @@ public class Timer : MonoBehaviour
 
     static public void Pause()
     {
-        //Time.timeScale = 0.0f;
+        Time.timeScale = 0.0f;
         Paused = true;
+
+        TimerPaused?.Invoke(null, false);
     }
 
     static public void Resume()
     {
         Time.timeScale = 1.0f;
         Paused = false;
+
+        TimerResumed?.Invoke(null, false);
     }
 }

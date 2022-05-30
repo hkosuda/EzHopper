@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class ConsoleInputField : MonoBehaviour
 {
-    static public EventHandler<string> ValueUpdated { get; private set; }
+    static public EventHandler<string> ValueUpdated { get; set; }
 
     static InputField inputField;
 
@@ -66,5 +66,11 @@ public class ConsoleInputField : MonoBehaviour
     {
         if (inputField == null) { return; }
         inputField.ActivateInputField();
+    }
+
+    static public void ChangeValue(string value)
+    {
+        inputField.text = value;
+        inputField.caretPosition = inputField.text.Length;
     }
 }

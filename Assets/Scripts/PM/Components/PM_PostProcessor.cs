@@ -10,7 +10,7 @@ public class PM_PostProcessor : ControllerComponent
 
         if (PM_Jumping.JumpingBegin)
         {
-            PM_Main.Rb.velocity = new Vector3(pvec.x, 4.2f, pvec.y);
+            PM_Main.Rb.velocity = new Vector3(pvec.x, 4.3f, pvec.y);
         }
 
         else

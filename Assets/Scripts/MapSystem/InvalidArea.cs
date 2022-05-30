@@ -1,9 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class InvalidArea : MonoBehaviour
 {
+    static public EventHandler<Vector3> CourseOut { get; private set; }
+
     [SerializeField] bool active = true;
     [SerializeField] GameObject respawnPosition;
 
@@ -21,9 +25,10 @@ public class InvalidArea : MonoBehaviour
     {
         if (active)
         {
-            PM_Camera.SetEulerAngles(respawnPosition.transform.eulerAngles);
-            PM_Main.Myself.transform.position = respawnPosition.transform.position;
-            PM_Main.Rb.velocity = Vector3.zero;
+            var position = PM_Main.Myself.transform.position;
+
+            PM_Main.ResetPosition(respawnPosition.transform.position, respawnPosition.transform.eulerAngles.y);
+            CourseOut?.Invoke(null, position);
         }
     }
 
@@ -31,4 +36,22 @@ public class InvalidArea : MonoBehaviour
     {
         respawnPosition = _respawnPosition;
     }
+
+    // - inner function
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        var disp = Vector3.Distance(transform.position, SceneView.currentDrawingSceneView.camera.transform.position);
+
+        if (disp < 150.0f) { return; }
+        if (!active) { return; }
+        if (respawnPosition == null) { return; }
+
+        var p0 = gameObject.transform.position;
+        var p1 = respawnPosition.transform.position;
+
+        Handles.color = new Color(0.0f, 1.0f, 0.0f);
+        Handles.DrawLine(p0, p1);
+    }
+#endif
 }

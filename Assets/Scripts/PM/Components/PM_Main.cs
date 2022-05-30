@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PM_Main : MonoBehaviour
 {
+    static public EventHandler<bool> Initialized { get; set; }
+
     static public readonly float centerY = 0.9f;
     static public readonly float playerRadius = 0.5f;
 
@@ -35,15 +38,15 @@ public class PM_Main : MonoBehaviour
         };
 
         pmDemo = new PM_Demo();
+
+        foreach (var component in ControllerComponents)
+        {
+            component.Initialize();
+        }
     }
 
     void Start()
     {
-        foreach(var component in ControllerComponents)
-        {
-            component.Initialize();
-        }
-
         SetEvent(1);
     }
 
@@ -101,6 +104,23 @@ public class PM_Main : MonoBehaviour
         var vx = v.z * Mathf.Sin(rot) + v.x * Mathf.Cos(rot);
 
         Rb.velocity = new Vector3(vx, v.y, vz);
+    }
+
+    static public void Initialize(Vector3 position, float degRotY = 0.0f)
+    {
+        Myself.transform.position = position;
+        PM_Camera.SetEulerAngles(new Vector3(0.0f, degRotY, 0.0f));
+
+        Rb.velocity = Vector3.zero;
+        Initialized?.Invoke(null, false);
+    }
+
+    static public void ResetPosition(Vector3 position, float degRotY = 0.0f)
+    {
+        Myself.transform.position = position;
+        PM_Camera.SetEulerAngles(new Vector3(0.0f, degRotY, 0.0f));
+
+        Rb.velocity = Vector3.zero;
     }
 }
 

@@ -12,9 +12,12 @@ public class PM_Jumping : ControllerComponent
     static public int JumpingFrameBufferRemain { get; private set; }
     static public bool JumpingBegin { get; private set; }
     static public bool AutoJump { get; set; }
+    static public bool ToggleAutoJumpMode = true;
 
     public override void Update(float dt)
     {
+        if (Keyconfig.CheckInput(Keyconfig.KeyAction.autoJump, true) && ToggleAutoJumpMode) { AutoJump = !AutoJump; }
+
         if (PM_Landing.LandingIndicator < 0) 
         {
             JumpingFrameBufferRemain--;
@@ -35,6 +38,10 @@ public class PM_Jumping : ControllerComponent
     public override void LateUpdate()
     {
         JumpingBegin = false;
-        AutoJump = false;
+
+        if (!ToggleAutoJumpMode)
+        {
+            AutoJump = false;
+        }
     }
 }

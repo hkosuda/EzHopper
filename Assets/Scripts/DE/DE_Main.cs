@@ -14,15 +14,15 @@ public class DE_Main : MonoBehaviour
             new DE_Availability(),
             new DE_Shooter(),
         };
+
+        foreach (var controller in controllers)
+        {
+            controller.Initialize();
+        }
     }
 
     void Start()
     {
-        foreach(var controller in controllers)
-        {
-            controller.Initialize();
-        }
-
         SetEvent(1);
     }
 

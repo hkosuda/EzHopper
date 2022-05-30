@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class EntranceGate : MonoBehaviour
 {
@@ -44,4 +45,19 @@ public class EntranceGate : MonoBehaviour
 
         return exitGate.transform.position + new Vector3(dx, dy, dz);
     }
+
+    // - unity editor
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (Vector3.Distance(transform.position, SceneView.currentDrawingSceneView.camera.transform.position) > 5000.0f) { return; }
+        if (exitGate == null) { return; }
+
+        var p0 = gameObject.transform.position;
+        var p1 = exitGate.transform.position;
+
+        Handles.color = new Color(1.0f, 0.0f, 0.0f);
+        Handles.DrawLine(p0, p1);
+    }
+#endif
 }

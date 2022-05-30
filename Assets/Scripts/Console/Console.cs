@@ -1,9 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Console : MonoBehaviour
 {
+    static public EventHandler<bool> ConsoleOpened { get; set; }
+    static public EventHandler<bool> ConsoleClosed { get; set; }
+
     static GameObject canvas;
 
     private void Awake()
@@ -51,6 +55,8 @@ public class Console : MonoBehaviour
     {
         Timer.Resume();
         canvas.SetActive(false);
+
+        ConsoleClosed?.Invoke(null, false);
     }
 
     static public void OpenConsole()
@@ -59,5 +65,7 @@ public class Console : MonoBehaviour
         canvas.SetActive(true);
 
         ConsoleInputField.ActivateInputField();
+
+        ConsoleOpened?.Invoke(null, false);
     }
 }

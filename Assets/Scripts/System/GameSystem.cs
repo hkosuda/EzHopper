@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameSystem : MonoBehaviour
 {
-    static bool autoJump;
+    static MapName initialMap = MapName.ez_athletic; 
 
     private void Awake()
     {
@@ -14,14 +14,14 @@ public class GameSystem : MonoBehaviour
     void Start()
     {
         Kernel.Reset();
-        
+        MapsManager.Begin(initialMap);
     }
 
     void Update()
     {
         if (Input.GetMouseButton(1))
         {
-            PM_Jumping.AutoJump = true;
+            //PM_Jumping.AutoJump = true;
         }
     }
 }

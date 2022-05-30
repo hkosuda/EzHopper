@@ -7,6 +7,9 @@ public class ChatArea : MonoBehaviour
     static GameObject inputField;
     static RectTransform messagesRect;
 
+    static bool fieldIsActive;
+    static bool suspendFiedlsActivation;
+
     private void Awake()
     {
         inputField = gameObject.transform.GetChild(0).gameObject;
@@ -32,11 +35,19 @@ public class ChatArea : MonoBehaviour
         if (indicator > 0)
         {
             Timer.Updated += UpdateMethod;
+            Timer.TimerResumed += SetSuspensionFlag;
+
+            Console.ConsoleOpened += DeactivateFieldsOnConsoleOpened;
+            Console.ConsoleClosed += DeactivateFieldsOnConsoleClosed;
         }
 
         else
         {
             Timer.Updated -= UpdateMethod;
+            Timer.TimerResumed -= SetSuspensionFlag;
+
+            Console.ConsoleOpened -= DeactivateFieldsOnConsoleOpened;
+            Console.ConsoleClosed -= DeactivateFieldsOnConsoleClosed;
         }
     }
 
@@ -52,6 +63,7 @@ public class ChatArea : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Return))
         {
+            if (suspendFiedlsActivation) { suspendFiedlsActivation = false; return; }
             ActivateFields();
         }
     }
@@ -66,6 +78,8 @@ public class ChatArea : MonoBehaviour
 
         DE_Main.Suspend = true;
         PM_Main.Suspend = true;
+
+        fieldIsActive = true;
     }
 
     static void DeactivateFields()
@@ -77,5 +91,15 @@ public class ChatArea : MonoBehaviour
 
         DE_Main.Suspend = false;
         PM_Main.Suspend = false;
+
+        fieldIsActive = false;
     }
+
+    static void SetSuspensionFlag(object obj, bool mute)
+    {
+        suspendFiedlsActivation = true;
+    }
+
+    static void DeactivateFieldsOnConsoleClosed(object obj, bool mute) { DeactivateFields(); }
+    static void DeactivateFieldsOnConsoleOpened(object obj, bool mute) { DeactivateFields(); }
 }

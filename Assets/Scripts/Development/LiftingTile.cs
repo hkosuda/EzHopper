@@ -8,7 +8,8 @@ public class LiftingTile : MonoBehaviour
     public float liftingRate = 0.0f;
 
     private void OnDrawGizmos()
-    { 
+    {
+        if (Vector3.Distance(transform.position, SceneView.currentDrawingSceneView.camera.transform.position) > 100.0f) { return; }
         if (targetTile == null) { return; }
 
         var p0 = gameObject.transform.position;

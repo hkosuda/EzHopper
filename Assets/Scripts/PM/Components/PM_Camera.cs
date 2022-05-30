@@ -53,6 +53,8 @@ public class PM_Camera : ControllerComponent
     static public void SetEulerAngles(Vector3 euler)
     {
         CameraTr.eulerAngles = euler;
+        degRotX = euler.x;
+        degRotY = euler.y;
     }
 
     static public void Rotate(float _degRotY)

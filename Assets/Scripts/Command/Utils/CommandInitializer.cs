@@ -14,6 +14,7 @@ public class CommandInitializer : IKernelManager
             new RecorderCommand(),
             new ExitCommand(),
             new DemoCommand(),
+            new BeginCommand(),
         };
 
         foreach(var command in commandList)

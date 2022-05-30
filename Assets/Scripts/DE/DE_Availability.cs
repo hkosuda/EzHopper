@@ -17,8 +17,6 @@ public class DE_Availability : ControllerComponent
 
     public override void Initialize()
     {
-        StartPreparing();
-
         SetEvent(1);
     }
 
@@ -33,12 +31,16 @@ public class DE_Availability : ControllerComponent
         {
             DeAnimator.PreparingEnd += PreparingEnd;
             DE_Shooter.Shot += InitializeShootingIntervalRemain;
+
+            PM_Main.Initialized += StartPreparing;
         }
 
         else
         {
             DeAnimator.PreparingEnd -= PreparingEnd;
             DE_Shooter.Shot -= InitializeShootingIntervalRemain;
+
+            PM_Main.Initialized -= StartPreparing;
         }
     }
 
@@ -68,10 +70,9 @@ public class DE_Availability : ControllerComponent
         }
     }
 
-    static public void StartPreparing()
+    static public void StartPreparing(object obj, bool mute)
     {
         preparingTimeRemain = preparingTime;
-
         PreparingBegin?.Invoke(null, false);
     }
 
