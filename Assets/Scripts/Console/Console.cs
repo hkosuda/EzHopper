@@ -34,14 +34,23 @@ public class Console : MonoBehaviour
         if (indicator > 0)
         {
             Timer.Updated += UpdateMethod;
+            DemoTimer.TimerResumed += CloseConsoleOnDemoBegin;
         }
 
         else
         {
             Timer.Updated -= UpdateMethod;
+            DemoTimer.TimerResumed -= CloseConsoleOnDemoBegin;
         }
     }
 
+    private void Update()
+    {
+        if (canvas.activeSelf)
+        {
+            Timer.Pause();
+        }
+    }
 
     static void UpdateMethod(object obj, float dt)
     {
@@ -67,5 +76,10 @@ public class Console : MonoBehaviour
         ConsoleInputField.ActivateInputField();
 
         ConsoleOpened?.Invoke(null, false);
+    }
+
+    static void CloseConsoleOnDemoBegin(object obj, bool mute)
+    {
+        canvas.SetActive(false);
     }
 }

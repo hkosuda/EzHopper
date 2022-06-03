@@ -16,6 +16,7 @@ static public class Kernel
             new DemoManager(),
 
             new DebugPlayerRecorder(),
+            new ToxicSystem(),
         };
 
         controllerList = new List<IKernelController>()
@@ -48,6 +49,9 @@ static public class Kernel
 
     static public void Reset()
     {
-
+        foreach(var manager in managerList)
+        {
+            manager.Reset();
+        }
     }
 }

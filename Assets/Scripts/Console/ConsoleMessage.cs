@@ -8,7 +8,7 @@ public class ConsoleMessage : MonoBehaviour
 {
     static public EventHandler<bool> LogUpdated { get; set; }
 
-    static string consoleLog = "wwww";
+    static string consoleLog = "> WELCOME!!";
     static Text consoleLogText;
 
     private void Awake()
@@ -53,9 +53,12 @@ public class ConsoleMessage : MonoBehaviour
 
     static void WriteTracerMessages(object obj, Tracer tracer)
     {
+        var tracerMessage = tracer.GetFullMessage();
+        if (tracerMessage.Trim() == "") { return; }
+
         TrimEndReturn();
         consoleLog += "\n";
-        consoleLog += tracer.GetFullMessage();
+        consoleLog += tracerMessage;
         TrimEndReturn();
 
         UpdateLogText();

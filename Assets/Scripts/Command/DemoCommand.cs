@@ -24,6 +24,12 @@ public class DemoCommand : Command
 
         var dataList = GetDataList(filename);
 
+        if (dataList == null || dataList.Count == 0) 
+        {
+            tracer.AddMessage("データリストの読み込みに失敗しました", Tracer.MessageLevel.error); 
+            return;
+        }
+
         DemoManager.BeginDemo(dataList);
 
         // - inner function

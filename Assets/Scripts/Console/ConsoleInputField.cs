@@ -16,7 +16,6 @@ public class ConsoleInputField : MonoBehaviour
         ActivateInputField();
 
         inputField.onValueChanged.AddListener(OnValueUpdatedMethod);
-        inputField.onEndEdit.AddListener(OnEndEditMethod);
     }
 
     static void OnValueUpdatedMethod(string value)
@@ -49,6 +48,14 @@ public class ConsoleInputField : MonoBehaviour
         else
         {
             CommandReceiver.CommandRequestEnd -= UpdateInputFieldText;
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            OnEndEditMethod(inputField.text);
         }
     }
 

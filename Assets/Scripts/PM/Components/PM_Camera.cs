@@ -9,8 +9,11 @@ public class PM_Camera : ControllerComponent
     static public Camera Camera;
     static public Transform CameraTr;
 
-    static float degRotX;
+    static public float degRotX;
     static float degRotY;
+
+    static float addRotX;
+    static float addRotY;
 
     static float dxPrev;
     static float dyPrev;
@@ -24,6 +27,8 @@ public class PM_Camera : ControllerComponent
 
     public override void Update(float dt)
     {
+        if (!InputSystem.Active) { return; }
+
         var dx = Input.GetAxis("Mouse Y") * ClientParams.MouseSensi;
         var dy = Input.GetAxis("Mouse X") * ClientParams.MouseSensi;
 
@@ -36,7 +41,7 @@ public class PM_Camera : ControllerComponent
         degRotX -= dx;
         degRotY += dy;
 
-        CameraTr.eulerAngles = new Vector3(degRotX, degRotY, 0.0f);
+        CameraTr.eulerAngles = new Vector3((degRotX + addRotX), (degRotY + addRotY), 0.0f);
 
         dxPrev = dx;
         dyPrev = dy;
@@ -47,12 +52,14 @@ public class PM_Camera : ControllerComponent
     /// </summary>
     static public Vector3 EulerAngles()
     {
-        return CameraTr.eulerAngles;
+        var a = CameraTr.eulerAngles;
+        return new Vector3(a.x, a.y, a.z);
     }
 
     static public void SetEulerAngles(Vector3 euler)
     {
         CameraTr.eulerAngles = euler;
+
         degRotX = euler.x;
         degRotY = euler.y;
     }
@@ -60,5 +67,11 @@ public class PM_Camera : ControllerComponent
     static public void Rotate(float _degRotY)
     {
         degRotY += _degRotY;
+    }
+
+    static public void SetAddRot(float _addRotX, float _addRotY)
+    {
+        addRotX = _addRotX;
+        addRotY = _addRotY;
     }
 }

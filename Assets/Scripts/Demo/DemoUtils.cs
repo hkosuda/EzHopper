@@ -16,7 +16,18 @@ static public class DemoUtils
 
         for (var n = 0; n < PlayerRecorder.dataSize; n++)
         {
-            interpolatedData[n] = dataList[indexes[0]][n] * rate[0] + dataList[indexes[1]][n] * rate[1];
+            if (n == 4 || n == 5)
+            {
+                var a0 = dataList[indexes[0]][n];
+                var a1 = dataList[indexes[1]][n];
+
+                interpolatedData[n] = AngleInterPolation(a0, a1, rate[0], rate[1]);
+            }
+
+            else
+            {
+                interpolatedData[n] = dataList[indexes[0]][n] * rate[0] + dataList[indexes[1]][n] * rate[1];
+            }
         }
 
         return interpolatedData;
@@ -55,6 +66,22 @@ static public class DemoUtils
             var rate1 = 1.0f - rate0;
 
             return new float[2] { rate0, rate1 };
+        }
+
+        // - inner function
+        static float AngleInterPolation(float a0, float a1, float r0, float r1)
+        {
+            if (a0 < 100.0f && a1 > 300.0f)
+            {
+                return (a0 + 360.0f) * r0 + a1 * r1;
+            }
+
+            if (a0 > 300.0f && a1 < 100.0f)
+            {
+                return a0 * r0 + (a1 + 360.0f) * r1;
+            }
+
+            return a0 * r0 + a1 * r1;
         }
     }
 }

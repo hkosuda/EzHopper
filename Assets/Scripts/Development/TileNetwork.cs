@@ -5,10 +5,11 @@ public class TileNetwork : MonoBehaviour
 {
 #if UNITY_EDITOR
     public GameObject[] targetTiles = new GameObject[1];
+    public float distance = 50.0f;
 
     private void OnDrawGizmos()
     {
-        if (Vector3.Distance(transform.position, SceneView.currentDrawingSceneView.camera.transform.position) > 100.0f) { return; }
+        if (Vector3.Distance(transform.position, SceneView.currentDrawingSceneView.camera.transform.position) > distance) { return; }
         if (targetTiles == null) { return; }
 
         foreach(var tile in targetTiles)

@@ -6,7 +6,7 @@ using UnityEditor;
 
 public class InvalidArea : MonoBehaviour
 {
-    static public EventHandler<Vector3> CourseOut { get; private set; }
+    static public EventHandler<Vector3> CourseOut { get; set; }
 
     [SerializeField] bool active = true;
     [SerializeField] GameObject respawnPosition;

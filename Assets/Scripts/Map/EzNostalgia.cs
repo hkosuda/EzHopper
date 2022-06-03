@@ -9,8 +9,14 @@ public class EzNostalgia : Map
         MapName = MapName.ez_nostalgia;
     }
 
+#if UNITY_EDITOR
     public override void Initialize()
     {
-        base.Initialize();
+
+        Debug.Log("AAA");
+
+        var tr = respawnPositions[7].transform;
+        PM_Main.Initialize(tr.position, tr.eulerAngles.y);
     }
+#endif
 }

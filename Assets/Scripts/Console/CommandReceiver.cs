@@ -81,7 +81,14 @@ static public class CommandReceiver
         var splitted = sentence.Split(new string[] { " ", "Å@" }, StringSplitOptions.RemoveEmptyEntries);
         if (splitted == null) { return null; }
 
-        return new List<string>(splitted);
+        var values = new List<string>(splitted);
+
+        for(var n = 0; n < values.Count; n++)
+        {
+            values[n] = values[n].ToLower();
+        }
+
+        return values;
     }
 }
 

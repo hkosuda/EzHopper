@@ -5,17 +5,14 @@ using UnityEngine;
 public class PmUtil
 {
     // constants
-    static readonly float _maxSpeedOnTheGround = 9.5f;
-    static readonly float _maxSpeedInTheAir = 0.6f;
-    static readonly float _accelOnTheGround = 80.0f;
-    static readonly float _accelInTheAir = 100.0f;
-    static readonly float _draggingAccel = 50.0f;
-
-    // daccel = 30.0 - 35.0 ?
+    static public readonly float _maxSpeedOnTheGround = 7.7f;
+    static public readonly float _maxSpeedInTheAir = 0.7f;
+    static public readonly float _accelOnTheGround = 50.0f;
+    static public readonly float _accelInTheAir = 100.0f;
+    static public readonly float _draggingAccel = 30.0f;
 
     static public Vector2 AddVector { get; private set; }
-
-    
+    static public Vector2 NextVector { get; private set; }
 
     static public Vector2 CalcVector(Vector2 inputVector, Vector2 currentVector, float dt, bool onground)
     {
@@ -47,7 +44,8 @@ public class PmUtil
 
         var nextPlayerVector = playerVector_fric + addVector;
 
-        AddVector = inputVector * magnitudeOfAddVector;
+        AddVector = addVector;
+        NextVector = nextPlayerVector;
 
         return nextPlayerVector;
 

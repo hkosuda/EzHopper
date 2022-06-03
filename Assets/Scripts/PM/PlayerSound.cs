@@ -14,6 +14,8 @@ public class PlayerSound : MonoBehaviour
     static AudioClip landingSound;
     static AudioClip footstepSound;
 
+    static float prevVy;
+
     private void Awake()
     {
         audioSource = gameObject.GetComponent<AudioSource>();
@@ -39,6 +41,7 @@ public class PlayerSound : MonoBehaviour
             PM_Demo.Landed += PlayLandingSoundDemo;
 
             Timer.Updated += UpdateMethod;
+            Timer.LateUpdated += LateUpdateMethod;
         }
 
         else
@@ -47,21 +50,27 @@ public class PlayerSound : MonoBehaviour
             PM_Demo.Landed -= PlayLandingSoundDemo;
 
             Timer.Updated -= UpdateMethod;
+            Timer.LateUpdated -= LateUpdateMethod;
         }
     }
 
-    static void PlayLandingSound(object obj, bool mute)
+    static void PlayLandingSound(object obj, RaycastHit hit)
     {
         if (landingSoundFrameBufferRemain > 0) { return; }
 
-        if (PM_Main.Rb.velocity.y < -2.0f)
+        if (prevVy < -2.0f)
         {
             audioSource.volume = 0.5f;
         }
 
-        else
+        else if (prevVy < -0.1f)
         {
             audioSource.volume = 0.3f;
+        }
+
+        else
+        {
+            audioSource.volume = 0.1f;
         }
 
         audioSource.PlayOneShot(landingSound);
@@ -88,6 +97,11 @@ public class PlayerSound : MonoBehaviour
             footstepIntervalRemain = footstepInterval;
             audioSource.PlayOneShot(footstepSound);
         }
+    }
+
+    static void LateUpdateMethod(object obj, bool mute)
+    {
+        prevVy = PM_Main.Rb.velocity.y;
     }
 
     static void PlayLandingSoundDemo(object obj, bool mute)

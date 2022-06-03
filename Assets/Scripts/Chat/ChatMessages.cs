@@ -6,6 +6,9 @@ using UnityEngine.UI;
 
 public class ChatMessages : MonoBehaviour
 {
+    static readonly int maxChats = 5;
+    static readonly float chatExistsTime = 7.0f;
+
     public enum Sender
     {
         none,
@@ -14,7 +17,15 @@ public class ChatMessages : MonoBehaviour
         system,
     }
 
-    static EventHandler<string> ChatReceived { get; set; }
+    public enum TeammateColor
+    {
+        green,
+        cyan,
+        purple,
+        orange,
+    }
+
+    static public EventHandler<MessageSender> ChatReceived { get; set; }
 
     static VerticalLayoutGroup vlGroup;
     static GameObject _chatMessage;
@@ -24,6 +35,10 @@ public class ChatMessages : MonoBehaviour
 
     static List<GameObject> messageList;
     static List<float> timeList;
+
+    static List<TeammateColor> teammateColorList;
+
+    static bool dontHideMessages;
 
     private void Awake()
     {
@@ -57,10 +72,10 @@ public class ChatMessages : MonoBehaviour
 
             timeList[n] += Time.deltaTime;
 
-            if (timeList[n] > 7.0f) 
+            if (timeList[n] > chatExistsTime) 
             {
                 timeList[n] = -1.0f;
-                messageList[n].SetActive(false);
+                if (!dontHideMessages) { messageList[n].SetActive(false); }
             }
         }
     }
@@ -79,9 +94,9 @@ public class ChatMessages : MonoBehaviour
         timeList.Add(0.0f);
         messageList.Add(chatMessage);
 
-        if (messageList.Count > 10)
+        if (messageList.Count > maxChats)
         {
-            for(var n = messageList.Count - 10; n > -1; n--)
+            for(var n = messageList.Count - maxChats; n > -1; n--)
             {
                 Destroy(messageList[n]);
 
@@ -90,19 +105,19 @@ public class ChatMessages : MonoBehaviour
             }
         }
 
-        ChatReceived?.Invoke(null, message);
+        ChatReceived?.Invoke(null, new MessageSender(message, sender));
 
         // - inner function
         static string SenderText(Sender sender)
         {
             if (sender == Sender.player)
             {
-                return "<color=orange>[Player] : </color>";
+                return "<color=yellow>Åú </color><color=orange>[Player] : </color>";
             }
 
             if (sender == Sender.unknown)
             {
-                return "<color=blue>[? ? ?] : </color>";
+                return RandomTeammateColor() + "Åú " + "</color><color=orange>[? ? ?] : </color>";
             }
 
             if (sender == Sender.system)
@@ -111,6 +126,24 @@ public class ChatMessages : MonoBehaviour
             }
 
             return "";
+        }
+
+        // - inner function
+        static string RandomTeammateColor()
+        {
+            if (teammateColorList == null || teammateColorList.Count == 0)
+            {
+                teammateColorList = new List<TeammateColor>() 
+                { 
+                    TeammateColor.cyan, TeammateColor.green, TeammateColor.orange, TeammateColor.purple 
+                };
+            }
+
+            var idx = UnityEngine.Random.Range(0, teammateColorList.Count);
+            var color = "<color=" + teammateColorList[idx].ToString() + ">";
+
+            teammateColorList.RemoveAt(idx);
+            return color;
         }
     }
 
@@ -122,6 +155,9 @@ public class ChatMessages : MonoBehaviour
         }
 
         frameBuffer = 2;
+        dontHideMessages = true;
+
+        InputSystem.Inactivate();
     }
 
     static public void HideMessages()
@@ -135,5 +171,20 @@ public class ChatMessages : MonoBehaviour
         }
 
         frameBuffer = 2;
+        dontHideMessages = false;
+
+        InputSystem.Activate();
+    }
+
+    public class MessageSender
+    {
+        public string message;
+        public Sender sender;
+
+        public MessageSender(string message, Sender sender)
+        {
+            this.message = message;
+            this.sender = sender;
+        }
     }
 }

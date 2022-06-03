@@ -33,12 +33,16 @@ public class DRecorderCommand : Command
         {
             var filepath = DemoFileUtils.FilePath(Filename(values[2]), true);
             DemoFileUtils.SaveFile(filepath, DebugPlayerRecorder.CachedDataList);
+
+            ChatMessages.SendChat("ファイルを保存しました．", ChatMessages.Sender.system);
         }
 
         else
         {
             var filepath = DemoFileUtils.FilePath(Filename(""), true);
             DemoFileUtils.SaveFile(filepath, DebugPlayerRecorder.CachedDataList);
+
+            ChatMessages.SendChat("ファイルを保存しました．", ChatMessages.Sender.system);
         }
 
         // - inner function
@@ -52,8 +56,10 @@ public class DRecorderCommand : Command
         {
             var now = DateTime.Now;
 
-            var datetime = now.Year.ToString() + now.Month.ToString() + now.Day.ToString() + "_" +
-                now.Hour.ToString() + "h" + now.Minute.ToString() + "m" + now.Second.ToString() + "s" + now.Millisecond.ToString();
+            //var datetime = now.Year.ToString() + now.Month.ToString() + now.Day.ToString() + "_" +
+                //now.Hour.ToString() + "h" + now.Minute.ToString() + "m" + now.Second.ToString() + "s" + now.Millisecond.ToString();
+
+            var datetime = now.Hour.ToString() + "h" + now.Minute.ToString() + "m" + now.Second.ToString() + "s";
 
             if (filename == "")
             {

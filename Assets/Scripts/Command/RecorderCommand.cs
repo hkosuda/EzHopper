@@ -56,12 +56,14 @@ public class RecorderCommand : Command
         if (value == "begin")
         {
             PlayerRecorder.BeginRecording();
+            ChatMessages.SendChat("レコーダーを起動しました．", ChatMessages.Sender.system);
             return;
         }
 
         if (value == "end")
         {
             PlayerRecorder.FinishRecording();
+            ChatMessages.SendChat("レコーダーを停止しました．", ChatMessages.Sender.system);
             return;
         }
     }

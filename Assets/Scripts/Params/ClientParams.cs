@@ -16,7 +16,9 @@ public class ClientParams
     }
 
     static public float MouseSensi { get; private set; } = 1.5f;
-    static public DeColorTheme DeTheme { get; private set; }
+    static public DeColorTheme DeTheme { get; private set; } = DeColorTheme.vivid;
+
+    static public bool ImNoob { get; private set; } = false;
 
 
     static public void SetSensi(float sensi)
@@ -43,5 +45,11 @@ public class ClientParams
         var nextIdx = (currentIdx + 1) % 4;
 
         return (DeColorTheme)nextIdx;
+    }
+
+    // i am noob
+    static public void SetNoobOrNot(bool isNoob)
+    {
+        ImNoob = isNoob;
     }
 }

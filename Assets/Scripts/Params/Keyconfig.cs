@@ -91,49 +91,8 @@ public class Keyconfig : MonoBehaviour
 
     static public bool CheckInput(KeyAction action, bool getKeyDown)
     {
-        var keybind = KeybindList[action];
+        var key = KeybindList[action];
 
-        if (keybind.keyCode != KeyCode.None)
-        {
-            if (getKeyDown)
-            {
-                if (Input.GetKeyDown(keybind.keyCode))
-                {
-                    return true;
-                }
-            }
-
-            else
-            {
-                if (Input.GetKey(keybind.keyCode))
-                {
-                    return true;
-                }
-            }
-        }
-
-        // keybind.keyCode == KeyCode.None
-        else
-        {
-            float wheelDelta = keybind.wheelDelta;
-
-            if (wheelDelta > 0)
-            {
-                if (Input.mouseScrollDelta.y > 0)
-                {
-                    return true;
-                }
-            }
-
-            else
-            {
-                if (Input.mouseScrollDelta.y < 0)
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return InputSystem.CheckInput(key, getKeyDown);
     }
 }

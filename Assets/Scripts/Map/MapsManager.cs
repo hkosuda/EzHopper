@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class MapsManager : MonoBehaviour
 {
+    static public EventHandler<bool> Initialized { get; set; }
+
     static public Dictionary<MapName, Map> MapList { get; private set; }
 
     static public Map CurrentMap { get; private set; }
@@ -14,9 +17,10 @@ public class MapsManager : MonoBehaviour
         {
             { MapName.ez_athletic, GetMap(0) },
             { MapName.ez_nostalgia, GetMap(1) },
-            { MapName.ez_training, GetMap(2) },
-            { MapName.ez_freefall, GetMap(3) },
-            { MapName.ez_flyer, GetMap(4) },
+            { MapName.ez_horizon, GetMap(2) },
+            { MapName.ez_training, GetMap(3) },
+            { MapName.ez_freefall, GetMap(4) },
+            { MapName.ez_flyer, GetMap(5) },
         };
 
         InactivateAll();
@@ -53,6 +57,8 @@ public class MapsManager : MonoBehaviour
 
         CurrentMap.gameObject.SetActive(true);
         CurrentMap.Initialize();
+
+        Initialized?.Invoke(null, false);
     }
 
     static void InactivateAll()

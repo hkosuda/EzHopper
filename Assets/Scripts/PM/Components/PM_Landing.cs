@@ -5,12 +5,14 @@ using UnityEngine;
 
 public class PM_Landing : ControllerComponent
 {
-    static public EventHandler<bool> Landed { get; set; }
+    static public EventHandler<RaycastHit> Landed { get; set; }
 
     /// <summary>
     /// landing indicator ... 1: perfect landing, 0: half landing (landing. but processing as 'in the air'), -1: in the air
     /// </summary>
     static public int LandingIndicator { get; private set; }
+    static public RaycastHit HitInfo { get; private set; }
+    static public float DeltaY { get; private set; }
 
     // constants
     static public readonly int landingFrameBuffer = 5;
@@ -50,9 +52,11 @@ public class PM_Landing : ControllerComponent
 
     static int LandingOrHalf()
     {
-        if (LandingIndicator < 0)
+        var previousLandingIndicator = LandingIndicator;
+
+        if (previousLandingIndicator < 0)
         {
-            Landed?.Invoke(null, false);
+            Landed?.Invoke(null, HitInfo);
         }
 
         landingFrameBufferRemain--;
@@ -68,14 +72,19 @@ public class PM_Landing : ControllerComponent
 
     static bool SingleSphereCastCheck()
     {
-        var radius = PM_Main.playerRadius;
+        var radius = PM_Main.playerRadius - 0.02f;
         var rbPosition = PM_Main.Rb.transform.position;
 
-        if (Physics.SphereCast(rbPosition, radius, Vector3.down, out RaycastHit hit, Mathf.Infinity, ~(1 << 7)))
-        {
-            var deltaY = rbPosition.y - hit.point.y;
+        Physics.SphereCast(rbPosition, radius, Vector3.down, out RaycastHit hitInfo, Mathf.Infinity);
+        HitInfo = hitInfo;
 
-            if (deltaY <= PM_Main.centerY + landingHeightEpsilon)
+        if (hitInfo.collider != null)
+        {
+            DeltaY = rbPosition.y - hitInfo.point.y;
+
+            if (hitInfo.collider.gameObject.layer == 7) { return false; }
+
+            if (DeltaY <= PM_Main.centerY + landingHeightEpsilon)
             {
                 return true;
             }

@@ -33,12 +33,13 @@ public class PM_Main : MonoBehaviour
 
             new PM_InputVector(),
             new PM_PlaneVector(),
+            new PM_ClipVector(),
 
             new PM_PostProcessor(),
         };
 
         pmDemo = new PM_Demo();
-
+        
         foreach (var component in ControllerComponents)
         {
             component.Initialize();
@@ -111,6 +112,8 @@ public class PM_Main : MonoBehaviour
         Myself.transform.position = position;
         PM_Camera.SetEulerAngles(new Vector3(0.0f, degRotY, 0.0f));
 
+        PM_Jumping.InactivateAutoJump();
+
         Rb.velocity = Vector3.zero;
         Initialized?.Invoke(null, false);
     }
@@ -120,6 +123,7 @@ public class PM_Main : MonoBehaviour
         Myself.transform.position = position;
         PM_Camera.SetEulerAngles(new Vector3(0.0f, degRotY, 0.0f));
 
+        PM_Jumping.InactivateAutoJump();
         Rb.velocity = Vector3.zero;
     }
 }

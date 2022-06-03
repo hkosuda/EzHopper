@@ -25,7 +25,10 @@ public class DemoManager : IKernelManager
         DemoDataList = new List<DemoData>()
         {
             new DemoData("ez_athletic_piles"),
-            new DemoData("piles")
+            new DemoData("ez_athletic_tiles_to_ez"),
+            new DemoData("ez_nostalgia_0101"),
+            new DemoData("ez_nostalgia_0102"),
+            new DemoData("ez_nostalgia_0103"),
         };
 
         _ui = Resources.Load<GameObject>("UI/DemoUI");
@@ -61,7 +64,7 @@ public class DemoManager : IKernelManager
         if (dataList == null) { return; }
 
         PastTime += dt * PlaySpeed;
-        if (PastTime > Duration) { PastTime = Duration; return; }
+        if (PastTime > Duration) { PastTime = Duration; }
         if (PastTime < 0.0f) { PastTime = 0.0f; }
 
         InterpolatedData = DemoUtils.Interpolate(dataList, PastTime);
@@ -87,6 +90,8 @@ public class DemoManager : IKernelManager
         PlayerStatusRecorder.Load();
         DemoTimer.Pause();
         Timer.Resume();
+
+        InputSystem.Activate();
 
         if (ui != null) { GameObject.Destroy(ui); }
     }
@@ -137,6 +142,8 @@ static public class PlayerStatusRecorder
 
     static public void Save()
     {
+        Debug.Log("SAVE: " + EulerAngle.x.ToString());
+
         Position = PM_Main.Myself.transform.position;
         EulerAngle = PM_Camera.EulerAngles();
         Velocity = PM_Main.Rb.velocity;
@@ -144,8 +151,10 @@ static public class PlayerStatusRecorder
 
     static public void Load()
     {
+        Debug.Log("LOAD: " + EulerAngle.x.ToString());
+
         PM_Main.Myself.transform.position = Position;
-        PM_Camera.SetEulerAngles(EulerAngle);
+        PM_Camera.SetEulerAngles(new Vector3(0.0f, EulerAngle.y, 0.0f));
         PM_Main.Rb.velocity = Velocity;
     }
 }

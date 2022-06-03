@@ -4,9 +4,11 @@ using UnityEditor;
 public class TileName : MonoBehaviour
 {
 #if UNITY_EDITOR
+    public float distance = 50.0f;
+
     private void OnDrawGizmos()
     {
-        if (Vector3.Distance(transform.position, SceneView.currentDrawingSceneView.camera.transform.position) > 100.0f) { return; }
+        if (Vector3.Distance(transform.position, SceneView.currentDrawingSceneView.camera.transform.position) > distance) { return; }
 
         var parent = gameObject.transform.parent;
         if (parent == null) { return; }

@@ -3,9 +3,7 @@ Shader "Custom/Surface"
     Properties
     {
         _SurfaceColor ("SurfaceColor", Color) = (1,0,0,1)
-		_BodyColor("BodyColor", Color) = (0,0,0,1)
-
-		_Y("Y", float) = 0
+		_BodyColor("BodyColor", Color) = (1,1,1,1)
     }
 
     SubShader
@@ -20,26 +18,20 @@ Shader "Custom/Surface"
 		half4 _SurfaceColor;
 		half4 _BodyColor;
 
-		half _Y;
-
 		struct Input
 		{
-			half3 worldPos;
+			half3 worldNormal;
 		};
 
 		void surf(Input IN, inout SurfaceOutputStandard o)
 		{
-			half dy = IN.worldPos.y - _Y;
-
-			if (dy > -0.01)
+			if(IN.worldNormal.y > 0.99)
 			{
-				o.Albedo = _SurfaceColor;	
+				o.Albedo = _SurfaceColor;
+				return;
 			}
 
-			else
-			{
-				o.Albedo = _BodyColor;
-			}
+			o.Albedo = _BodyColor;
 		}
 
 	ENDCG

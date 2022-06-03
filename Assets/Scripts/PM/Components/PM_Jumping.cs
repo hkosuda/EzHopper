@@ -12,11 +12,33 @@ public class PM_Jumping : ControllerComponent
     static public int JumpingFrameBufferRemain { get; private set; }
     static public bool JumpingBegin { get; private set; }
     static public bool AutoJump { get; set; }
-    static public bool ToggleAutoJumpMode = true;
+
+    public override void Initialize()
+    {
+        SetEvent(1);
+    }
+
+    public override void Shutdown()
+    {
+        SetEvent(-1);
+    }
+
+    static void SetEvent(int indicator)
+    {
+        if (indicator > 0)
+        {
+            InvalidArea.CourseOut += InactivateAutoJumpOnCourseOut;
+        }
+
+        else
+        {
+            InvalidArea.CourseOut -= InactivateAutoJumpOnCourseOut;
+        }
+    }
 
     public override void Update(float dt)
     {
-        if (Keyconfig.CheckInput(Keyconfig.KeyAction.autoJump, true) && ToggleAutoJumpMode) { AutoJump = !AutoJump; }
+        if (Keyconfig.CheckInput(Keyconfig.KeyAction.autoJump, true)) { AutoJump = !AutoJump; }
 
         if (PM_Landing.LandingIndicator < 0) 
         {
@@ -38,10 +60,15 @@ public class PM_Jumping : ControllerComponent
     public override void LateUpdate()
     {
         JumpingBegin = false;
+    }
 
-        if (!ToggleAutoJumpMode)
-        {
-            AutoJump = false;
-        }
+    static void InactivateAutoJumpOnCourseOut(object obj, Vector3 position)
+    {
+        InactivateAutoJump();
+    }
+
+    static public void InactivateAutoJump()
+    {
+        AutoJump = false;
     }
 }

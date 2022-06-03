@@ -8,6 +8,4 @@ public class EzAthletic : Map
     {
         MapName = MapName.ez_athletic;
     }
-
-    
 }
