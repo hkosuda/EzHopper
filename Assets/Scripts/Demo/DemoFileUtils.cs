@@ -29,6 +29,7 @@ static public class DemoFileUtils
 
         return new List<float[]>();
     }
+
     static public void SaveFile(string filepath, List<float[]> dataList)
     {
         CreateDirectory();
@@ -76,9 +77,19 @@ static public class DemoFileUtils
     {
         var line = "";
 
-        foreach(var value in data)
+        for(var n = 0; n < data.Length; n++)
         {
-            line += value.ToString() + ",";
+            var value = data[n];
+
+            if (n > 5)
+            {
+                line += value.ToString() + ",";
+            }
+
+            else
+            {
+                line += value.ToString("f8") + ",";
+            }
         }
 
         return line;

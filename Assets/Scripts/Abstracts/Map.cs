@@ -5,6 +5,7 @@ using UnityEngine;
 public enum MapName
 {
     ez_athletic,
+    ez_square,
     ez_nostalgia,
     ez_horizon,
     ez_training,

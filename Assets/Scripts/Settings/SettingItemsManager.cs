@@ -104,13 +104,5 @@ public class SettingItemsManager : MonoBehaviour
             var component = item.GetComponent<KeySettingItem>(); Debug.Log(component);
             component.Initialize(keybind.Key);
         }
-
-        var settingTitle = Instantiate(_settingTitle);
-        settingTitle.transform.SetParent(myself.transform);
-        settingTitle.transform.GetChild(0).gameObject.GetComponent<Text>().text = "‚»‚Ì‘¼";
-
-        var settingItem = Instantiate(_settingItem);
-        settingItem.transform.SetParent(myself.transform);
-        settingItem.GetComponent<SettingItem>().Initialize("•Ší‚Ìƒe[ƒ}", ClientParams.ChangeDeTheme, ClientParams.DeNextTheme);
     }
 }

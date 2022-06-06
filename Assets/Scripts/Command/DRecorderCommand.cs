@@ -56,10 +56,7 @@ public class DRecorderCommand : Command
         {
             var now = DateTime.Now;
 
-            //var datetime = now.Year.ToString() + now.Month.ToString() + now.Day.ToString() + "_" +
-                //now.Hour.ToString() + "h" + now.Minute.ToString() + "m" + now.Second.ToString() + "s" + now.Millisecond.ToString();
-
-            var datetime = now.Hour.ToString() + "h" + now.Minute.ToString() + "m" + now.Second.ToString() + "s";
+            var datetime = now.Month.ToString() + "M" + now.Day.ToString() + "D" + "_" + now.Hour.ToString() + "h" + now.Minute.ToString() + "m" + now.Second.ToString() + "s";
 
             if (filename == "")
             {

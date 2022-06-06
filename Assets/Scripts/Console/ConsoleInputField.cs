@@ -16,6 +16,9 @@ public class ConsoleInputField : MonoBehaviour
         ActivateInputField();
 
         inputField.onValueChanged.AddListener(OnValueUpdatedMethod);
+
+        var enterButton = gameObject.transform.GetChild(1).gameObject.GetComponent<Button>();
+        enterButton.onClick.AddListener(RequestCommand);
     }
 
     static void OnValueUpdatedMethod(string value)
@@ -23,8 +26,11 @@ public class ConsoleInputField : MonoBehaviour
         ValueUpdated?.Invoke(null, value);
     }
 
-    static void OnEndEditMethod(string value)
+    static void RequestCommand()
     {
+        var value = inputField.text;
+        if (value.Trim() == "") { return; }
+
         CommandReceiver.RequestCommand(value, true);
     }
 
@@ -55,7 +61,7 @@ public class ConsoleInputField : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            OnEndEditMethod(inputField.text);
+            RequestCommand();
         }
     }
 

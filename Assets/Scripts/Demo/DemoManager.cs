@@ -6,8 +6,6 @@ using UnityEngine;
 
 public class DemoManager : IKernelManager
 {
-    static public List<DemoData> DemoDataList { get; private set; }
-
     // public 
     static public float[] InterpolatedData { get; private set; }
     static public float PastTime { get; private set; }
@@ -22,15 +20,6 @@ public class DemoManager : IKernelManager
 
     public void Initialize()
     {
-        DemoDataList = new List<DemoData>()
-        {
-            new DemoData("ez_athletic_piles"),
-            new DemoData("ez_athletic_tiles_to_ez"),
-            new DemoData("ez_nostalgia_0101"),
-            new DemoData("ez_nostalgia_0102"),
-            new DemoData("ez_nostalgia_0103"),
-        };
-
         _ui = Resources.Load<GameObject>("UI/DemoUI");
 
         SetEvent(1);

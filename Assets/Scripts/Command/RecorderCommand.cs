@@ -62,7 +62,7 @@ public class RecorderCommand : Command
 
         if (value == "end")
         {
-            PlayerRecorder.FinishRecording();
+            PlayerRecorder.FinishRecording(true);
             ChatMessages.SendChat("レコーダーを停止しました．", ChatMessages.Sender.system);
             return;
         }

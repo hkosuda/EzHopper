@@ -10,10 +10,10 @@ public class DemoUiKeys : MonoBehaviour
     {
         keyList = new Dictionary<ReplayKey.Key, ReplayKey>()
         {
-            { ReplayKey.Key.f, GetKey(0) },
-            { ReplayKey.Key.b, GetKey(1) },
-            { ReplayKey.Key.r, GetKey(2) },
-            { ReplayKey.Key.l, GetKey(3) },
+            { ReplayKey.Key.f, GetKey(1) },
+            { ReplayKey.Key.b, GetKey(2) },
+            { ReplayKey.Key.r, GetKey(3) },
+            { ReplayKey.Key.l, GetKey(4) },
         };
 
         // - inner function

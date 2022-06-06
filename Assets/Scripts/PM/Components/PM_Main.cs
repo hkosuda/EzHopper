@@ -12,6 +12,7 @@ public class PM_Main : MonoBehaviour
 
     static public GameObject Myself { get; private set; }
     static public Rigidbody Rb { get; private set; }
+    static public MeshCollider Collider { get; private set; }
 
     static List<ControllerComponent> ControllerComponents;
     static ControllerComponent pmDemo;
@@ -22,16 +23,18 @@ public class PM_Main : MonoBehaviour
     {
         Myself = gameObject;
         Rb = gameObject.GetComponent<Rigidbody>();
+        Collider = gameObject.GetComponent<MeshCollider>();
 
         ControllerComponents = new List<ControllerComponent>()
         {
-            new PM_Demo(),
             new PM_Camera(),
+            new PM_InputVector(),
+            new PM_God(),
 
             new PM_Landing(),
             new PM_Jumping(),
 
-            new PM_InputVector(),
+            
             new PM_PlaneVector(),
             new PM_ClipVector(),
 
@@ -79,7 +82,10 @@ public class PM_Main : MonoBehaviour
     {
         foreach (var component in ControllerComponents)
         {
-            component.Update(dt);
+            if (!component.Update(dt))
+            {
+                return;
+            }
         }
     }
 

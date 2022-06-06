@@ -57,8 +57,8 @@ public class Keyconfig : MonoBehaviour
         { KeyAction.right, new Key(KeyCode.D) },
         { KeyAction.left, new Key(KeyCode.A) },
         { KeyAction.shot, new Key(KeyCode.Mouse0) },
-        { KeyAction.menu, new Key(KeyCode.Return) },
-        { KeyAction.console, new Key(KeyCode.F3) },
+        { KeyAction.menu, new Key(KeyCode.M) },
+        { KeyAction.console, new Key(KeyCode.K) },
     };
 
     static public Dictionary<KeyAction, Key> KeybindList { get; private set; } = new Dictionary<KeyAction, Key>(DefaultKeybindList);

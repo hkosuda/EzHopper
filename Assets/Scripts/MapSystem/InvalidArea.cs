@@ -9,7 +9,7 @@ public class InvalidArea : MonoBehaviour
     static public EventHandler<Vector3> CourseOut { get; set; }
 
     [SerializeField] bool active = true;
-    [SerializeField] GameObject respawnPosition;
+    public GameObject respawnPosition;
 
     private void Start()
     {

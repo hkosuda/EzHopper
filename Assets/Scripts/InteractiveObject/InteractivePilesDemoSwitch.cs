@@ -12,7 +12,6 @@ public class InteractivePilesDemoSwitch : MonoBehaviour
 
     void RequestCommand()
     {
-        Debug.Log("Request");
         CommandReceiver.RequestCommand("demo ez_athletic_piles", true);
     }
 }

@@ -91,6 +91,8 @@ public class Ghost : MonoBehaviour
         if (_ghost == null) { _ghost = Resources.Load<GameObject>("Ghost/Ghost"); }
         if (_ghostLine == null) { _ghostLine = Resources.Load<GameObject>("Ghost/GhostLine"); }
 
+        if (GameSystem.Root == null) { return; }
+
         dataList = _dataList;
         pastTime = 0.0f;
 
@@ -101,6 +103,9 @@ public class Ghost : MonoBehaviour
 
         ghostLineObject = Object.Instantiate(_ghostLine);
         ghostLine = ghostLineObject.transform.GetChild(0).gameObject.GetComponent<LineRenderer>();
+
+        GameSystem.SetChildOfRoot(ghost);
+        GameSystem.SetChildOfRoot(ghostLineObject);
 
         ghostLine.positionCount = 1;
         ghostLine.SetPosition(0, Vec3(dataList[0], -PM_Main.centerY));

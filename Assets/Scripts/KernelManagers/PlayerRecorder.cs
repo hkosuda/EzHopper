@@ -35,11 +35,17 @@ public class PlayerRecorder : IKernelManager
         if (indicator > 0)
         {
             Timer.Updated += UpdateMethod;
+            MapsManager.Initialized += StopRecorderOnMapInitialized;
+
+            InvalidArea.CourseOut += StopRecordingOnCourseOut;
         }
 
         else
         {
             Timer.Updated -= UpdateMethod;
+            MapsManager.Initialized -= StopRecorderOnMapInitialized;
+
+            InvalidArea.CourseOut -= StopRecordingOnCourseOut;
         }
     }
 
@@ -84,12 +90,15 @@ public class PlayerRecorder : IKernelManager
         pastTime = 0.0f;
     }
 
-    static public void FinishRecording()
+    static public void FinishRecording(bool ghostReplay)
     {
         if (!recording) { return; }
         recording = false;
 
-        Ghost.BeginReplay(dataList);
+        if (ghostReplay)
+        {
+            Ghost.BeginReplay(dataList);
+        }
 
         RecordingEnd?.Invoke(null, new List<float[]>(dataList));
         dataList = new List<float[]>();
@@ -99,5 +108,14 @@ public class PlayerRecorder : IKernelManager
     {
         if (dataList == null) { return 0; }
         return dataList.Count;
+    }
+
+    static void StopRecordingOnCourseOut(object obj, Vector3 pos)
+    {
+        FinishRecording(false);
+    }
+    static void StopRecorderOnMapInitialized(object obj, bool mute)
+    {
+        FinishRecording(false);
     }
 }

@@ -12,7 +12,7 @@ public class LinerDampingSolver
     static readonly float t2 = 0.05f;
     static readonly float t3 = 0.1f;
 
-    static readonly float v_amp = 1.2f;
+    static readonly float v_amp = 1.4f;
     static readonly float h_amp = 0.0f;
 
     static float h_a1;

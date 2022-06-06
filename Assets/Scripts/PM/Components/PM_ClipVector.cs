@@ -18,32 +18,25 @@ public class PM_ClipVector : ControllerComponent
         base.Shutdown();
     }
 
-    public override void Update(float dt)
+    public override bool Update(float dt)
     {
         var pv = PM_PlaneVector.PlaneVector;
         var v = new Vector3(pv.x, PM_Main.Rb.velocity.y, pv.y);
 
-        //ClipVector = v; return;
-
         if (PM_Landing.HitInfo.collider == null)
         {
             ClipVector = v;
-            return;
+            return true;
         }
 
         if (PM_Landing.HitInfo.collider.gameObject.layer == 7 && PM_Landing.DeltaY < dyOnSlope)
         {
             CalcClipVector(v);
-            return;
+            return true;
         }
 
-        //if (CheckSlopeAbove())
-        //{
-        //    CalcClipVector(v);
-        //    return;
-        //}
-
         ClipVector = v;
+        return true;
     }
 
     static bool CheckSlopeAbove()
@@ -62,8 +55,6 @@ public class PM_ClipVector : ControllerComponent
 
     static void CalcClipVector(Vector3 v)
     {
-        Debug.Log("CLIP");
-
         var normal = PM_Landing.HitInfo.normal;
         var backoff = Vector3.Dot(v, normal);
 

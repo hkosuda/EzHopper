@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class SensitivitySetting : MonoBehaviour
 {
+    static readonly Floats.Item item = Floats.Item.mouse_sens;
+
     static Slider slider;
     static InputField inputField;
 
@@ -14,19 +16,19 @@ public class SensitivitySetting : MonoBehaviour
         inputField = gameObject.transform.GetChild(0).gameObject.GetComponent<InputField>();
 
         slider.minValue = 0.1f;
-        slider.maxValue = 5.0f;
+        slider.maxValue = 10.0f;
 
         slider.onValueChanged.AddListener(UpdateInputField);
         inputField.onEndEdit.AddListener(UpdateSlider);
 
-        slider.value = ClientParams.MouseSensi;
-        inputField.text = ClientParams.MouseSensi.ToString("f2");
+        slider.value = Floats.Get(item);
+        inputField.text = Floats.Get(Floats.Item.mouse_sens).ToString("f2");
     }
 
     void UpdateInputField(float value)
     {
         ChageSensi(value);
-        inputField.text = ClientParams.MouseSensi.ToString("f2");
+        inputField.text = Floats.Get(Floats.Item.mouse_sens).ToString("f2");
     }
 
     void UpdateSlider(string value)
@@ -34,12 +36,17 @@ public class SensitivitySetting : MonoBehaviour
         if (float.TryParse(value, out var num))
         {
             ChageSensi(num);
-            slider.value = ClientParams.MouseSensi;
+            slider.value = Floats.Get(Floats.Item.mouse_sens);
         }
     }
 
     void ChageSensi(float value)
     {
-        ClientParams.SetSensi(value);
+        var setting = Floats.Settings[item];
+
+        if (setting.ValidationCheck(value))
+        {
+            setting.SetValue(value);
+        }
     }
 }

@@ -25,12 +25,12 @@ public class PM_Camera : ControllerComponent
         CameraTr.eulerAngles = new Vector3(degRotX, degRotY, 0.0f);
     }
 
-    public override void Update(float dt)
+    public override bool Update(float dt)
     {
-        if (!InputSystem.Active) { return; }
+        if (!InputSystem.Active) { return true; }
 
-        var dx = Input.GetAxis("Mouse Y") * ClientParams.MouseSensi;
-        var dy = Input.GetAxis("Mouse X") * ClientParams.MouseSensi;
+        var dx = Input.GetAxis("Mouse Y") * Floats.Get(Floats.Item.mouse_sens);
+        var dy = Input.GetAxis("Mouse X") * Floats.Get(Floats.Item.mouse_sens);
 
         if (Mathf.Abs(dx) / dt > omegaThreshold) { dx = dxPrev; }
         if (Mathf.Abs(dy) / dt > omegaThreshold) { dy = dyPrev; }
@@ -45,6 +45,8 @@ public class PM_Camera : ControllerComponent
 
         dxPrev = dx;
         dyPrev = dy;
+
+        return true;
     }
 
     /// <summary>

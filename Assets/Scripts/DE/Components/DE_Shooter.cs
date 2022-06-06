@@ -18,12 +18,13 @@ public class DE_Shooter : ControllerComponent
         base.Shutdown();
     }
 
-    public override void Update(float dt)
+    public override bool Update(float dt)
     {
-        if (!Keyconfig.CheckInput(Keyconfig.KeyAction.shot, true)) { return; }
-        if (!DE_Availability.Availability) { return; }
+        if (!Keyconfig.CheckInput(Keyconfig.KeyAction.shot, true)) { return true; }
+        if (!DE_Availability.Availability) { return true; }
 
         DeShot();
+        return true;
     }
 
     static void DeShot()
@@ -120,7 +121,7 @@ public class SpreadSolver
             var r = pqr_vector[2];
 
             // running
-            var maxSpeed = PmUtil._maxSpeedOnTheGround;
+            var maxSpeed = Floats.Get(Floats.Item.pm_max_speed_on_ground);
             var velocity = new Vector2(PM_Main.Rb.velocity.x, PM_Main.Rb.velocity.z).magnitude;
 
             var v_rate = (velocity / maxSpeed);

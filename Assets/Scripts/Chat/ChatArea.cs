@@ -7,7 +7,6 @@ public class ChatArea : MonoBehaviour
     static GameObject inputField;
     static RectTransform messagesRect;
 
-    static bool fieldIsActive;
     static bool suspendFiedlsActivation;
 
     private void Awake()
@@ -51,14 +50,6 @@ public class ChatArea : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            DeactivateFields();
-        }
-    }
-
     static void UpdateMethod(object obj, float dt)
     {
         if (Input.GetKeyDown(KeyCode.Return))
@@ -78,11 +69,9 @@ public class ChatArea : MonoBehaviour
 
         DE_Main.Suspend = true;
         PM_Main.Suspend = true;
-
-        fieldIsActive = true;
     }
 
-    static void DeactivateFields()
+    static public void DeactivateFields()
     {
         inputField.SetActive(false);
         messagesRect.offsetMin = new Vector2(0.0f, 0.0f);
@@ -91,8 +80,6 @@ public class ChatArea : MonoBehaviour
 
         DE_Main.Suspend = false;
         PM_Main.Suspend = false;
-
-        fieldIsActive = false;
     }
 
     static void SetSuspensionFlag(object obj, bool mute)

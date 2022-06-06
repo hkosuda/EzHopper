@@ -22,9 +22,10 @@ public class PM_Landing : ControllerComponent
     // valiables
     static int landingFrameBufferRemain;
 
-    public override void Update(float dt)
+    public override bool Update(float dt)
     {
         LandingIndicator = CheckLanding();
+        return true;
     }
 
     // main function

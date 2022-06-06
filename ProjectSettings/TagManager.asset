@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - console
+  - athletic_piles
+  - athletic_tiles
   layers:
   - Default
   - TransparentFX
@@ -14,8 +16,8 @@ TagManager:
   - UI
   - FrontView
   - Slope
-  - 
-  - 
+  - Player
+  - VirtualPlayer
   - 
   - 
   - 

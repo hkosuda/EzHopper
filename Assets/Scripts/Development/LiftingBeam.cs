@@ -5,6 +5,7 @@ using UnityEditor;
 
 public class LiftingBeam : MonoBehaviour
 {
+#if UNITY_EDITOR
     public bool xDirection;
     public float distance = 50.0f;
 
@@ -38,4 +39,5 @@ public class LiftingBeam : MonoBehaviour
         Handles.DrawLine(pp1, pp, 1.0f);
         Handles.DrawLine(pp, p0, 1.0f);
     }
+#endif
 }

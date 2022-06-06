@@ -4,11 +4,15 @@ using UnityEngine;
 
 public class GameSystem : MonoBehaviour
 {
-    static readonly MapName initialMap = MapName.ez_horizon;
+    [SerializeField] MapName _initialMap = MapName.ez_athletic;
+
+    static MapName initialMap = MapName.ez_horizon;
     static public GameObject Root { get; private set; }
 
     private void Awake()
     {
+        initialMap = _initialMap;
+
         Root = new GameObject("Root");
         Kernel.Initialize();
     }

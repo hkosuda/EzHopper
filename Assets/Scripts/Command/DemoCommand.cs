@@ -22,7 +22,10 @@ public class DemoCommand : Command
         if (values.Count < 2) { return; }
         var filename = values[1];
 
-        var dataList = GetDataList(filename);
+        var asset = Resources.Load<TextAsset>("DemoData/" + filename + ".ghost");
+        if (asset == null) { tracer.AddMessage("データが見つかりませんでした．", Tracer.MessageLevel.error); return; }
+
+        var dataList = DemoFileUtils.FullText2DataList(asset.text);
 
         if (dataList == null || dataList.Count == 0) 
         {
@@ -31,19 +34,5 @@ public class DemoCommand : Command
         }
 
         DemoManager.BeginDemo(dataList);
-
-        // - inner function
-        static List<float[]> GetDataList(string filename)
-        {
-            foreach (var demoData in DemoManager.DemoDataList)
-            {
-                if (demoData.filename == filename)
-                {
-                    return demoData.DataList();
-                }
-            }
-
-            return new List<float[]>();
-        }
     }
 }

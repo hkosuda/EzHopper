@@ -6,7 +6,7 @@ public class PM_PlaneVector : ControllerComponent
 {
     static public Vector2 PlaneVector { get; private set; }
 
-    public override void Update(float dt)
+    public override bool Update(float dt)
     {
         var landingIndicator = PM_Landing.LandingIndicator;
 
@@ -17,14 +17,14 @@ public class PM_PlaneVector : ControllerComponent
         if (landingIndicator < 0 || PM_Jumping.JumpingBegin)
         {
             PlaneVector = PmUtil.CalcVector(inputVector, currentVector, dt, false);
-            return;
+            return true;
         }
 
         // half landing
         if (landingIndicator == 0)
         {
             PlaneVector = PmUtil.CalcVector(inputVector, currentVector, dt, false);
-            return;
+            return true;
         }
 
         // perfect landing
@@ -32,6 +32,8 @@ public class PM_PlaneVector : ControllerComponent
         {
             PlaneVector = PmUtil.CalcVector(inputVector, currentVector, dt, true);
         }
+
+        return true;
 
         static Vector2 CurrentVector()
         {

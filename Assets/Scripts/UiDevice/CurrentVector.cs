@@ -4,13 +4,19 @@ using UnityEngine;
 
 public class CurrentVector : MonoBehaviour
 {
+    static readonly Bools.Item _show = Bools.Item.show_vector;
+
     static RectTransform isJumping;
     static RectTransform inputVector;
     static RectTransform mainVector;
     static RectTransform addVector;
 
+    static GameObject imageGroup;
+
     private void Awake()
     {
+        imageGroup = gameObject.transform.GetChild(0).gameObject;
+
         isJumping = GetRect(0);
         inputVector = GetRect(1);
         mainVector = GetRect(2);
@@ -25,6 +31,7 @@ public class CurrentVector : MonoBehaviour
 
     void Start()
     {
+        UpdateVisibility(null, false);
         SetEvent(1);
     }
 
@@ -38,16 +45,25 @@ public class CurrentVector : MonoBehaviour
         if (indicator > 0)
         {
             Timer.Updated += UpdateMethod;
+            Bools.Settings[_show].ValueUpdated += UpdateVisibility;
         }
 
         else
         {
             Timer.Updated -= UpdateMethod;
+            Bools.Settings[_show].ValueUpdated -= UpdateVisibility;
         }
+    }
+
+    static void UpdateVisibility(object obj, bool prev)
+    {
+        imageGroup.SetActive(Bools.Get(_show));
     }
 
     static void UpdateMethod(object obj, float dt)
     {
+        if (!Bools.Get(_show)) { return; }
+
         ActivateIfJumping(isJumping);
         UpdateVector(inputVector, PM_InputVector.InputVector, 150.0f, 2.0f);
         UpdateVector(mainVector, PmUtil.NextVector, 10.0f, 4.0f);

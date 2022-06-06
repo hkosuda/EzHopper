@@ -25,7 +25,7 @@ static public class CommandReceiver
         CommandList.Remove(commandName);
     }
 
-    static public void RequestCommand(string sentence, bool echo)
+    static public bool RequestCommand(string sentence, bool echo, bool exec = true)
     {
         // start //
 
@@ -34,17 +34,21 @@ static public class CommandReceiver
         var tracer = new Tracer();
 
         var values = GetValues(sentence);
-        if (values == null || values.Count == 0) { SimpleEnd(tracer, echo); return; }
+        if (values == null || values.Count == 0) { SimpleEnd(tracer, echo); return false; }
 
         var commandName = values[0];
-        if (CommandList == null || CommandList.Count == 0) { UnkownCommand(tracer, commandName, echo); return; }
-        if (!CommandList.ContainsKey(commandName)) { UnkownCommand(tracer, commandName, echo); return; }
+        if (CommandList == null || CommandList.Count == 0) { UnkownCommand(tracer, commandName, echo); return false; }
+        if (!CommandList.ContainsKey(commandName)) { UnkownCommand(tracer, commandName, echo); return false; }
 
         var command = CommandList[commandName];
-        if (!command.CheckValues(tracer, values)) { InvalidValues(tracer, echo); return; }
+        if (!command.CheckValues(tracer, values)) { InvalidValues(tracer, echo); return false; }
 
-        command.CommandMethod(tracer, values);
-        if (echo) { CommandRequestEnd?.Invoke(null, tracer); }
+        if (exec) { command.CommandMethod(tracer, values); }
+        if (exec && echo) { CommandRequestEnd?.Invoke(null, tracer); }
+
+        if (tracer.NoError) { return true; }
+
+        return false;
 
         // end //
 

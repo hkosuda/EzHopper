@@ -8,7 +8,7 @@ public class ConsoleMessage : MonoBehaviour
 {
     static public EventHandler<bool> LogUpdated { get; set; }
 
-    static string consoleLog = "> WELCOME!!";
+    static string consoleLog = "";
     static Text consoleLogText;
 
     private void Awake()

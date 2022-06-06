@@ -16,11 +16,12 @@ public class MapsManager : MonoBehaviour
         MapList = new Dictionary<MapName, Map>()
         {
             { MapName.ez_athletic, GetMap(0) },
-            { MapName.ez_nostalgia, GetMap(1) },
-            { MapName.ez_horizon, GetMap(2) },
-            { MapName.ez_training, GetMap(3) },
-            { MapName.ez_freefall, GetMap(4) },
-            { MapName.ez_flyer, GetMap(5) },
+            { MapName.ez_square, GetMap(1) },
+            { MapName.ez_nostalgia, GetMap(2) },
+            { MapName.ez_horizon, GetMap(3) },
+            { MapName.ez_training, GetMap(4) },
+            { MapName.ez_freefall, GetMap(5) },
+            { MapName.ez_flyer, GetMap(6) },
         };
 
         InactivateAll();

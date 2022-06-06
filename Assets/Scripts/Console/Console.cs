@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Console : MonoBehaviour
 {
@@ -13,6 +14,9 @@ public class Console : MonoBehaviour
     private void Awake()
     {
         canvas = gameObject.transform.GetChild(0).gameObject;
+
+        var closeButton = gameObject.transform.GetChild(0).GetChild(0).GetChild(0).gameObject.GetComponent<Button>();
+        closeButton.onClick.AddListener(CloseConsole);
     }
 
     private void Start()

@@ -5,12 +5,12 @@ using UnityEngine;
 
 public class BindCommand : Command
 {
-    static List<Binding> keyBindingList;
+    static public List<Binding> KeyBindingList { get; private set; }
 
     public BindCommand()
     {
         commandName = "bind";
-        keyBindingList = new List<Binding>();
+        KeyBindingList = new List<Binding>();
 
         Timer.Updated += UpdateMethod;
     }
@@ -18,7 +18,7 @@ public class BindCommand : Command
     public override void CommandMethod(Tracer tracer, List<string> values)
     {
         if (values == null || values.Count < 3) { return; }
-        if (keyBindingList == null) { keyBindingList = new List<Binding>(); }
+        if (KeyBindingList == null) { KeyBindingList = new List<Binding>(); }
 
         var keyDeltaValue = values[1];
         var command = GetCommand(values);
@@ -27,7 +27,7 @@ public class BindCommand : Command
         {
             if (keyCode.ToString().ToLower() == keyDeltaValue)
             {
-                keyBindingList.Add(new Binding(keyCode, 0.0f, command));
+                KeyBindingList.Add(new Binding(keyCode, 0.0f, command));
                 return;
             }
         }
@@ -36,12 +36,12 @@ public class BindCommand : Command
         {
             if (num > 0.0f)
             {
-                keyBindingList.Add(new Binding(KeyCode.None, 1.0f, command));
+                KeyBindingList.Add(new Binding(KeyCode.None, 1.0f, command));
             }
 
             else if (num < 0.0f)
             {
-                keyBindingList.Add(new Binding(KeyCode.None, -1.0f, command));
+                KeyBindingList.Add(new Binding(KeyCode.None, -1.0f, command));
                 return;
             }
 
@@ -67,10 +67,10 @@ public class BindCommand : Command
 
     static void UpdateMethod(object obj, float dt)
     {
-        if(keyBindingList == null) { return; }
+        if(KeyBindingList == null) { return; }
         if (!Input.anyKeyDown && Input.mouseScrollDelta.y == 0.0f) { return; }
 
-        foreach(var keybind in keyBindingList)
+        foreach(var keybind in KeyBindingList)
         {
             // key
             if (InputSystem.CheckInput(keybind.key, true))
@@ -80,7 +80,15 @@ public class BindCommand : Command
         }
     }
 
-    class Binding
+    static public void RemoveKeybind(int n)
+    {
+        if (n > 0 && n < KeyBindingList.Count)
+        {
+            KeyBindingList.RemoveAt(n);
+        }
+    }
+
+    public class Binding
     {
         public Keyconfig.Key key;
         public string command;

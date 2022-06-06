@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class CurrentVelocity : MonoBehaviour
 {
+    static readonly Bools.Item _show = Bools.Item.show_velocity;
+
     static Text velocityText;
 
     private void Awake()
@@ -14,6 +16,7 @@ public class CurrentVelocity : MonoBehaviour
 
     private void Start()
     {
+        UpdateVisibility(null, false);
         SetEvent(1);
     }
 
@@ -27,21 +30,26 @@ public class CurrentVelocity : MonoBehaviour
         if (indicator > 0)
         {
             Timer.Updated += UpdateMethod;
+            Bools.Settings[_show].ValueUpdated += UpdateVisibility;
         }
 
         else
         {
             Timer.Updated -= UpdateMethod;
+            Bools.Settings[_show].ValueUpdated -= UpdateVisibility;
         }
     } 
+
+    static void UpdateVisibility(object obj, bool prev)
+    {
+        velocityText.gameObject.SetActive(Bools.Get(_show));
+    }
 
     static void UpdateMethod(object obj, float dt)
     {
         var v = PM_Main.Rb.velocity;
         var pv = new Vector2(v.x, v.z);
 
-        velocityText.text = pv.magnitude.ToString("f2") + ", " + v.y.ToString("f2");
-        //velocityText.text = PM_Camera.degRotX.ToString("f2");
-        //velocityText.text = PM_Landing.DeltaY.ToString("f5") + ", " + v.y.ToString("f2");
+        velocityText.text = pv.magnitude.ToString("f2") + " [m/s]";
     }
 }

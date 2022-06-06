@@ -8,6 +8,6 @@ public abstract class ControllerComponent
 
     public virtual void Shutdown() { }
 
-    public virtual void Update(float dt) { }
+    public virtual bool Update(float dt) { return true; }
     public virtual void LateUpdate() { }
 }

@@ -12,10 +12,7 @@ public class EzNostalgia : Map
 #if UNITY_EDITOR
     public override void Initialize()
     {
-
-        Debug.Log("AAA");
-
-        var tr = respawnPositions[7].transform;
+        var tr = respawnPositions[6].transform;
         PM_Main.Initialize(tr.position, tr.eulerAngles.y);
     }
 #endif

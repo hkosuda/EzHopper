@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ToxicSystem : IKernelManager
 {
+    static readonly Bools.Item toxicItem = Bools.Item.toxic_teammate;
+
     static AudioClip sampleClip;
 
     static GameObject _toxicVC;
@@ -40,7 +42,7 @@ public class ToxicSystem : IKernelManager
 
     public void Reset()
     {
-        ClientParams.SetNoobOrNot(false);
+        
     }
 
     static void ReactingToChat(object obj, ChatMessages.MessageSender messageSender)
@@ -61,7 +63,7 @@ public class ToxicSystem : IKernelManager
 
     static void ReactToCourseOut(object obj, Vector3 position)
     {
-        if (!ClientParams.ImNoob) { return; }
+        if (!Bools.Get(toxicItem)) { return; }
 
         var chatMessages = new List<string>();
 

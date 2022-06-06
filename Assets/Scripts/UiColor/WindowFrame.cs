@@ -1,18 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WindowFrame : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        var image = gameObject.GetComponent<Image>();
+        image.color = new Color(0.8f, 0.8f, 0.8f, 1.0f);
     }
 }

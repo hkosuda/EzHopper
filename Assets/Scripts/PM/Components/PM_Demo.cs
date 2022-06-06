@@ -12,7 +12,7 @@ public class PM_Demo : ControllerComponent
     static bool isLanding;
     static int frameBufferRemain;
 
-    public override void Update(float dt)
+    public override bool Update(float dt)
     {
         var _isLanding = SphereCastCheck();
 
@@ -36,6 +36,7 @@ public class PM_Demo : ControllerComponent
         }
 
         isLanding = _isLanding;
+        return true;
     }
 
     static bool SphereCastCheck()

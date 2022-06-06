@@ -5,8 +5,7 @@ using UnityEngine;
 public class PM_Jumping : ControllerComponent
 {
     // constants
-    static readonly int jumpingFrameBuffer = 2;
-    static readonly float jumpingSpeed = 3.6f; // 3.6
+    static readonly int jumpingFrameBuffer = 10;
 
     // valiables
     static public int JumpingFrameBufferRemain { get; private set; }
@@ -36,7 +35,7 @@ public class PM_Jumping : ControllerComponent
         }
     }
 
-    public override void Update(float dt)
+    public override bool Update(float dt)
     {
         if (Keyconfig.CheckInput(Keyconfig.KeyAction.autoJump, true)) { AutoJump = !AutoJump; }
 
@@ -45,16 +44,21 @@ public class PM_Jumping : ControllerComponent
             JumpingFrameBufferRemain--;
             if (JumpingFrameBufferRemain < 0) { JumpingFrameBufferRemain = 0; }
 
-            return; 
+            return true; 
         }
 
-        if (Keyconfig.CheckInput(Keyconfig.KeyAction.jump, true) || AutoJump)
+        if (PM_Main.Suspend) { return true; }
+
+        if (JumpingFrameBufferRemain <= 0)
         {
-            if (PM_Main.Suspend) { return; }
-
-            JumpingFrameBufferRemain = jumpingFrameBuffer;
-            JumpingBegin = true;
+            if (Keyconfig.CheckInput(Keyconfig.KeyAction.jump, true) || AutoJump)
+            {
+                JumpingFrameBufferRemain = jumpingFrameBuffer;
+                JumpingBegin = true;
+            }
         }
+
+        return true;
     }
 
     public override void LateUpdate()

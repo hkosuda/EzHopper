@@ -32,13 +32,15 @@ public class DE_Recoil : ControllerComponent
         LinerDampingSolver.Initialize();
     }
 
-    public override void Update(float dt)
+    public override bool Update(float dt)
     {
-        if (!LinerDampingSolver.Active) { return; }
+        if (!LinerDampingSolver.Active) { return true; }
 
         LinerDampingSolver.UpdateTime(dt);
 
         var addRot = LinerDampingSolver.GetPosition();
         PM_Camera.SetAddRot(addRot[0], addRot[1]);
+
+        return true;
     }
 }

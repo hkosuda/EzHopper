@@ -3,6 +3,7 @@ using UnityEditor;
 
 public class LongJumpBoard : MonoBehaviour
 {
+#if UNITY_EDITOR
     public GameObject baseTile;
 
     private void OnDrawGizmos()
@@ -26,4 +27,5 @@ public class LongJumpBoard : MonoBehaviour
         var idx = gameObject.transform.GetSiblingIndex();
         gameObject.name = "LongJumpTile_" + idx.ToString();
     }
+#endif
 }

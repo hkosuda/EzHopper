@@ -4,8 +4,15 @@ using UnityEngine;
 
 public abstract class Command
 {
+    public enum CommandType
+    {
+        normal,
+        values,
+    }
+
     public string commandName;
     public string description;
+    public CommandType commandType = CommandType.normal;
 
     public virtual string Description(List<string> values)
     {

@@ -49,7 +49,7 @@ public class DE_Availability : ControllerComponent
         preparingTimeRemain = 0.0f;
     }
 
-    public override void Update(float dt)
+    public override bool Update(float dt)
     {
         preparingTimeRemain -= dt;
         shootingIntervalRemain -= dt;
@@ -57,7 +57,7 @@ public class DE_Availability : ControllerComponent
         if (preparingTimeRemain < 0.0f) { preparingTimeRemain = 0.0f; }
         if (shootingIntervalRemain < 0.0f) { shootingIntervalRemain = 0.0f; }
 
-        if (DE_Main.Suspend) { Availability = false; return; }
+        if (DE_Main.Suspend) { Availability = false; return true; }
 
         if (preparingTimeRemain > 0.0f || shootingIntervalRemain > 0.0f)
         {
@@ -68,6 +68,8 @@ public class DE_Availability : ControllerComponent
         {
             Availability = true;
         }
+
+        return true;
     }
 
     static public void StartPreparing(object obj, bool mute)

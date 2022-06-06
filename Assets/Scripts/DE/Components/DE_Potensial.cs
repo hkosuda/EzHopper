@@ -38,9 +38,11 @@ public class DE_Potensial : ControllerComponent
         if (Potential > maxPotential) { Potential = maxPotential; }
     }
 
-    public override void Update(float dt)
+    public override bool Update(float dt)
     {
         Potential -= dt;
         if (Potential < 0.0f) { Potential = 0.0f; }
+
+        return true;
     }
 }

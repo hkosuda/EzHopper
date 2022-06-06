@@ -71,12 +71,11 @@ Shader "Custom/SurfChess"
 				if (abs(dx) < _LineWidth || abs(dy) < _LineWidth)
 				{
 					o.Albedo = _LineColor;
+					return;
 				}
-
-				return;
 			}
 
-			if (abs(IN.worldNormal).x > 0.99)
+			if (abs(IN.worldNormal.x) > 0.99)
 			{
 				if (abs(dy) < _LineWidth || abs(dz) < _LineWidth)
 				{
