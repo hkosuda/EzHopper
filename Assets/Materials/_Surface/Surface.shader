@@ -25,7 +25,7 @@ Shader "Custom/Surface"
 
 		void surf(Input IN, inout SurfaceOutputStandard o)
 		{
-			if(IN.worldNormal.y > 0.99)
+			if(abs(IN.worldNormal.y) > 0.98)
 			{
 				o.Albedo = _SurfaceColor;
 				return;

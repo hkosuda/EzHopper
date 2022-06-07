@@ -6,9 +6,35 @@ public class AnchorCommand : Command
 {
     static AnchoredParams anchoredParams;
 
+    enum Values
+    {
+        set,
+        back,
+    }
+
     public AnchorCommand()
     {
         commandName = "anchor";
+        description = "プレイヤーの座標を記録し，その場所に戻る機能を提供します．\n" +
+            "'anchor " + Values.set.ToString() + "'で座標を記録し，'anchor " + Values.back.ToString() + "'でその座標まで戻ります．\n" +
+            "なお，マップが変更されると座標のデータは削除されます．";
+    }
+
+    public override void OnMapInitialized()
+    {
+        anchoredParams = null;
+    }
+
+    public override List<string> AvailableValues(List<string> values)
+    {
+        if (values == null || values.Count == 0) { return new List<string>(); }
+
+        if (values.Count < 3)
+        {
+            return new List<string>() { Values.set.ToString(), Values.back.ToString() };
+        }
+
+        return new List<string>();
     }
 
     public override void CommandMethod(Tracer tracer, List<string> values)

@@ -17,7 +17,7 @@ public class PmUtil
     static public Vector2 CalcVector(Vector2 inputVector, Vector2 currentVector, float dt, bool onground)
     {
         // load settings 
-        var draggingAccel = Floats.Get(Floats.Item.env_friction_accel);
+        var draggingAccel = Floats.Get(Floats.Item.pm_friction_accel);
         var maxSpeed = Floats.Get(Floats.Item.pm_max_speed_on_ground);
         var accel = Floats.Get(Floats.Item.pm_accel_on_ground);
 

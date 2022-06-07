@@ -33,15 +33,14 @@ static public class Floats
         none,
 
         mouse_sens,
-
-        env_gravity,
-        env_friction_accel,
-
+        
         pm_max_speed_on_ground,
         pm_max_speed_in_air,
         pm_accel_on_ground,
         pm_accel_in_air,
+        pm_friction_accel,
         pm_jumping_velocity,
+        pm_gravity,
 
         god_moving_speed,
         god_moving_accel,
@@ -60,15 +59,10 @@ static public class Floats
                 new List<FlValidation>(){new Positive() })
         },
 
-        {
-            Item.env_gravity, new FlSetting(
-                -16.0f, 
-                "重力加速度の値．",
-                new List<FlValidation>(){ new Negative() }) 
-        },
+        
 
         {
-            Item.env_friction_accel, new FlSetting(
+            Item.pm_friction_accel, new FlSetting(
                 35.0f, "地面からの抵抗による加速度の大きさ",
                 new List<FlValidation>() { new NotNegative() })
         },
@@ -107,6 +101,13 @@ static public class Floats
                 new List<FlValidation>() { new NotNegative() }) 
         },
 
+        {
+            Item.pm_gravity, new FlSetting(
+                -16.0f,
+                "重力加速度の値．",
+                new List<FlValidation>(){ new Negative() })
+        },
+
         // god
         {
             Item.god_moving_speed, new FlSetting(
@@ -124,19 +125,19 @@ static public class Floats
         {
             Item.crosshair_length, new FlSetting(
                 6.0f, "クロスヘアの長さ．",
-                new List<FlValidation>() { new OnlyInteger(), new NotNegative() })
+                new List<FlValidation>() { new OnlyInteger(), new NotNegative(), new NSmallerThan(10.0f) })
         },
 
         {
             Item.crosshair_width, new FlSetting(
                 2.0f, "クロスヘアの幅．",
-                new List<FlValidation>() { new OnlyInteger(), new NotNegative() })
+                new List<FlValidation>() { new OnlyInteger(), new NotNegative(), new NSmallerThan(10.0f) })
         },
 
         {
             Item.crosshair_gap, new FlSetting(
                 2.0f, "クロスヘアのギャップの大きさ．",
-                new List<FlValidation>() { new OnlyInteger(), new NotNegative() })
+                new List<FlValidation>() { new OnlyInteger(), new NotNegative(), new NSmallerThan(10.0f) })
         }
     };
 
@@ -151,7 +152,7 @@ static public class Floats
 
             else
             {
-                tracer.AddMessage(GetDiscription(), Tracer.MessageLevel.error);
+                if (tracer != null) { tracer.AddMessage(GetDiscription(), Tracer.MessageLevel.error); }
                 return false;
             }
         }
@@ -173,7 +174,7 @@ static public class Floats
 
             else
             {
-                tracer.AddMessage("負の値でなければなりません．", Tracer.MessageLevel.error);
+                if (tracer != null) { tracer.AddMessage("負の値でなければなりません．", Tracer.MessageLevel.error); }
                 return false;
             }
         }
@@ -195,7 +196,7 @@ static public class Floats
 
             else
             {
-                tracer.AddMessage(GetDiscription(), Tracer.MessageLevel.error);
+                if (tracer != null) { tracer.AddMessage(GetDiscription(), Tracer.MessageLevel.error); }
                 return false;
             }
         }
@@ -217,7 +218,7 @@ static public class Floats
 
             else
             {
-                tracer.AddMessage(GetDiscription(), Tracer.MessageLevel.error);
+                if (tracer != null) { tracer.AddMessage(GetDiscription(), Tracer.MessageLevel.error); }
                 return false;
             }
         }
@@ -225,6 +226,35 @@ static public class Floats
         public override string GetDiscription()
         {
             return "整数値で指定してください";
+        }
+    }
+
+    class NSmallerThan : FlValidation
+    {
+        float value;
+
+        public NSmallerThan(float value)
+        {
+            this.value = value;
+        }
+
+        public override bool Check(float value, Tracer tracer = null)
+        {
+            if (value < this.value)
+            {
+                return true;
+            }
+
+            else
+            {
+                if (tracer != null) { tracer.AddMessage(GetDiscription(), Tracer.MessageLevel.error); }
+                return false;
+            }
+        }
+
+        public override string GetDiscription()
+        {
+            return value.ToString() + "未満の値でなければなりません．";
         }
     }
 }

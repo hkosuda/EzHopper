@@ -39,16 +39,18 @@ public class DeBullet : MonoBehaviour
     {
         if (indicator > 0)
         {
-            Timer.Updated += UpdateMethod;
             DE_Shooter.Shot += StartPreview;
             DE_Shooter.ShootingHit += UpdateExistTime;
+
+            Timer.Updated += UpdateMethod;
         }
 
         else
         {
-            Timer.Updated -= UpdateMethod;
             DE_Shooter.Shot -= StartPreview;
             DE_Shooter.ShootingHit -= UpdateExistTime;
+
+            Timer.Updated -= UpdateMethod;
         }
     }
 

@@ -9,8 +9,9 @@ public enum MapName
     ez_nostalgia,
     ez_horizon,
     ez_training,
-    ez_freefall,
     ez_flyer,
+
+    none,
 }
 
 public abstract class Map : MonoBehaviour
@@ -28,16 +29,6 @@ public abstract class Map : MonoBehaviour
     }
 
     public virtual void Shutdown() { }
-
-    static bool CheckRespawnPositions(GameObject[] respawnPositions)
-    {
-        if (respawnPositions == null || respawnPositions.Length == 0)
-        {
-            return false;
-        }
-
-        return true;
-    }
 
     public void Next()
     {
@@ -59,5 +50,20 @@ public abstract class Map : MonoBehaviour
         var rot = respawnPositions[index].transform.eulerAngles;
 
         PM_Main.Initialize(pos, rot.y);
+    }
+
+    public void SetIndex(int index)
+    {
+        if (index < 0)
+        {
+            index = 0;
+        }
+
+        if (index > respawnPositions.Length - 1)
+        {
+            index = respawnPositions.Length - 1;
+        }
+
+        this.index = index;
     }
 }

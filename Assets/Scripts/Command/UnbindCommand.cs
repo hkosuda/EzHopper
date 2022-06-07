@@ -7,7 +7,28 @@ public class UnbindCommand : Command
     public UnbindCommand()
     {
         commandName = "unbind";
-        description = "いちど作成したキーバインドを削除します";
+        description = "作成したキーバインドを削除する機能を提供します．\n" +
+            "特定のキーバインドを指定するには，キーバインドの番号を使用します．そのため，いちどコンソールで'bind'と入力し" +
+            "削除したいキーバインドが何番に指定されているかを確認してから実行しましょう．";
+    }
+
+    public override List<string> AvailableValues(List<string> values)
+    {
+        if (values == null || values.Count == 0) { return new List<string>(); }
+
+        if (values.Count < 3)
+        {
+            var available = new List<string>();
+
+            for(var n = 0; n < BindCommand.KeyBindingList.Count - 1; n++)
+            {
+                available.Add(n.ToString());
+            }
+
+            return available;
+        }
+
+        return new List<string>();
     }
 
     public override void CommandMethod(Tracer tracer, List<string> values)
@@ -27,11 +48,17 @@ public class UnbindCommand : Command
             {
                 if (num > 0 && num < BindCommand.KeyBindingList.Count)
                 {
-                    BindCommand.RemoveKeybind(num);
+                    BindCommand.RemoveKeybind(num, tracer);
+                    return;
                 }
+            }
+
+            else
+            {
+                tracer.AddMessage(value + "を整数に変換できません．", Tracer.MessageLevel.error);
             }
         }
 
-        tracer.AddMessage("", Tracer.MessageLevel.error);
+        tracer.AddMessage("2個以上の値を指定することはできません．", Tracer.MessageLevel.error);
     }
 }

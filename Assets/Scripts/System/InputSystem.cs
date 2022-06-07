@@ -36,6 +36,14 @@ public class InputSystem : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (Timer.Paused)
+        {
+            Active = false;
+        }
+    }
+
     static void InactivateOnTimerPaused(object obj, bool mute)
     {
         Inactivate();

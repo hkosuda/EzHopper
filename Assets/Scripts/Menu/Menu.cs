@@ -56,8 +56,6 @@ public class Menu : MonoBehaviour
 
     static void CloseMenu()
     {
-        Debug.Log("CLOSE");
-
         canvas.SetActive(false);
         Timer.Resume();
     }

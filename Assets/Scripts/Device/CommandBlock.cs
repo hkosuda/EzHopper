@@ -37,7 +37,7 @@ public class CommandBlock : MonoBehaviour
         {
             initialized = true;
 
-            if (!CommandReceiver.RequestCommand(command, true, false))
+            if (!CommandReceiver.RequestCommand(command, false, false))
             {
                 Debug.LogError("Command Failed : " + command);
             }

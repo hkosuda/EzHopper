@@ -13,8 +13,7 @@ public class DeSound : MonoBehaviour
     {
         audioSource = gameObject.GetComponent<AudioSource>();
 
-        //shootingSound = Resources.Load<AudioClip>("DeSound/de_shot");
-        shootingSound = Resources.Load<AudioClip>("DeSound/de_shooting_02");
+        shootingSound = Resources.Load<AudioClip>("DeSound/de_shooting_03");
         sliderSound = Resources.Load<AudioClip>("DeSound/de_slider");
     }
 

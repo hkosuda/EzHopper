@@ -40,7 +40,6 @@ static  public class Bools
         show_weapon,
 
         left_hand,
-        toxic_teammate,
     }
 
     static public Dictionary<Item, BlSetting> Settings = new Dictionary<Item, BlSetting>()
@@ -71,10 +70,6 @@ static  public class Bools
 
         {
             Item.left_hand, new BlSetting(false, "銃を左手で持つ．") 
-        },
-
-        {
-            Item.toxic_teammate, new BlSetting(false, "トキシックな仲間たちと楽しくゲームをする．")
         },
     };
 }

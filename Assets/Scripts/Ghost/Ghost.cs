@@ -42,11 +42,13 @@ public class Ghost : MonoBehaviour
         if (indicator > 0)
         {
             Timer.Updated += UpdateMethod;
+            Timer.TimerPaused += OnTimerPaused;
         }
 
         else
         {
             Timer.Updated -= UpdateMethod;
+            Timer.TimerPaused -= OnTimerPaused;
         }
     }
 
@@ -59,18 +61,11 @@ public class Ghost : MonoBehaviour
 
         InterpolatedData = DemoUtils.Interpolate(dataList, pastTime);
 
-        if (PlayerRecorder.RecordSize() > 2) { SetVisibility(false); return; }
+        if (PlayerRecorder.DataListSize() > 0) { SetVisibility(false); return; }
 
         SetVisibility(true);
         UpdateTransform();
         UpdateLine();
-
-        // - inner function
-        static void SetVisibility(bool visibility)
-        {
-            ghostBody.SetActive(visibility);
-            ghostLineObject.SetActive(visibility);
-        }
     }
 
     static void UpdateTransform()
@@ -136,10 +131,23 @@ public class Ghost : MonoBehaviour
         pastTime = 0.0f;
     }
 
+    static void OnTimerPaused(object obj, bool mute)
+    {
+        SetVisibility(false);
+    }
+
     //
     // utilities
     static Vector3 Vec3(float[] data, float dy = 0.0f)
     {
         return new Vector3(data[1], data[2] + dy, data[3]);
+    }
+
+    static void SetVisibility(bool visibility)
+    {
+        if (Timer.Paused) { visibility = false; }
+
+        if (ghostBody != null) { ghostBody.SetActive(visibility); }
+        if (ghostLineObject != null) { ghostLineObject.SetActive(visibility); }
     }
 }

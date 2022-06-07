@@ -14,19 +14,11 @@ public abstract class Command
     public string description;
     public CommandType commandType = CommandType.normal;
 
-    public virtual string Description(List<string> values)
-    {
-        return "";
-    }
+    public virtual void OnMapInitialized() { }
 
     public virtual List<string> AvailableValues(List<string> values)
     {
         return new List<string>();
-    }
-
-    public virtual bool CheckValues(Tracer tracer, List<string> values)
-    {
-        return true;
     }
 
     public abstract void CommandMethod(Tracer tracer, List<string> values);

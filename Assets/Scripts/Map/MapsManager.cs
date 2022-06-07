@@ -20,8 +20,7 @@ public class MapsManager : MonoBehaviour
             { MapName.ez_nostalgia, GetMap(2) },
             { MapName.ez_horizon, GetMap(3) },
             { MapName.ez_training, GetMap(4) },
-            { MapName.ez_freefall, GetMap(5) },
-            { MapName.ez_flyer, GetMap(6) },
+            { MapName.ez_flyer, GetMap(5) },
         };
 
         InactivateAll();
@@ -39,19 +38,11 @@ public class MapsManager : MonoBehaviour
         }
     }
 
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
-
     static public void Begin(MapName mapName)
     {
         if (CurrentMap != null) { CurrentMap.Shutdown(); }
+        if (!MapList.ContainsKey(mapName)) { return; }
+
         CurrentMap = MapList[mapName];
 
         InactivateAll();

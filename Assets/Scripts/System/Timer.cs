@@ -37,17 +37,27 @@ public class Timer : MonoBehaviour
 
     static public void Pause()
     {
+        var prev = Paused;
+
         Time.timeScale = 0.0f;
         Paused = true;
 
-        TimerPaused?.Invoke(null, false);
+        if (prev != Paused)
+        {
+            TimerPaused?.Invoke(null, false);
+        }
     }
 
     static public void Resume()
     {
+        var prev = Paused;
+
         Time.timeScale = 1.0f;
         Paused = false;
 
-        TimerResumed?.Invoke(null, false);
+        if (prev != Paused)
+        {
+            TimerResumed?.Invoke(null, false);
+        }
     }
 }

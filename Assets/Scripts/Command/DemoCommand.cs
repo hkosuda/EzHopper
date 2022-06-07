@@ -4,35 +4,107 @@ using UnityEngine;
 
 public class DemoCommand : Command
 {
+    static readonly List<string> availableValues = new List<string>()
+    {
+        "athletic_piles",
+        "athletic_tiles",
+        "athletic_slopes",
+        "flyer",
+        "horizon_0101",
+        "nostalgia_0101",
+        "nostalgia_0101_02",
+        "nostalgia_0102",
+        "nostalgia_0103",
+        "nostalgia_0201",
+        "nostalgia_0202",
+        "nostalgia_0203",
+        "nostalgia_0203_shortcut",
+        "nostalgia_0301",
+        "nostalgia_0302",
+        "square_0101_01",
+        "square_0102_01",
+        "square_0103_01",
+        "square_0103_02",
+        "square_0103_03",
+        "square_0103_04",
+        "training",
+
+    };
+
     public DemoCommand()
     {
         commandName = "demo";
-        description = "デモンストレーションを行う機能を提供する．";
+        description = "デモを再生する機能を提供します．\n";
+
+#if UNITY_EDITOR
+        foreach(var value in availableValues)
+        {
+            var asset = Resources.Load<TextAsset>("DemoData/" + value + ".ghost");
+            if (asset == null)
+            {
+                Debug.LogError("Not available : " + value);
+            }
+        }
+#endif
     }
 
-    public override bool CheckValues(Tracer tracer, List<string> values)
+    public override List<string> AvailableValues(List<string> values)
     {
-        if (values == null || values.Count < 2) { return false; }
+        if (values == null || values.Count == 0) { return new List<string>(); }
 
-        return true;
+        if (values.Count < 3)
+        {
+            return availableValues;
+        }
+
+        return new List<string>();
     }
 
     public override void CommandMethod(Tracer tracer, List<string> values)
     {
-        if (values.Count < 2) { return; }
-        var filename = values[1];
+        if (values == null || values.Count == 0) { return; }
 
-        var asset = Resources.Load<TextAsset>("DemoData/" + filename + ".ghost");
-        if (asset == null) { tracer.AddMessage("データが見つかりませんでした．", Tracer.MessageLevel.error); return; }
-
-        var dataList = DemoFileUtils.FullText2DataList(asset.text);
-
-        if (dataList == null || dataList.Count == 0) 
+        if (values.Count == 1)
         {
-            tracer.AddMessage("データリストの読み込みに失敗しました", Tracer.MessageLevel.error); 
+            tracer.AddMessage("再生するデータを指定してください．", Tracer.MessageLevel.error);
             return;
         }
 
-        DemoManager.BeginDemo(dataList);
+        if (values.Count == 2)
+        {
+            var filename = values[1];
+
+            var asset = Resources.Load<TextAsset>("DemoData/" + filename + ".ghost");
+
+            if (asset != null)
+            {
+                var mapName = DemoFileUtils.FullText2MapName(asset.text);
+                if (mapName == MapName.none) { tracer.AddMessage("データに指定されたマップが見つかりません．", Tracer.MessageLevel.error); return; }
+
+                var dataList = DemoFileUtils.FullText2DataList(asset.text);
+                if (dataList == null || dataList.Count == 0)
+                {
+                    tracer.AddMessage("データリストの読み込みに失敗しました", Tracer.MessageLevel.error);
+                    return;
+                }
+
+                if (!MapsManager.MapList.ContainsKey(mapName))
+                {
+                    tracer.AddMessage("指定されたマップは読み込めません．", Tracer.MessageLevel.error);
+                    return;
+                }
+
+                if (mapName != MapsManager.CurrentMap.MapName)
+                {
+                    tracer.AddMessage("現在のマップと異なるマップのデモデータであるため，マップを切り替えて実行します．", Tracer.MessageLevel.warning);
+                    MapsManager.Begin(mapName);
+                }
+
+                DemoManager.BeginDemo(dataList);
+                return;
+            }
+
+            tracer.AddMessage(filename + "に該当するデータが見つかりませんでした．", Tracer.MessageLevel.error);
+        }
     }
 }

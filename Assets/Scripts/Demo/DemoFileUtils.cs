@@ -6,6 +6,34 @@ using UnityEngine;
 
 static public class DemoFileUtils
 {
+    static public MapName FullText2MapName(string fullText)
+    {
+        var splitted = fullText.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        if (splitted == null) { return MapName.none; }
+
+        var mapBegin = false;
+
+        foreach (var _line in splitted)
+        {
+            var line = _line.Trim();
+
+            if (line == "map") { mapBegin = true; continue; }
+            if (mapBegin && line == "end") { return MapName.none; }
+
+            if (!mapBegin) { continue; }
+
+            foreach(MapName mapName in Enum.GetValues(typeof(MapName)))
+            {
+                if (line.ToLower() == mapName.ToString())
+                {
+                    return mapName;
+                }
+            }
+        }
+
+        return MapName.none;
+    }
+
     static public List<float[]> FullText2DataList(string fullText)
     {
         var splitted = fullText.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -20,6 +48,8 @@ static public class DemoFileUtils
 
             if (line == "values") { valuesBegin = true; continue; }
             if (valuesBegin && line == "end") { return dataList; }
+
+            if (!valuesBegin) { continue; }
 
             var data = Line2Data(line);
             if (data == null) { return new List<float[]>(); }
@@ -52,6 +82,10 @@ static public class DemoFileUtils
     static string CreateFileContent(List<float[]> dataList)
     {
         var content = "";
+
+        content += "map\n";
+        content += "\t" + MapsManager.CurrentMap.MapName.ToString();
+        content += "end\n\n";
 
         content += "values\n";
         content += DataList2DataLines(dataList);

@@ -11,7 +11,7 @@ public class PlayerRecorder : IKernelManager
     static public readonly int dataSize = 10;
 
     static List<float[]> dataList;
-    static bool recording;
+    static public bool Recording;
 
     static float pastTime;
 
@@ -27,7 +27,7 @@ public class PlayerRecorder : IKernelManager
 
     public void Reset()
     {
-
+        FinishRecording(false);
     }
 
     static void SetEvent(int indicator)
@@ -51,7 +51,7 @@ public class PlayerRecorder : IKernelManager
 
     static void UpdateMethod(object obj, float dt)
     {
-        if (!recording) { return; }
+        if (!Recording) { return; }
         if (dataList == null) { dataList = new List<float[]>(); }
 
         pastTime += dt;
@@ -73,6 +73,12 @@ public class PlayerRecorder : IKernelManager
 
         dataList.Add(data);
 
+        if (pastTime > 180.0f)
+        {
+            ChatMessages.SendChat("180秒が経過したため，レコーダーを停止します．", ChatMessages.Sender.system);
+            FinishRecording(false);
+        }
+
         // - inner function
         static float CheckInput(bool value)
         {
@@ -85,26 +91,47 @@ public class PlayerRecorder : IKernelManager
     {
         RecordingBegin?.Invoke(null, false);
 
+        var prev = Recording;
+
         dataList = new List<float[]>();
-        recording = true;
+        Recording = true;
         pastTime = 0.0f;
+
+        if (!prev)
+        {
+            ChatMessages.SendChat("レコーダーを起動しました．", ChatMessages.Sender.system);
+        }
     }
 
-    static public void FinishRecording(bool ghostReplay)
+    static public void FinishRecording(bool ghostReplay, bool mute = false)
     {
-        if (!recording) { return; }
-        recording = false;
+        if (!Recording) { return; }
+        Recording = false;
+
+        if (dataList == null || dataList.Count == 0) { return; }
 
         if (ghostReplay)
         {
             Ghost.BeginReplay(dataList);
         }
 
-        RecordingEnd?.Invoke(null, new List<float[]>(dataList));
+        if (mute) 
+        {
+            ChatMessages.SendChat("レコーダーによる記録を中断しました．", ChatMessages.Sender.system);
+        }
+
+        else
+        {
+            ChatMessages.SendChat("レコーダーを停止しました．", ChatMessages.Sender.system);
+            RecordingEnd?.Invoke(null, new List<float[]>(dataList));
+        }
+        
+        
+
         dataList = new List<float[]>();
     }
 
-    static public int RecordSize()
+    static public int DataListSize()
     {
         if (dataList == null) { return 0; }
         return dataList.Count;
@@ -112,10 +139,27 @@ public class PlayerRecorder : IKernelManager
 
     static void StopRecordingOnCourseOut(object obj, Vector3 pos)
     {
-        FinishRecording(false);
+        FinishRecording(true);
     }
+
     static void StopRecorderOnMapInitialized(object obj, bool mute)
     {
         FinishRecording(false);
+    }
+
+    static public void CurrentRecorderStatus(Tracer tracer)
+    {
+        if (!Recording || dataList == null)
+        {
+            tracer.AddMessage("現在レコーダーは起動していません", Tracer.MessageLevel.normal);
+        }
+
+        else
+        {
+            var status = "現在のレコーダーのステータス：\n";
+            status += "\t\t" + "経過時間：" + pastTime.ToString("f4") + "\n";
+            status += "\t\t" + "データサイズ：" + dataList.Count.ToString();
+            tracer.AddMessage(status, Tracer.MessageLevel.normal);
+        }
     }
 }

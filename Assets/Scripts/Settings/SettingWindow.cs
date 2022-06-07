@@ -11,23 +11,6 @@ public class SettingWindow : MonoBehaviour
         closeButton.onClick.AddListener(Close);
     }
 
-    void Start()
-    {
-        Timer.Pause();
-        DemoTimer.Pause();
-    }
-
-    private void Update()
-    {
-        Timer.Pause();
-        DemoTimer.Pause();
-    }
-
-    private void OnDestroy()
-    {
-        Timer.Resume();
-    }
-
     void Close()
     {
         Destroy(gameObject);

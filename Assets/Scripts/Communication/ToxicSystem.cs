@@ -4,25 +4,13 @@ using UnityEngine;
 
 public class ToxicSystem : IKernelManager
 {
-    static readonly Bools.Item toxicItem = Bools.Item.toxic_teammate;
-
-    static AudioClip sampleClip;
-
-    static GameObject _toxicVC;
-
     public void Initialize()
     {
-        sampleClip = Resources.Load<AudioClip>("DeSound/de_slider");
-
-        
-
         SetEvent(1);
     }
 
     public void Shutdown()
     {
-        _toxicVC = null;
-
         SetEvent(-1);
     }
 
@@ -31,7 +19,6 @@ public class ToxicSystem : IKernelManager
         if (indicator > 0)
         {
             ChatMessages.ChatReceived += ReactingToChat;
-            InvalidArea.CourseOut += ReactToCourseOut;
         }
 
         else
@@ -55,33 +42,6 @@ public class ToxicSystem : IKernelManager
         {
             SendToxicChat("i love you");
         }
-
-        PlayToxicChat(sampleClip);
-    }
-
-    
-
-    static void ReactToCourseOut(object obj, Vector3 position)
-    {
-        if (!Bools.Get(toxicItem)) { return; }
-
-        var chatMessages = new List<string>();
-
-        if (Rnd(0.5f)) { chatMessages.Add("noob"); }
-        if (Rnd(0.5f)) { chatMessages.Add("..."); }
-        if (Rnd(0.5f)) { chatMessages.Add("idiot"); }
-        if (Rnd(0.5f)) { chatMessages.Add("gg"); }
-        if (Rnd(0.5f)) { chatMessages.Add("???"); }
-        if (Rnd(0.5f)) { chatMessages.Add("????????????????????????????"); }
-
-        foreach (var message in chatMessages)
-        {
-            SendToxicChat(message, 1.0f, 2.5f);
-        }
-
-        if (chatMessages.Count == 0) { SendToxicChat("nt", 1.0f, 2.5f); }
-
-        
     }
 
     // utility
@@ -92,11 +52,6 @@ public class ToxicSystem : IKernelManager
 
         chat.AddComponent<ToxicChat>();
         chat.GetComponent<ToxicChat>().Initialize(message, minDelay, maxDelay);
-    }
-
-    static void PlayToxicChat(AudioClip audioClip, float volume = 0.5f, float minDelay = 0.5f, float maxDelay = 1.5f)
-    {
-        ToxicVoices.AddToxcVoice(audioClip);
     }
 
     static bool Rnd(float probability)

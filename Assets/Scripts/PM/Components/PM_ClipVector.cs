@@ -39,20 +39,6 @@ public class PM_ClipVector : ControllerComponent
         return true;
     }
 
-    static bool CheckSlopeAbove()
-    {
-        var radius = PM_Main.playerRadius - 0.02f;
-        var rbPosition = PM_Main.Rb.transform.position;
-
-        if (Physics.SphereCast(rbPosition, radius, Vector3.up, out RaycastHit hitInfo, Mathf.Infinity, 1 << 7))
-        {
-            var deltaY = hitInfo.point.y - rbPosition.y;
-            if (deltaY <= dyOnSlope + PM_Landing.landingHeightEpsilon) { return true; }
-        }
-
-        return false;
-    }
-
     static void CalcClipVector(Vector3 v)
     {
         var normal = PM_Landing.HitInfo.normal;

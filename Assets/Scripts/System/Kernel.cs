@@ -17,6 +17,8 @@ static public class Kernel
 
             new DebugPlayerRecorder(),
             new ToxicSystem(),
+
+            new RecordCacheSystem(),
         };
 
         controllerList = new List<IKernelController>()

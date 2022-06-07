@@ -26,13 +26,11 @@ public class SettingItemsManager : MonoBehaviour
 
     void Start()
     {
-        Timer.Pause();
         SetEvent(1);
     }
 
     private void OnDestroy()
     {
-        Timer.Resume();
         SetEvent(-1);
     }
 

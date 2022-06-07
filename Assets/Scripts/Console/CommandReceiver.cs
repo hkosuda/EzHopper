@@ -41,13 +41,11 @@ static public class CommandReceiver
         if (!CommandList.ContainsKey(commandName)) { UnkownCommand(tracer, commandName, echo); return false; }
 
         var command = CommandList[commandName];
-        if (!command.CheckValues(tracer, values)) { InvalidValues(tracer, echo); return false; }
 
         if (exec) { command.CommandMethod(tracer, values); }
-        if (exec && echo) { CommandRequestEnd?.Invoke(null, tracer); }
+        if (echo) { CommandRequestEnd?.Invoke(null, tracer); }
 
         if (tracer.NoError) { return true; }
-
         return false;
 
         // end //
@@ -55,27 +53,14 @@ static public class CommandReceiver
         // - inner function
         static void SimpleEnd(Tracer tracer, bool echo)
         {
-            if (!echo) { return; }
-
-            CommandRequestEnd?.Invoke(null, tracer);
+            if (echo) { CommandRequestEnd?.Invoke(null, tracer); }
         }
 
         // - inner function
         static void UnkownCommand(Tracer tracer, string commandName, bool echo)
         {
-            if (!echo) { return; }
-
             tracer.AddMessage(commandName + "というコマンドは存在しません", Tracer.MessageLevel.error);
-            CommandRequestEnd?.Invoke(null, tracer);
-        }
-        
-        // - inner function
-        static void InvalidValues(Tracer tracer, bool echo)
-        {
-            if (!echo) { return; }
-
-            tracer.AddMessage("無効な値：", Tracer.MessageLevel.error);
-            CommandRequestEnd?.Invoke(null, tracer);
+            if (echo) { CommandRequestEnd?.Invoke(null, tracer); }
         }
     }
 

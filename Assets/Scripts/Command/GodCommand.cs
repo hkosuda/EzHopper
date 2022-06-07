@@ -14,7 +14,11 @@ public class GodCommand : Command
     public GodCommand()
     {
         commandName = "god";
-        description = "プレイヤーがマップ上を自由に移動できるようになります";
+        description = "神視点モードを起動し，プレイヤーがマップ上を自由に移動する機能を提供します．\n" +
+            "'god'で神視点モードを起動し，'god end'で神視点モードを起動した場所まで戻ります．" +
+            "また，神視点モード中にジャンプ入力を行うと，任意の場所に着地できます．\n" +
+            "ただし，着地すると中間地点まで戻されるような場所では，すぐに中間地点まで戻されるので注意しましょう．\n" +
+            "悪用しないようにしましょう．";
 
         _virtualPlayer = Resources.Load<GameObject>("God/VirtualPlayer");
 
@@ -25,15 +29,18 @@ public class GodCommand : Command
     {
         if (indicator > 0)
         {
-            MapsManager.Initialized += Inactivate;
             Timer.Updated += UpdateMethod;
         }
 
         else
         {
-            MapsManager.Initialized -= Inactivate;
             Timer.Updated -= UpdateMethod;
         }
+    }
+
+    public override void OnMapInitialized()
+    {
+        Inactivate();
     }
 
     static void UpdateMethod(object obj, float dt)
@@ -59,6 +66,17 @@ public class GodCommand : Command
         }
     }
 
+    public override List<string> AvailableValues(List<string> values)
+    {
+        if (values == null || values.Count == 0) { return new List<string>(); }
+
+        if (values.Count < 3)
+        {
+            return new List<string>() { "end" };
+        }
+
+        return new List<string>();
+    }
 
     public override void CommandMethod(Tracer tracer, List<string> values)
     {
@@ -67,26 +85,58 @@ public class GodCommand : Command
         if (VirtualPlayer.CheckLandingNow)
         {
             tracer.AddMessage("現在，着地点を調査中のためコマンドを実行できません", Tracer.MessageLevel.error);
+            return;
+        }
+
+        if (values.Count == 1)
+        {
+            if (!Active)
+            {
+                originalPosition = PM_Main.Myself.transform.position;
+                originalEulerAngle = PM_Camera.EulerAngles();
+
+                Active = true;
+                SetPlayerPhysics(true);
+
+                tracer.AddMessage("神視点モードを起動しました．ジャンプ入力で任意の場所に着地できます．", Tracer.MessageLevel.normal);
+
+                return;
+            }
+
+            else
+            {
+                tracer.AddMessage("すでに神視点モードが起動しています．", Tracer.MessageLevel.error);
+                return;
+            }
         }
 
         if (values.Count == 2)
         {
-            if (values[0] == "end")
+            if (Active && values[0] == "end")
             {
                 Land(originalPosition, originalEulerAngle);
+
+                var pos = PM_Main.Myself.transform.position;
+                var posString = "x : " + pos.x.ToString() + ", y: " + pos.y.ToString() + ", z : " + pos.z.ToString();
+
+                tracer.AddMessage("神視点モードを終了しました．現在の座標は " + posString + " です．", Tracer.MessageLevel.normal);
+                return;
+            }
+
+            if (!Active && values[0] == "end")
+            {
+                tracer.AddMessage("神視点モードは起動していません．", Tracer.MessageLevel.error);
+                return;
+            }
+
+            else
+            {
+                tracer.AddMessage("無効な値です．神視点モードを終了するには，'god end'と入力するか，任意の場所でジャンプ入力を行い着地を試みてください．", Tracer.MessageLevel.error);
+                return;
             }
         }
 
-        if (!Active)
-        {
-            originalPosition = PM_Main.Myself.transform.position;
-            originalEulerAngle = PM_Camera.EulerAngles();
-
-            PM_Main.Collider.enabled = false;
-            PM_Main.Rb.useGravity = false;
-
-            Active = true;
-        }
+        tracer.AddMessage("2個以上の値を指定することはできません．", Tracer.MessageLevel.error);
     }
 
     static RaycastHit SphereCastCheck()
@@ -98,12 +148,10 @@ public class GodCommand : Command
         return hitinfo;
     }
 
-    static void Inactivate(object obj, bool mute)
+    static void Inactivate()
     {
         Active = false;
-
-        PM_Main.Rb.useGravity = true;
-        PM_Main.Collider.enabled = true;
+        SetPlayerPhysics(true);
     }
 
     static public void Land(Vector3 position, Vector3 eulerAngle)
@@ -111,8 +159,12 @@ public class GodCommand : Command
         Active = false;
 
         PM_Main.ResetPosition(position, eulerAngle.y);
+        SetPlayerPhysics(true);
+    }
 
-        PM_Main.Rb.useGravity = true;
-        PM_Main.Collider.enabled = true;
+    static void SetPlayerPhysics(bool status)
+    {
+        PM_Main.Rb.useGravity = status;
+        PM_Main.Collider.enabled = status;
     }
 }

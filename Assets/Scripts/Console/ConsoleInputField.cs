@@ -81,9 +81,27 @@ public class ConsoleInputField : MonoBehaviour
         inputField.ActivateInputField();
     }
 
-    static public void ChangeValue(string value)
+    static public void AddValue(string value)
     {
-        inputField.text = value;
+        var values = CommandReceiver.GetValues(inputField.text);
+        var text = CorrectValues(values);
+
+        inputField.text = text + value;
         inputField.caretPosition = inputField.text.Length;
+
+        // - inner function
+        static string CorrectValues(List<string> values)
+        {
+            if (values == null || values.Count < 2) { return ""; }
+
+            var text = "";
+
+            for(var  n = 0; n < values.Count - 1; n++)
+            {
+                text += values[n] + " ";
+            }
+
+            return text;
+        }
     }
 }

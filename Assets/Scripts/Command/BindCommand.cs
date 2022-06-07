@@ -10,45 +10,87 @@ public class BindCommand : Command
     public BindCommand()
     {
         commandName = "bind";
-        KeyBindingList = new List<Binding>();
+        description = "特定のキーにコマンドを割り当てる機能を提供します．\n" +
+            "たとえば，'bind c anchor back'とコンソールで入力すると，Cキーを押した際に'begin ez_athletic'が実行されるようになります．" +
+            "これにより，記録された座標に素早く戻ることができるようになります．\n" +
+            "バインドを解除するには，unbindコマンドを使用します．\n" +
+            "値を指定せずに，ただ単に'bind'と入力すると現在のバインドの設定をみることができます．" +
+            "unbindコマンドでバインドを削除するまえに確認するようにしましょう．";
 
+        // initialize method
+        KeyBindingList = new List<Binding>();
         Timer.Updated += UpdateMethod;
+    }
+
+    public override List<string> AvailableValues(List<string> values)
+    {
+        if (values == null || values.Count == 0) { return new List<string>(); }
+
+        if (values.Count < 3)
+        {
+            var available = new List<string>();
+
+            foreach (KeyCode keyCode in Enum.GetValues(typeof(KeyCode)))
+            {
+                available.Add(keyCode.ToString());
+            }
+
+            available.Add("1");
+            available.Add("-1");
+
+            return available;
+        }
+
+        return new List<string>();
     }
 
     public override void CommandMethod(Tracer tracer, List<string> values)
     {
-        if (values == null || values.Count < 3) { return; }
-        if (KeyBindingList == null) { KeyBindingList = new List<Binding>(); }
+        if (values == null || values.Count == 0) { return; }
 
-        var keyDeltaValue = values[1];
-        var command = GetCommand(values);
-
-        foreach(KeyCode keyCode in Enum.GetValues(typeof(KeyCode)))
+        if (values.Count == 1)
         {
-            if (keyCode.ToString().ToLower() == keyDeltaValue)
-            {
-                KeyBindingList.Add(new Binding(keyCode, 0.0f, command));
-                return;
-            }
+            tracer.AddMessage(CurrentBindings(), Tracer.MessageLevel.normal);
+            return;
         }
 
-        if (float.TryParse(keyDeltaValue, out var num))
+        if (values.Count == 2)
         {
-            if (num > 0.0f)
+            tracer.AddMessage("キーのあとに，バインドするコマンドを指定してください．", Tracer.MessageLevel.error);
+            return;
+        }
+
+        if (values.Count > 2)
+        {
+            if (KeyBindingList == null) { KeyBindingList = new List<Binding>(); }
+
+            var keyString = values[1];
+            var key = GetKey(keyString, tracer);
+
+            if (key == null) { return; }
+
+            var command = GetCommand(values);
+            KeyBindingList.Add(new Binding(key.keyCode, key.wheelDelta, command));
+        }
+
+        // - inner function
+        static string CurrentBindings()
+        {
+            if (KeyBindingList == null || KeyBindingList.Count == 0)
             {
-                KeyBindingList.Add(new Binding(KeyCode.None, 1.0f, command));
+                return "現在バインドされているコマンドはありません．";
             }
 
-            else if (num < 0.0f)
+            var message = "現在バインドされているコマンドは以下の通りです．\n";
+
+            for(var n = 0; n < KeyBindingList.Count; n++)
             {
-                KeyBindingList.Add(new Binding(KeyCode.None, -1.0f, command));
-                return;
+                var binding = KeyBindingList[n];
+
+                message += "\t\t[" + n.ToString() + "] " + binding.key.GetKeyString() + " : " + binding.command + "\n";
             }
 
-            else
-            {
-                tracer.AddMessage("マウスホイールの上下にコマンドを割り当てたい場合は，0でない値を指定してください．", Tracer.MessageLevel.error);
-            }
+            return message.TrimEnd(new char[1] { '\n' });
         }
 
         // - inner function
@@ -63,8 +105,43 @@ public class BindCommand : Command
 
             return command.TrimEnd();
         }
+
+        // - inner function
+        static Keyconfig.Key GetKey(string keyString, Tracer tracer)
+        {
+            foreach (KeyCode keyCode in Enum.GetValues(typeof(KeyCode)))
+            {
+                if (keyCode.ToString().ToLower() == keyString)
+                {
+                    return new Keyconfig.Key(keyCode);
+                }
+            }
+
+            if (float.TryParse(keyString, out var num))
+            {
+                if (num > 0.0f)
+                {
+                    return new Keyconfig.Key(KeyCode.None, 1.0f);
+                }
+
+                else if (num < 0.0f)
+                {
+                    return new Keyconfig.Key(KeyCode.None, -1.0f);
+                }
+
+                else
+                {
+                    tracer.AddMessage("マウスホイールの上下にコマンドを割り当てたい場合は，0でない値を指定してください．", Tracer.MessageLevel.error);
+                    return null;
+                }
+            }
+
+            tracer.AddMessage(keyString + "を有効なキーに変換できません．", Tracer.MessageLevel.error);
+            return null;
+        }
     }
 
+    // update method
     static void UpdateMethod(object obj, float dt)
     {
         if(KeyBindingList == null) { return; }
@@ -75,16 +152,28 @@ public class BindCommand : Command
             // key
             if (InputSystem.CheckInput(keybind.key, true))
             {
-                CommandReceiver.RequestCommand(keybind.command, true);
+                CommandReceiver.RequestCommand(keybind.command, false);
             }
         }
     }
 
-    static public void RemoveKeybind(int n)
+    static public void RemoveKeybind(int n, Tracer tracer)
     {
+        if (KeyBindingList == null || KeyBindingList.Count == 0)
+        {
+            tracer.AddMessage("現在キーバインドは作成されていません．", Tracer.MessageLevel.error);
+            return;
+        }
+
         if (n > 0 && n < KeyBindingList.Count)
         {
             KeyBindingList.RemoveAt(n);
+        }
+
+        else
+        {
+            var message = n.ToString() + "は有効な値の範囲外です．有効な値の範囲は0から" + (KeyBindingList.Count - 1).ToString() + "までです．";
+            tracer.AddMessage(message, Tracer.MessageLevel.error);
         }
     }
 

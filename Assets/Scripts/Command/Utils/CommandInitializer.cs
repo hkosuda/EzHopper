@@ -10,7 +10,6 @@ public class CommandInitializer : IKernelManager
     {
         commandList = new List<Command>()
         {
-            new DRecorderCommand(),
             new RecorderCommand(),
             new ExitCommand(),
             new DemoCommand(),
@@ -22,7 +21,12 @@ public class CommandInitializer : IKernelManager
             new UnbindCommand(),
             new GodCommand(),
             new CrosshairCommand(),
+            new ReplayCommand(),
         };
+
+#if UNITY_EDITOR
+        commandList.Add(new DRecorderCommand());
+#endif
 
         foreach(var command in commandList)
         {
@@ -48,6 +52,9 @@ public class CommandInitializer : IKernelManager
 
     public void Reset()
     {
-
+        foreach(var command in commandList)
+        {
+            command.OnMapInitialized();
+        }
     }
 }

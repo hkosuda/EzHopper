@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -83,10 +84,70 @@ public class Suggest : MonoBehaviour
     {
         InactivateAllButtons();
 
-        var suggestCommands = GetSuggestCommands(content);
-        ActivateSuggestButtons(suggestCommands);
+        var command = GetCommand(content);
+
+        if (command == null)
+        {
+            var suggestCommands = GetSuggestCommands(content);
+            ActivateSuggestButtons(suggestCommands);
+        }
+
+        else
+        {
+            var suggestValues = GetSuggestValues(command, content);
+            ActivateSuggestButtons(suggestValues);
+        }
 
         UpdatePanelSize();
+
+        // - inner function
+        static Command GetCommand(string content)
+        {
+            content = content.TrimStart();
+
+            foreach(var command in CommandReceiver.CommandList)
+            {
+                if (content.StartsWith(command.Key + " "))
+                {
+                    return command.Value;
+                }
+            }
+
+            return null;
+        }
+
+        // - inner function
+        static List<string> GetSuggestValues(Command command, string content)
+        {
+            var suggestValues = new List<string>();
+
+            var values = CommandReceiver.GetValues(content);
+            var availableValues = command.AvailableValues(values);
+
+            if (availableValues == null || availableValues.Count == 0) { return suggestValues; }
+
+            var lastValue = values.Last();
+
+            if (availableValues.Contains(lastValue) && content.EndsWith(" "))
+            {
+                return new List<string>();
+            }
+
+            if (content.EndsWith(" "))
+            {
+                return availableValues;
+            }
+
+            foreach (var value in availableValues)
+            {
+                if (value.StartsWith(lastValue))
+                {
+                    suggestValues.Add(value);
+                }
+            }
+
+            return suggestValues;
+        }
 
         // function
         static List<string> GetSuggestCommands(string content)
@@ -119,6 +180,8 @@ public class Suggest : MonoBehaviour
         // function
         static void ActivateSuggestButtons(List<string> suggestCommands)
         {
+            if (suggestCommands == null) { return; }
+
             ActiveButtons = new List<GameObject>();
 
             foreach (var suggestCommand in suggestCommands)
@@ -185,8 +248,6 @@ public class Suggest : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            Debug.Log("Apply");
-
             var button = ActiveButtons[0];
             button.GetComponent<Button>().onClick?.Invoke();
         }

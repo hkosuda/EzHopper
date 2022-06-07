@@ -24,6 +24,12 @@ public class MenuButtonGroup : MonoBehaviour
 
         var restartButton = GetButton(2);
         restartButton.onClick.AddListener(Restart);
+
+        var backToStartButton = GetButton(3);
+        backToStartButton.onClick.AddListener(BackToStart);
+
+        var finishGameButton = GetButton(4);
+        finishGameButton.onClick.AddListener(FinishTheGame);
     }
 
     // - inner function
@@ -32,18 +38,48 @@ public class MenuButtonGroup : MonoBehaviour
         return gameObject.transform.GetChild(n).gameObject.GetComponent<Button>();
     }
 
-    void OpenHowToPlayWindow()
+    static void OpenHowToPlayWindow()
     {
         Instantiate(_howToPlayWindow);
     }
 
-    void OpenSettingWindow()
+    static void OpenSettingWindow()
     {
         Instantiate(_settingWindow);
     }
 
-    void Restart()
+    static void Restart()
     {
-        CommandReceiver.RequestCommand("", true);
+        Confirmation.BeginConfirmation("再スタートしますか？", RequestRestart);
+    }
+
+    static void RequestRestart()
+    {
+        CommandReceiver.RequestCommand("begin " + MapsManager.CurrentMap.MapName.ToString().ToLower(), false);
+    }
+
+    static void BackToStart()
+    {
+        Confirmation.BeginConfirmation("最初のマップに戻りますか？", RequestBeginAthletic);
+    }
+
+    static void RequestBeginAthletic()
+    {
+        CommandReceiver.RequestCommand("begin " + MapName.ez_athletic.ToString(), false);
+    }
+
+    static void FinishTheGame()
+    {
+        Confirmation.BeginConfirmation("ゲームを終了しますか？", FinishTheGameMethod);
+    }
+
+    static void FinishTheGameMethod()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        return;
+#endif 
+
+        Application.Quit();
     }
 }

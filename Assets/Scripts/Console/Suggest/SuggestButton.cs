@@ -12,7 +12,7 @@ public class SuggestButton : MonoBehaviour
 
     void OnClickMethod()
     {
-        var text = gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text;
-        ConsoleInputField.ChangeValue(text + " ");
+        var value = gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text;
+        ConsoleInputField.AddValue(value + " ");
     }
 }

@@ -24,7 +24,9 @@ public class GameSystem : MonoBehaviour
 
         SetEvent(1);
 
+#if UNITY_EDITOR
         CommandReceiver.RequestCommand("anchor set", true);
+#endif 
     }
 
     private void OnDestroy()

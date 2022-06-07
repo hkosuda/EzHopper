@@ -72,6 +72,8 @@ public class DemoManager : IKernelManager
 
         DemoTimer.Resume();
         ui = GameObject.Instantiate(_ui);
+
+        InputSystem.Inactivate();
     }
 
     static public void EndDemo()
@@ -124,15 +126,13 @@ public class DemoManager : IKernelManager
 
 static public class PlayerStatusRecorder
 {
-    static public GameHost.Host Host { get; private set; }
+    static public MapName MapName { get; private set; }
     static public Vector3 Position { get; private set; }
     static public Vector3 EulerAngle { get; private set; }
     static public Vector3 Velocity { get; private set; }
 
     static public void Save()
     {
-        Debug.Log("SAVE: " + EulerAngle.x.ToString());
-
         Position = PM_Main.Myself.transform.position;
         EulerAngle = PM_Camera.EulerAngles();
         Velocity = PM_Main.Rb.velocity;
@@ -140,8 +140,6 @@ static public class PlayerStatusRecorder
 
     static public void Load()
     {
-        Debug.Log("LOAD: " + EulerAngle.x.ToString());
-
         PM_Main.Myself.transform.position = Position;
         PM_Camera.SetEulerAngles(new Vector3(0.0f, EulerAngle.y, 0.0f));
         PM_Main.Rb.velocity = Velocity;

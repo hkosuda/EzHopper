@@ -11,16 +11,6 @@ public class DRecorderCommand : Command
         description = "デバッグ用の記録システムを提供します．";
     }
 
-    public override bool CheckValues(Tracer tracer, List<string> values)
-    {
-        if (values == null || values.Count == 0) { return false; }
-        if (values.Count < 2) { return false; }
-
-        if (values[1] == "save") { return true; }
-
-        return false;
-    }
-
     public override void CommandMethod(Tracer tracer, List<string> values)
     {
         var dataList = DebugPlayerRecorder.CachedDataList;
@@ -56,7 +46,7 @@ public class DRecorderCommand : Command
         {
             var now = DateTime.Now;
 
-            var datetime = now.Month.ToString() + "M" + now.Day.ToString() + "D" + "_" + now.Hour.ToString() + "h" + now.Minute.ToString() + "m" + now.Second.ToString() + "s";
+            var datetime = "M" + now.Month.ToString() + "D" + now.Day.ToString() + "_" + now.Hour.ToString() + "h" + now.Minute.ToString() + "m" + now.Second.ToString() + "s";
 
             if (filename == "")
             {
