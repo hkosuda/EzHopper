@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -32,7 +33,7 @@ public class BindCommand : Command
 
             foreach (KeyCode keyCode in Enum.GetValues(typeof(KeyCode)))
             {
-                available.Add(keyCode.ToString());
+                available.Add(keyCode.ToString().ToLower());
             }
 
             available.Add("1");
@@ -54,13 +55,13 @@ public class BindCommand : Command
             return;
         }
 
-        if (values.Count == 2)
+        else if (values.Count == 2)
         {
             tracer.AddMessage("キーのあとに，バインドするコマンドを指定してください．", Tracer.MessageLevel.error);
             return;
         }
 
-        if (values.Count > 2)
+        else if (values.Count > 2)
         {
             if (KeyBindingList == null) { KeyBindingList = new List<Binding>(); }
 
@@ -71,6 +72,8 @@ public class BindCommand : Command
 
             var command = GetCommand(values);
             KeyBindingList.Add(new Binding(key.keyCode, key.wheelDelta, command));
+
+            tracer.AddMessage("バインドを追加しました：" + BindingInfo(KeyBindingList.Last()), Tracer.MessageLevel.normal);
         }
 
         // - inner function
@@ -161,13 +164,16 @@ public class BindCommand : Command
     {
         if (KeyBindingList == null || KeyBindingList.Count == 0)
         {
-            tracer.AddMessage("現在キーバインドは作成されていません．", Tracer.MessageLevel.error);
+            tracer.AddMessage("現在バインドは作成されていません．", Tracer.MessageLevel.error);
             return;
         }
 
-        if (n > 0 && n < KeyBindingList.Count)
+        if (0 <= n && n < KeyBindingList.Count)
         {
+            var bind = KeyBindingList[n];
+            
             KeyBindingList.RemoveAt(n);
+            tracer.AddMessage("バインドを削除しました：" + BindingInfo(bind), Tracer.MessageLevel.normal);
         }
 
         else
@@ -175,6 +181,11 @@ public class BindCommand : Command
             var message = n.ToString() + "は有効な値の範囲外です．有効な値の範囲は0から" + (KeyBindingList.Count - 1).ToString() + "までです．";
             tracer.AddMessage(message, Tracer.MessageLevel.error);
         }
+    }
+
+    static string BindingInfo(BindCommand.Binding binding)
+    {
+        return "key : " + binding.key.GetKeyString() + ", command : " + binding.command;
     }
 
     public class Binding

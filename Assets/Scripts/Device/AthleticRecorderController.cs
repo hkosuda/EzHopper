@@ -7,11 +7,11 @@ public class AthleticRecorderController : MonoBehaviour
     bool active = false;
     Vector3 lastLandingPoint;
 
-    string tag;
+    string objectTag;
 
     private void Awake()
     {
-        tag = gameObject.tag;
+        objectTag = gameObject.tag;
     }
 
     private void Start()
@@ -66,7 +66,7 @@ public class AthleticRecorderController : MonoBehaviour
         if (!active) { return; }
         if (hit.collider == null) { return; }
 
-        if (tag != hit.collider.gameObject.tag)
+        if (objectTag != hit.collider.gameObject.tag)
         {
             active = false;
             PlayerRecorder.FinishRecording(true);

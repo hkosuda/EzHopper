@@ -17,6 +17,8 @@ public class ReplayCommand : Command
         {
             var available = new List<string>();
 
+            if (RecordCacheSystem.CachedDataList == null) { return new List<string>(); }
+
             foreach(var data in RecordCacheSystem.CachedDataList)
             {
                 available.Add(data.Key);
@@ -35,10 +37,18 @@ public class ReplayCommand : Command
         if (values.Count == 1)
         {
             var dataParams = RecordCacheSystem.CachedData;
-            if (dataParams == null) { tracer.AddMessage("データが存在しないため，デモを再生できません．", Tracer.MessageLevel.error); return; }
 
-            BeginDemoFromParams(dataParams, tracer);
-            return;
+            if (dataParams == null)
+            {
+                tracer.AddMessage("データが存在しないため，デモを再生できません．", Tracer.MessageLevel.error); 
+                return;
+            }
+
+            else
+            {
+                BeginDemoFromParams(dataParams, tracer);
+                return;
+            }
         }
 
         if (values.Count == 2)
@@ -52,6 +62,12 @@ public class ReplayCommand : Command
                 BeginDemoFromParams(dataParams, tracer);
                 return;
             }
+
+            else
+            {
+                tracer.AddMessage(filename + "というデータは存在しません．", Tracer.MessageLevel.error);
+                return;
+            }
         }
 
         tracer.AddMessage("3個以上の値を指定することはできません．", Tracer.MessageLevel.error);
@@ -61,7 +77,7 @@ public class ReplayCommand : Command
         {
             if (param.mapName != MapsManager.CurrentMap.MapName)
             {
-                tracer.AddMessage("現在のマップと異なるマップのデモデータであるため，マップを切り替えて実行します．", Tracer.MessageLevel.warning);
+                tracer.AddMessage("現在のマップと異なるマップのデータであるため，マップを切り替えて実行します．", Tracer.MessageLevel.warning);
                 MapsManager.Begin(param.mapName);
             }
 

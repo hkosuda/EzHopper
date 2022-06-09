@@ -54,7 +54,7 @@ static public class Floats
     {
         {
             Item.mouse_sens, new FlSetting(
-                1.0f,
+                1.6f,
                 "マウス感度．",
                 new List<FlValidation>(){new Positive() })
         },

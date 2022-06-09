@@ -7,10 +7,11 @@ public class PileNetwork : MonoBehaviour
 {
 #if UNITY_EDITOR
     public GameObject[] targetPiles = new GameObject[1];
+    public float distance = 30.0f;
 
     private void OnDrawGizmos()
     {
-        if (Vector3.Distance(transform.position, SceneView.currentDrawingSceneView.camera.transform.position) > 100.0f) { return; }
+        if (Vector3.Distance(transform.position, SceneView.currentDrawingSceneView.camera.transform.position) > distance) { return; }
         if (targetPiles == null) { return; }
 
         foreach (var pile in targetPiles)

@@ -22,7 +22,7 @@ public class ObjectName : MonoBehaviour
         gameObject.name = name;
 
         Handles.color = new Color(0.0f, 0.0f, 1.0f);
-        Handles.Label(gameObject.transform.position, name);
+        Handles.Label(gameObject.transform.GetChild(0).position + new Vector3(0.0f, 0.2f, 0.2f), name);
         Handles.color = new Color(0.0f, 0.0f, 1.0f);
 
         // - inner function

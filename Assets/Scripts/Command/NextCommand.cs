@@ -12,6 +12,18 @@ public class NextCommand : Command
 
     public override void CommandMethod(Tracer tracer, List<string> values)
     {
+        var prev = MapsManager.CurrentMap.Index;
         MapsManager.CurrentMap.Next();
+        var current = MapsManager.CurrentMap.Index;
+
+        if (MapsManager.CurrentMap.respawnPositions.Length == 1)
+        {
+            tracer.AddMessage("現在のマップにはチェックポイントが1つしかありません．", Tracer.MessageLevel.warning);
+        }
+
+        else
+        {
+            tracer.AddMessage("check point : " + prev.ToString() + " -> " + current.ToString(), Tracer.MessageLevel.normal);
+        }
     }
 }

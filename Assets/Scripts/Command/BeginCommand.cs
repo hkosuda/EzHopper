@@ -42,7 +42,7 @@ public class BeginCommand : Command
             return;
         }
 
-        if (values.Count == 2)
+        else if (values.Count == 2)
         {
             var value = values[1];
 

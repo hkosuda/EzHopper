@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// profile ... 0 : length, 1 : width, 2 : gap, 3 : color
+
 public class CrosshairCommand : Command
 {
     public CrosshairCommand()
@@ -12,7 +14,7 @@ public class CrosshairCommand : Command
 
     enum CrosshairColor
     {
-        none = 0,
+        none,
 
         white = 1,
         red = 2,
@@ -83,7 +85,9 @@ public class CrosshairCommand : Command
 
         if (values.Count == 2)
         {
+            var profile = values[1];
 
+            ApplyCrosshairSettings(profile, tracer);
             return;
         }
 
@@ -171,6 +175,66 @@ public class CrosshairCommand : Command
             else
             {
                 tracer.AddMessage(value + "を有効な数値に変換できません．", Tracer.MessageLevel.error);
+            }
+        }
+    }
+
+    static void ApplyCrosshairSettings(string profile, Tracer tracer)
+    {
+        if (profile.Length == 4)
+        {
+            var length = profile[0].ToString();
+            var width = profile[1].ToString();
+            var gap = profile[2].ToString();
+            var color = profile[3].ToString();
+
+            TryUpdate(Floats.Item.crosshair_length, length, tracer);
+            TryUpdate(Floats.Item.crosshair_width, width, tracer);
+            TryUpdate(Floats.Item.crosshair_gap, gap, tracer);
+            
+            if (int.TryParse(color, out var index))
+            {
+                if (0 < index && index < 7)
+                {
+                    currentColor = (CrosshairColor)index;
+                    Crosshair.UpdateCrosshair();
+
+                    tracer.AddMessage("プロファイルの読み込みに成功しました．", Tracer.MessageLevel.normal);
+                }
+
+                else
+                {
+                    tracer.AddMessage("色の指定が有効ではありません．1から6までの整数で指定してください．", Tracer.MessageLevel.error);
+                }
+            }
+
+            else
+            {
+                tracer.AddMessage(color + "を整数に変換できません．", Tracer.MessageLevel.error);
+            }
+        }
+
+        else
+        {
+            tracer.AddMessage("プロファイルは長さ4の文字列でなければなりません．", Tracer.MessageLevel.error);
+        }
+
+        // - inner function
+        static void TryUpdate(Floats.Item item, string value, Tracer tracer)
+        {
+            var setting = Floats.Settings[item];
+
+            if (int.TryParse(value, out var num))
+            {
+                if (setting.ValidationCheck(num, tracer))
+                {
+                    setting.SetValue(num);
+                }
+            }
+
+            else
+            {
+                tracer.AddMessage(value + "を整数に変換できません．", Tracer.MessageLevel.error);
             }
         }
     }

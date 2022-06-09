@@ -9,10 +9,11 @@ public class RecorderCommand : Command
     {
         commandName = "recorder";
         description = "プレイヤーの動きを記録する機能（レコーダー）を提供します．\n" +
-            "レコーダーは，無効なエリアに侵入したとき，もしくは180秒経過すると自動で停止します．\n" +
+            "レコーダーは，無効なエリアに侵入したとき，もしくは" + ((int)PlayerRecorder.limitTime).ToString() + "秒経過すると自動で停止します．\n" +
             "'recorder begin'で記録を開始し，'recorder end'で記録を停止します．記録したデータは，次の記録が終了するまで一時的に保存されます．\n" +
-            "一時的に保存されている間に'recorder save <name>'を実行すると，ゲームを起動している間だけ名前付きでデータを保持し続けます．" +
-            "ここで作成した名前付きデータは，demoコマンドやghostコマンドで利用可能となります．";
+            "一時的に保存されている間に'recorder save <name>'を実行すると，ゲームを起動している間だけ名前付きでデータを保持し続けます（<name>の部分に任意の名前を入力します．" +
+            "ここで作成した名前付きデータは，demoコマンドやghostコマンドで利用可能となります．\n" +
+            "保存したデータを削除するには，'recorder begin <name>'を実行してください．";
     }
 
     public override List<string> AvailableValues(List<string> values)
@@ -21,7 +22,7 @@ public class RecorderCommand : Command
 
         if (values.Count < 3)
         {
-            return new List<string>() { "begin", "end", "stop", "save" };
+            return new List<string>() { "begin", "end", "stop", "save", "remove" };
         }
 
         return new List<string>();
@@ -71,6 +72,15 @@ public class RecorderCommand : Command
                 tracer.AddMessage("データを保存するには，名前を指定してください．", Tracer.MessageLevel.error);
                 return;
             }
+
+            if (value == "remove")
+            {
+                tracer.AddMessage("データを削除するには，名前を指定してください．", Tracer.MessageLevel.error);
+                return;
+            }
+
+            tracer.AddMessage("一番目の値としては，'begin', 'end', 'stop', 'save', 'remove' のみ指定可能です．", Tracer.MessageLevel.error);
+            return;
         }
         
         if (values.Count == 3)
@@ -81,9 +91,15 @@ public class RecorderCommand : Command
                 return;
             }
 
+            if (values[1] == "remove")
+            {
+                RecordCacheSystem.RemoveData(values[2], tracer);
+                return;
+            }
+
             else
             {
-                tracer.AddMessage("一番目の値としては，'begin', 'end', 'stop', 'save' のみ指定可能です．", Tracer.MessageLevel.error);
+                tracer.AddMessage("一番目の値としては，'begin', 'end', 'stop', 'save', 'remove' のみ指定可能です．", Tracer.MessageLevel.error);
                 return;
             }
         }

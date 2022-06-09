@@ -5,10 +5,11 @@ using UnityEngine;
 
 public class PlayerRecorder : IKernelManager
 {
+    static public readonly float limitTime = 10.0f;
+    static public readonly int dataSize = 10;
+
     static public EventHandler<bool> RecordingBegin { get; set; }
     static public EventHandler<List<float[]>> RecordingEnd { get; set; }
-
-    static public readonly int dataSize = 10;
 
     static List<float[]> dataList;
     static public bool Recording;
@@ -73,9 +74,9 @@ public class PlayerRecorder : IKernelManager
 
         dataList.Add(data);
 
-        if (pastTime > 180.0f)
+        if (pastTime > limitTime)
         {
-            ChatMessages.SendChat("180秒が経過したため，レコーダーを停止します．", ChatMessages.Sender.system);
+            ChatMessages.SendChat(limitTime.ToString() + "秒が経過したため，レコーダーを停止します．", ChatMessages.Sender.system);
             FinishRecording(false);
         }
 

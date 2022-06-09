@@ -46,11 +46,8 @@ public class UnbindCommand : Command
 
             if (int.TryParse(value, out var num))
             {
-                if (num > 0 && num < BindCommand.KeyBindingList.Count)
-                {
-                    BindCommand.RemoveKeybind(num, tracer);
-                    return;
-                }
+                BindCommand.RemoveKeybind(num, tracer);
+                return;
             }
 
             else
@@ -59,6 +56,9 @@ public class UnbindCommand : Command
             }
         }
 
-        tracer.AddMessage("2個以上の値を指定することはできません．", Tracer.MessageLevel.error);
+        else
+        {
+            tracer.AddMessage("2個以上の値を指定することはできません．", Tracer.MessageLevel.error);
+        }
     }
 }

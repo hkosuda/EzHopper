@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -64,6 +65,24 @@ public class RecordCacheSystem : IKernelManager
         }
 
         CachedDataList.Add(name, new DataListParams(CachedData.mapName, CachedData.dataList));
+
+        var info = "\t\t名称：" + name + "\n\t\tマップ：" + CachedData.mapName.ToString() + "\n\t\t継続時間：" + CachedData.dataList.Last()[0].ToString("f1");
+        tracer.AddMessage("データを保存しました．\n" + info, Tracer.MessageLevel.normal);
+    }
+
+    static public void RemoveData(string name, Tracer tracer)
+    {
+        if (CachedDataList.ContainsKey(name))
+        {
+            CachedDataList.Remove(name);
+            tracer.AddMessage(name + "を削除しました．", Tracer.MessageLevel.normal);
+        }
+
+        else
+        {
+            tracer.AddMessage(name + "というデータは存在しません．", Tracer.MessageLevel.error);
+            return;
+        }
     }
 
     public class DataListParams

@@ -22,6 +22,7 @@ public class CommandInitializer : IKernelManager
             new GodCommand(),
             new CrosshairCommand(),
             new ReplayCommand(),
+            new GhostCommand(),
         };
 
 #if UNITY_EDITOR
@@ -42,6 +43,7 @@ public class CommandInitializer : IKernelManager
         CommandReceiver.RequestCommand("bind 1 recorder begin", true);
         CommandReceiver.RequestCommand("bind -1 recorder end", true);
         CommandReceiver.RequestCommand("bind r drecorder save", true);
+        CommandReceiver.RequestCommand("bind z ghost end", true);
 #endif
     }
 

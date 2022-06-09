@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DemoCommand : Command
 {
-    static readonly List<string> availableValues = new List<string>()
+    static public readonly List<string> availableValues = new List<string>()
     {
         "athletic_piles",
         "athletic_tiles",
@@ -101,10 +101,20 @@ public class DemoCommand : Command
                 }
 
                 DemoManager.BeginDemo(dataList);
+                tracer.AddMessage("デモを起動しました．", Tracer.MessageLevel.normal);
                 return;
             }
 
-            tracer.AddMessage(filename + "に該当するデータが見つかりませんでした．", Tracer.MessageLevel.error);
+            else
+            {
+                tracer.AddMessage(filename + "に該当するデータが見つかりませんでした．", Tracer.MessageLevel.error);
+            }
+        }
+
+        else
+        {
+            tracer.AddMessage("2個以上の値を指定することはできません．", Tracer.MessageLevel.error);
+            return;
         }
     }
 }

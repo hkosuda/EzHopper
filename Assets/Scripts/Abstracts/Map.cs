@@ -6,6 +6,7 @@ public enum MapName
 {
     ez_athletic,
     ez_square,
+    ez_square2,
     ez_nostalgia,
     ez_horizon,
     ez_training,
@@ -16,7 +17,7 @@ public enum MapName
 
 public abstract class Map : MonoBehaviour
 {
-    int index = 0;
+    public int Index { get; private set; }
 
     public GameObject[] respawnPositions = new GameObject[1];
 
@@ -32,10 +33,10 @@ public abstract class Map : MonoBehaviour
 
     public void Next()
     {
-        index = (index + 1) % respawnPositions.Length;
+        Index = (Index + 1) % respawnPositions.Length;
 
-        var pos = respawnPositions[index].transform.position;
-        var rot = respawnPositions[index].transform.eulerAngles;
+        var pos = respawnPositions[Index].transform.position;
+        var rot = respawnPositions[Index].transform.eulerAngles;
 
         PM_Main.Initialize(pos, rot.y);
 
@@ -43,27 +44,27 @@ public abstract class Map : MonoBehaviour
 
     public void Prev()
     {
-        index -= 1;
-        if (index < 0) { index = respawnPositions.Length - 1; }
+        Index -= 1;
+        if (Index < 0) { Index = respawnPositions.Length - 1; }
 
-        var pos = respawnPositions[index].transform.position;
-        var rot = respawnPositions[index].transform.eulerAngles;
+        var pos = respawnPositions[Index].transform.position;
+        var rot = respawnPositions[Index].transform.eulerAngles;
 
         PM_Main.Initialize(pos, rot.y);
     }
 
-    public void SetIndex(int index)
+    public void SetIndex(int Index)
     {
-        if (index < 0)
+        if (Index < 0)
         {
-            index = 0;
+            Index = 0;
         }
 
-        if (index > respawnPositions.Length - 1)
+        if (Index > respawnPositions.Length - 1)
         {
-            index = respawnPositions.Length - 1;
+            Index = respawnPositions.Length - 1;
         }
 
-        this.index = index;
+        this.Index = Index;
     }
 }

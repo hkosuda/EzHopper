@@ -17,10 +17,11 @@ public class MapsManager : MonoBehaviour
         {
             { MapName.ez_athletic, GetMap(0) },
             { MapName.ez_square, GetMap(1) },
-            { MapName.ez_nostalgia, GetMap(2) },
-            { MapName.ez_horizon, GetMap(3) },
-            { MapName.ez_training, GetMap(4) },
-            { MapName.ez_flyer, GetMap(5) },
+            { MapName.ez_square2, GetMap(2) },
+            { MapName.ez_nostalgia, GetMap(3) },
+            { MapName.ez_horizon, GetMap(4) },
+            { MapName.ez_training, GetMap(5) },
+            { MapName.ez_flyer, GetMap(6) },
         };
 
         InactivateAll();

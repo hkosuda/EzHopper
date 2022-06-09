@@ -21,16 +21,6 @@ public class EdgeLine : MonoBehaviour
         InitializeMaterial();
     }
 
-#if UNITY_EDITOR
-    //private void OnDrawGizmos()
-    //{
-    //    if (Vector3.Distance(transform.position, SceneView.currentDrawingSceneView.camera.transform.position) > distance) { return; }
-    //    if (mesh == null) { return; }
-
-    //    InitializeMaterial();
-    //}
-#endif
-
     void InitializeMaterial()
     {
         var material = mesh.material;

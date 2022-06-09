@@ -96,7 +96,7 @@ public class GodCommand : Command
                 originalEulerAngle = PM_Camera.EulerAngles();
 
                 Active = true;
-                SetPlayerPhysics(true);
+                SetPlayerPhysics(false);
 
                 tracer.AddMessage("神視点モードを起動しました．ジャンプ入力で任意の場所に着地できます．", Tracer.MessageLevel.normal);
 
@@ -112,7 +112,7 @@ public class GodCommand : Command
 
         if (values.Count == 2)
         {
-            if (Active && values[0] == "end")
+            if (Active && values[1] == "end")
             {
                 Land(originalPosition, originalEulerAngle);
 
@@ -123,7 +123,7 @@ public class GodCommand : Command
                 return;
             }
 
-            if (!Active && values[0] == "end")
+            if (!Active && values[1] == "end")
             {
                 tracer.AddMessage("神視点モードは起動していません．", Tracer.MessageLevel.error);
                 return;
@@ -136,7 +136,10 @@ public class GodCommand : Command
             }
         }
 
-        tracer.AddMessage("2個以上の値を指定することはできません．", Tracer.MessageLevel.error);
+        else
+        {
+            tracer.AddMessage("2個以上の値を指定することはできません．", Tracer.MessageLevel.error);
+        }
     }
 
     static RaycastHit SphereCastCheck()

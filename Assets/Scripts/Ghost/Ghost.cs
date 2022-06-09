@@ -17,14 +17,14 @@ public class Ghost : MonoBehaviour
     static GameObject _ghostLine;
 
     static GameObject ghost;
-    static GameObject ghostBody;
+    static GameObject ghostBox;
 
     static GameObject ghostLineObject;
     static LineRenderer ghostLine;
 
     private void Awake()
     {
-        ghostBody = gameObject.transform.GetChild(0).gameObject;
+        ghostBox = gameObject.transform.GetChild(0).gameObject;
     }
 
     void Start()
@@ -71,6 +71,7 @@ public class Ghost : MonoBehaviour
     static void UpdateTransform()
     {
         ghost.transform.position = Vec3(InterpolatedData);
+        ghost.transform.eulerAngles = new Vector3(0.0f, InterpolatedData[5], 0.0f);
     }
 
     static void UpdateLine()
@@ -106,7 +107,7 @@ public class Ghost : MonoBehaviour
         ghostLine.SetPosition(0, Vec3(dataList[0], -PM_Main.centerY));
     }
 
-    static void EndReplay()
+    static public void EndReplay()
     {
         if (ghost == null) { return; }
 
@@ -147,7 +148,7 @@ public class Ghost : MonoBehaviour
     {
         if (Timer.Paused) { visibility = false; }
 
-        if (ghostBody != null) { ghostBody.SetActive(visibility); }
+        if (ghostBox != null) { ghostBox.SetActive(visibility); }
         if (ghostLineObject != null) { ghostLineObject.SetActive(visibility); }
     }
 }

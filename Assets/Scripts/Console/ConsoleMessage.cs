@@ -46,9 +46,25 @@ public class ConsoleMessage : MonoBehaviour
     {
         TrimEndReturn();
         consoleLog += "\n";
-        consoleLog += "> " + sentence;
+        consoleLog += "> " + CorrectSentence(sentence);
 
         UpdateLogText();
+
+        // - inner function
+        static string CorrectSentence(string sentence)
+        {
+            var values = CommandReceiver.GetValues(sentence);
+            if (values == null || values.Count == 0) { return ""; }
+
+            var corrected = "";
+
+            foreach(var value in values)
+            {
+                corrected += value + " ";
+            }
+
+            return corrected.TrimEnd(new char[1] { ' ' });
+        }
     }
 
     static void WriteTracerMessages(object obj, Tracer tracer)
