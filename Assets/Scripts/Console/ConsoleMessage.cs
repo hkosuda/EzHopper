@@ -8,7 +8,6 @@ public class ConsoleMessage : MonoBehaviour
 {
     static public EventHandler<bool> LogUpdated { get; set; }
 
-    static string consoleLog = "";
     static Text consoleLogText;
 
     private void Awake()
@@ -32,12 +31,14 @@ public class ConsoleMessage : MonoBehaviour
         if (indicator > 0)
         {
             CommandReceiver.CommandRequestBegin += WriteSentence;
+            CommandReceiver.UnknownCommandRequest += WriteUnkownCommandMessages;
             CommandReceiver.CommandRequestEnd += WriteTracerMessages;
         }
 
         else
         {
             CommandReceiver.CommandRequestBegin -= WriteSentence;
+            CommandReceiver.UnknownCommandRequest -= WriteUnkownCommandMessages;
             CommandReceiver.CommandRequestEnd -= WriteTracerMessages;
         }
     }
@@ -45,31 +46,29 @@ public class ConsoleMessage : MonoBehaviour
     static void WriteSentence(object obj, string sentence)
     {
         TrimEndReturn();
-        consoleLog += "\n";
-        consoleLog += "> " + CorrectSentence(sentence);
+
+        var message = "> " + sentence;
+        ProcessMessages(message, sentence);
 
         UpdateLogText();
+    }
 
-        // - inner function
-        static string CorrectSentence(string sentence)
-        {
-            var values = CommandReceiver.GetValues(sentence);
-            if (values == null || values.Count == 0) { return ""; }
+    static void WriteUnkownCommandMessages(object obj, string sentence)
+    {
+        TrimEndReturn();
 
-            var corrected = "";
+        var values = CommandReceiver.GetValues(sentence);
+        if (values == null || values.Count == 0) { return; }
 
-            foreach(var value in values)
-            {
-                corrected += value + " ";
-            }
+        var message = "<color=red>" + values[0] + "というコマンドは存在しません．" + "</color>";
+        ProcessMessages(message, sentence);
 
-            return corrected.TrimEnd(new char[1] { ' ' });
-        }
+        UpdateLogText();
     }
 
     static void WriteTracerMessages(object obj, Tracer tracer)
     {
-        var tracerMessage = tracer.GetFullMessage();
+        var tracerMessage = tracer.ConsoleMessage();
         if (tracerMessage.Trim() == "") { return; }
 
         TrimEndReturn();
@@ -78,6 +77,27 @@ public class ConsoleMessage : MonoBehaviour
         TrimEndReturn();
 
         UpdateLogText();
+    }
+
+    static void ProcessMessages(string message, string sentence)
+    {
+        var options = CommandReceiver.GetOptions(sentence);
+
+        if (Tracer.CheckOption(Tracer.Option.echo, options))
+        {
+            AddMessageToLog(message);
+        }
+
+        else if (!Tracer.CheckOption(Tracer.Option.mute, options) && !Tracer.CheckOption(Tracer.Option.flash, options))
+        {
+            AddMessageToLog(message);
+        }
+
+        // - inner function
+        static void AddMessageToLog(string message)
+        {
+            consoleLog += "\n" + message;
+        }
     }
 
     static void TrimEndReturn()
@@ -93,6 +113,8 @@ public class ConsoleMessage : MonoBehaviour
         LogUpdated?.Invoke(null, false);
     }
 
+    
+
     static public void WriteLog(string log)
     {
         TrimEndReturn();
@@ -101,4 +123,15 @@ public class ConsoleMessage : MonoBehaviour
 
         if (consoleLogText != null) { UpdateLogText(); }
     }
+
+    
+
+    static string consoleLog = "<color=lime> - EzHopper ver 1.0 - </color>\n" +
+        "<color=orange>" +
+        "Tips：\n" +
+        "\tコマンドの一覧を確認するには，'command'を実行してください．\n" +
+        "\t設定に関するコマンドを確認するには'settings'を実行してください．\n" +
+        "\t説明まで表示するには，どちらも'description'をつけて実行してください（'command description'など）．\n" +
+        "\t'exit'でコンソールを閉じることができます．\n" +
+        "</color>";
 }

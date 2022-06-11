@@ -8,6 +8,6 @@ public class WarpGate : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        CommandReceiver.RequestCommand("begin " + targetMapName.ToString(), false);
+        CommandReceiver.RequestCommand("begin " + targetMapName.ToString() + " -mute");
     }
 }

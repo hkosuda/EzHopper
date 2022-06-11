@@ -22,6 +22,7 @@ public class MapsManager : MonoBehaviour
             { MapName.ez_horizon, GetMap(4) },
             { MapName.ez_training, GetMap(5) },
             { MapName.ez_flyer, GetMap(6) },
+            { MapName.ez_settingroom, GetMap(7) },
         };
 
         InactivateAll();

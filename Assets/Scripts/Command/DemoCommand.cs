@@ -60,61 +60,57 @@ public class DemoCommand : Command
         return new List<string>();
     }
 
-    public override void CommandMethod(Tracer tracer, List<string> values)
+    public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)
     {
         if (values == null || values.Count == 0) { return; }
 
         if (values.Count == 1)
         {
-            tracer.AddMessage("再生するデータを指定してください．", Tracer.MessageLevel.error);
-            return;
+            AddMessage("再生するデータを指定してください．", Tracer.MessageLevel.error, tracer, options);
         }
 
-        if (values.Count == 2)
+        else if (values.Count == 2)
         {
             var filename = values[1];
-
             var asset = Resources.Load<TextAsset>("DemoData/" + filename + ".ghost");
 
             if (asset != null)
             {
                 var mapName = DemoFileUtils.FullText2MapName(asset.text);
-                if (mapName == MapName.none) { tracer.AddMessage("データに指定されたマップが見つかりません．", Tracer.MessageLevel.error); return; }
+                if (mapName == MapName.none){ AddMessage("データに指定されたマップが見つかりません．", Tracer.MessageLevel.error, tracer, options); return; }
 
                 var dataList = DemoFileUtils.FullText2DataList(asset.text);
                 if (dataList == null || dataList.Count == 0)
                 {
-                    tracer.AddMessage("データリストの読み込みに失敗しました", Tracer.MessageLevel.error);
+                    AddMessage("データリストの読み込みに失敗しました", Tracer.MessageLevel.error, tracer, options);
                     return;
                 }
 
-                if (!MapsManager.MapList.ContainsKey(mapName))
+                else if (!MapsManager.MapList.ContainsKey(mapName))
                 {
-                    tracer.AddMessage("指定されたマップは読み込めません．", Tracer.MessageLevel.error);
+                    AddMessage("指定されたマップは読み込めません．", Tracer.MessageLevel.error, tracer, options);
                     return;
                 }
 
-                if (mapName != MapsManager.CurrentMap.MapName)
+                else if (mapName != MapsManager.CurrentMap.MapName)
                 {
-                    tracer.AddMessage("現在のマップと異なるマップのデモデータであるため，マップを切り替えて実行します．", Tracer.MessageLevel.warning);
                     MapsManager.Begin(mapName);
+                    AddMessage("現在のマップと異なるマップのデモデータであるため，マップを切り替えて実行します．", Tracer.MessageLevel.warning, tracer, options);
                 }
 
                 DemoManager.BeginDemo(dataList);
-                tracer.AddMessage("デモを起動しました．", Tracer.MessageLevel.normal);
-                return;
+                AddMessage("デモを起動しました．", Tracer.MessageLevel.normal, tracer, options);
             }
 
             else
             {
-                tracer.AddMessage(filename + "に該当するデータが見つかりませんでした．", Tracer.MessageLevel.error);
+                AddMessage(filename + "に該当するデータが見つかりませんでした．", Tracer.MessageLevel.error, tracer, options);
             }
         }
 
         else
         {
-            tracer.AddMessage("2個以上の値を指定することはできません．", Tracer.MessageLevel.error);
-            return;
+            AddMessage(ERROR_OverValues(2), Tracer.MessageLevel.error, tracer, options);
         }
     }
 }

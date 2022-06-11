@@ -40,12 +40,12 @@ public class ToxicSystem : IKernelManager
         // processing
         if (message == "i love you" || message == "i love u")
         {
-            SendToxicChat("i love you");
+            SendDelayedToxicChat("i love you");
         }
     }
 
     // utility
-    static void SendToxicChat(string message, float minDelay = 2.0f, float maxDelay = 4.0f)
+    static public void SendDelayedToxicChat(string message, float minDelay = 2.0f, float maxDelay = 4.0f)
     {
         var chat = new GameObject("ToxicChat");
         GameSystem.SetChildOfRoot(chat);

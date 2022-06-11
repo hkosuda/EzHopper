@@ -58,6 +58,14 @@ public class DeImpactBox : MonoBehaviour
 
     static void UpdateMethod(object obj, float dt)
     {
+        if (Timer.Paused)
+        {
+            foreach(var box in impactBoxList)
+            {
+                box.SetActive(false);
+            }
+        }
+
         for(var n = impactBoxList.Count - 1; n > -1; n--)
         {
             timeList[n] += dt;

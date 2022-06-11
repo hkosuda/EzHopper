@@ -19,10 +19,16 @@ public class CommandInitializer : IKernelManager
             new NextCommand(),
             new PrevCommand(),
             new UnbindCommand(),
-            new GodCommand(),
+            new ObserverCommand(),
             new CrosshairCommand(),
             new ReplayCommand(),
             new GhostCommand(),
+            new CommandCommand(),
+            new SettingsCommand(),
+            new BackCommand(),
+            new OverrideCommand(),
+            new IgniteCommand(),
+            new TimerCommand(),
         };
 
 #if UNITY_EDITOR
@@ -37,14 +43,7 @@ public class CommandInitializer : IKernelManager
         Bools.AddCommands();
         Floats.AddCommands();
 
-#if UNITY_EDITOR
-        CommandReceiver.RequestCommand("bind p anchor set", true);
-        CommandReceiver.RequestCommand("bind v anchor back", true);
-        CommandReceiver.RequestCommand("bind 1 recorder begin", true);
-        CommandReceiver.RequestCommand("bind -1 recorder end", true);
-        CommandReceiver.RequestCommand("bind r drecorder save", true);
-        CommandReceiver.RequestCommand("bind z ghost end", true);
-#endif
+        
     }
 
     public void Shutdown()

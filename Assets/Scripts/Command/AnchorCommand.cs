@@ -37,24 +37,22 @@ public class AnchorCommand : Command
         return new List<string>();
     }
 
-    public override void CommandMethod(Tracer tracer, List<string> values)
+    public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)
     {
         if (values == null || values.Count == 0) { return; }
 
         if (values.Count == 1)
         {
-            tracer.AddMessage("現在の座標 ... " + PositionInfo(PM_Main.Myself.transform.position), Tracer.MessageLevel.error);
+            AddMessage("現在の座標 ... " + PositionInfo(PM_Main.Myself.transform.position), Tracer.MessageLevel.normal, tracer, options);
 
             if (anchoredParams == null)
             {
-                tracer.AddMessage("座標の記録はありません．", Tracer.MessageLevel.normal);
-                return;
+                AddMessage("座標の記録はありません．", Tracer.MessageLevel.normal, tracer, options);
             }
 
             else
             {
-                tracer.AddMessage("記録された座標 ... " + PositionInfo(anchoredParams.position), Tracer.MessageLevel.normal);
-                return;
+                AddMessage("記録された座標 ... " + PositionInfo(anchoredParams.position), Tracer.MessageLevel.normal, tracer, options);
             }
         }
 
@@ -65,42 +63,37 @@ public class AnchorCommand : Command
             if (action == "set")
             {
                 anchoredParams = new AnchoredParams();
-                ChatMessages.SendChat("座標を記録しました．", ChatMessages.Sender.system);
-                return;
+                AddMessage("座標を記録しました．", Tracer.MessageLevel.normal, tracer, options);
             }
 
             else if (action == "back")
             {
                 if (anchoredParams == null)
                 {
-                    tracer.AddMessage("座標が記録されていません．'anchor set'を使用して座標を記録してください", Tracer.MessageLevel.error);
-                    return;
+                    AddMessage("座標が記録されていません．'anchor set'を使用して座標を記録してください", Tracer.MessageLevel.error, tracer, options);
                 }
 
-                if (anchoredParams.mapName != MapsManager.CurrentMap.MapName)
+                else if (anchoredParams.mapName != MapsManager.CurrentMap.MapName)
                 {
-                    tracer.AddMessage("記録された際のマップと現在のマップが異なるため，記録された座標に戻れません．", Tracer.MessageLevel.error);
-                    return;
+                    AddMessage("記録された際のマップと現在のマップが異なるため，記録された座標に戻れません．", Tracer.MessageLevel.error, tracer, options);
                 }
 
-                PM_Main.Myself.transform.position = anchoredParams.position;
-                PM_Camera.SetEulerAngles(anchoredParams.eulerAngle);
-                PM_Main.Rb.velocity = Vector3.zero;
-                PM_Jumping.InactivateAutoJump();
+                else
+                {
+                    PM_Main.ResetPosition(anchoredParams.position, anchoredParams.eulerAngle.y);
+                    AddMessage("記録された座標にプレイヤーを移動させました．", Tracer.MessageLevel.normal, tracer, options);
+                }
             }
 
             else
             {
-                tracer.AddMessage("'set'もしくは'back'のみ値として指定可能です．", Tracer.MessageLevel.error);
-                return;
+                AddMessage("'set'もしくは'back'のみ値として指定可能です．", Tracer.MessageLevel.error, tracer, options);
             }
-
-            return;
         }
 
         else
         {
-            tracer.AddMessage("2個以上の値を指定することはできません．", Tracer.MessageLevel.error);
+            AddMessage(ERROR_OverValues(2), Tracer.MessageLevel.error, tracer, options);
         }
         
         // - inner function

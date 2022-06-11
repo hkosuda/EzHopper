@@ -32,14 +32,13 @@ public class BeginCommand : Command
         return new List<string>();
     }
 
-    public override void CommandMethod(Tracer tracer, List<string> values)
+    public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)
     {
         if (values == null || values.Count == 0) { return; }
 
         if (values.Count == 1)
         {
-            tracer.AddMessage("マップの名称を指定してください．", Tracer.MessageLevel.error);
-            return;
+            AddMessage("マップの名称を指定してください．", Tracer.MessageLevel.error, tracer, options);
         }
 
         else if (values.Count == 2)
@@ -51,18 +50,18 @@ public class BeginCommand : Command
                 if (mapName == MapName.none) { continue; }
                 if (value.ToLower() != mapName.ToString().ToLower()) { continue; }
 
-                tracer.AddMessage(mapName.ToString().ToLower() + "を開始します．", Tracer.MessageLevel.normal);
                 MapsManager.Begin(mapName);
+                AddMessage(mapName.ToString().ToLower() + "を開始します．", Tracer.MessageLevel.normal, tracer, options);
                 return;
             }
 
-            tracer.AddMessage(value + "は存在しません．", Tracer.MessageLevel.error);
+            AddMessage(value + "は存在しません．", Tracer.MessageLevel.error, tracer, options);
             return;
         }
 
         else
         {
-            tracer.AddMessage("値を2個以上指定することはできません．", Tracer.MessageLevel.error);
+            AddMessage("値を2個以上指定することはできません．", Tracer.MessageLevel.error, tracer, options);
         }
     }
 }

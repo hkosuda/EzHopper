@@ -10,7 +10,7 @@ public class ExitCommand : Command
         description = "コンソールを閉じます．";
     }
 
-    public override void CommandMethod(Tracer tracer, List<string> values)
+    public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)
     {
         Console.CloseConsole();
     }

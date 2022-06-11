@@ -84,7 +84,7 @@ static public class DemoFileUtils
         var content = "";
 
         content += "map\n";
-        content += "\t" + MapsManager.CurrentMap.MapName.ToString();
+        content += "\t" + MapsManager.CurrentMap.MapName.ToString() + "\n";
         content += "end\n\n";
 
         content += "values\n";

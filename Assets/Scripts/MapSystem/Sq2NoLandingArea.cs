@@ -2,19 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InvalidLandingSurface : MonoBehaviour
+public class Sq2NoLandingArea : MonoBehaviour
 {
-    static readonly int counterLimit = 5;
+    static readonly int counterLimit = 2;
 
-    [SerializeField] InvalidArea invalidArea;
-
+    [SerializeField] GameObject respawnPosition;
     int counter = 0;
 
     private void Awake()
     {
-        if (invalidArea == null)
+        if (respawnPosition == null)
         {
-            Debug.LogWarning("No Invalid Area");
+            Debug.LogWarning("No Respawn Position");
         }
     }
 
@@ -55,11 +54,11 @@ public class InvalidLandingSurface : MonoBehaviour
             if (counter > counterLimit)
             {
                 var position = PM_Main.Myself.transform.position;
-                var respawn = invalidArea.respawnPosition;
+                var respawn = respawnPosition;
 
                 PM_Main.ResetPosition(respawn.transform.position, respawn.transform.eulerAngles.y);
                 InvalidArea.CourseOut?.Invoke(null, position);
-            }   
-        } 
+            }
+        }
     }
 }

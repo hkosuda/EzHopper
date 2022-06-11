@@ -12,30 +12,58 @@ public class BooleanCommand : Command
 
         commandName = item.ToString();
         commandType = CommandType.values;
+
+        description = Bools.Settings[item].Description;
+        description += "\n現在の値：" + CurrentValue() + ", デフォルト値：" + DefaultValue();
     }
 
-    public override void CommandMethod(Tracer tracer, List<string> values)
+    public override string CurrentValue()
+    {
+        var val = Bools.Settings[item].CurrentValue;
+        return GetValueText(val);
+    }
+
+    public override string DefaultValue()
+    {
+        var val = Bools.Settings[item].DefaultValue;
+        return GetValueText(val);
+    }
+
+    static string GetValueText(bool value)
+    {
+        if (value)
+        {
+            return "on(1)";
+        }
+
+        else
+        {
+            return "off(0)";
+        }
+    }
+
+    public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)
     {
         if (values == null || values.Count == 0) { return; }
 
         if (values.Count == 1)
         {
-            tracer.AddMessage(HelpText(item), Tracer.MessageLevel.normal);
+            AddMessage(HelpText(item), Tracer.MessageLevel.normal, tracer, options);
             return;
         }
 
         if (values.Count == 2)
         {
-            ChangeValue(item, tracer, values);
+            ChangeValue(item, tracer, values, options);
         }
 
         else
         {
-            tracer.AddMessage("値を2個以上指定することはできません．", Tracer.MessageLevel.error);
+            AddMessage("値を2個以上指定することはできません．", Tracer.MessageLevel.error, tracer, options);
         }
         
         // - inner function
-        static void ChangeValue(Bools.Item item, Tracer tracer, List<string> values)
+        static void ChangeValue(Bools.Item item, Tracer tracer, List<string> values, List<string> options)
         {
             var setting = Bools.Settings[item];
 
@@ -68,7 +96,7 @@ public class BooleanCommand : Command
                 return;
             }
 
-            tracer.AddMessage(value + "を有効な値に変換できません．'on'もしくは'off'を値として指定してください．", Tracer.MessageLevel.error);
+            AddMessage(value + "を有効な値に変換できません．'on'もしくは'off'を値として指定してください．", Tracer.MessageLevel.error, tracer, options);
         }
     }
 

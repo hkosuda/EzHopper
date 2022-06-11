@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class ChatMessages : MonoBehaviour
 {
-    static readonly int maxChats = 5;
+    static readonly int maxChats = 25;
     static readonly float chatExistsTime = 7.0f;
 
     public enum Sender
@@ -49,6 +49,58 @@ public class ChatMessages : MonoBehaviour
 
         messageList = new List<GameObject>();
         timeList = new List<float>();
+    }
+
+    private void Start()
+    {
+        SetEvent(1);
+    }
+
+    private void OnDestroy()
+    {
+        SetEvent(-1);
+    }
+
+    static void SetEvent(int indicator)
+    {
+        if (indicator > 0)
+        {
+            CommandReceiver.UnknownCommandRequest += WriteUnkownCommandMessages;
+            CommandReceiver.CommandRequestEnd += WriteTracerMessages;
+        }
+
+        else
+        {
+            CommandReceiver.UnknownCommandRequest -= WriteUnkownCommandMessages;
+            CommandReceiver.CommandRequestEnd -= WriteTracerMessages;
+        }
+    }
+
+    static void WriteUnkownCommandMessages(object obj, string sentence)
+    {
+        var values = CommandReceiver.GetValues(sentence);
+        if (values == null || values.Count == 0) { return; }
+
+        var message = values[0] + "というコマンドは存在しません．";
+        ProcessMessages(message, sentence);
+    }
+
+    static void WriteTracerMessages(object obj, Tracer tracer)
+    {
+        var tracerMessage = tracer.ChatMessage();
+        if (tracerMessage.Trim() == "") { return; }
+
+        SendChat(tracerMessage, Sender.system);
+    }
+
+    static void ProcessMessages(string message, string sentence)
+    {
+        var options = CommandReceiver.GetOptions(sentence);
+
+        if (Tracer.CheckOption(Tracer.Option.echo, options) || Tracer.CheckOption(Tracer.Option.flash, options))
+        {
+            SendChat(message, Sender.system);
+        }
     }
 
     void Update()

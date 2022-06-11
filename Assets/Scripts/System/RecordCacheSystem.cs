@@ -44,43 +44,45 @@ public class RecordCacheSystem : IKernelManager
         CachedData = new DataListParams(MapsManager.CurrentMap.MapName, dataList);
     }
 
-    static public void CacheData(string name, Tracer tracer)
+    static public void CacheData(string name, Tracer tracer, List<string> options)
     {
         if (CachedData == null)
         {
-            tracer.AddMessage("データが存在しないため，保存に失敗しました．", Tracer.MessageLevel.error);
+            Command.AddMessage("データが存在しないため，保存に失敗しました．", Tracer.MessageLevel.error, tracer, options);
             return;
         }
 
         if (CachedData.dataList.Count == 0)
         {
-            tracer.AddMessage("データの長さが0であるため，保存できません．", Tracer.MessageLevel.error);
+            Command.AddMessage("データの長さが0であるため，保存できません．", Tracer.MessageLevel.error, tracer, options);
             return;
         }
 
         if (CachedDataList.ContainsKey(name))
         {
-            tracer.AddMessage("すでに同名のデータが存在するため，保存できません．", Tracer.MessageLevel.error);
+            Command.AddMessage("すでに同名のデータが存在するため，保存できません．", Tracer.MessageLevel.error, tracer, options);
             return;
         }
 
         CachedDataList.Add(name, new DataListParams(CachedData.mapName, CachedData.dataList));
 
-        var info = "\t\t名称：" + name + "\n\t\tマップ：" + CachedData.mapName.ToString() + "\n\t\t継続時間：" + CachedData.dataList.Last()[0].ToString("f1");
-        tracer.AddMessage("データを保存しました．\n" + info, Tracer.MessageLevel.normal);
+        Command.AddMessage("データを保存しました．", Tracer.MessageLevel.normal, tracer, options);
+        Command.AddMessage("名称：" + name, Tracer.MessageLevel.normal, tracer, options, 2);
+        Command.AddMessage("マップ：" + CachedData.mapName.ToString(), Tracer.MessageLevel.normal, tracer, options, 2);
+        Command.AddMessage("継続時間：" + CachedData.dataList.Last()[0].ToString("f1"), Tracer.MessageLevel.normal, tracer, options, 2);
     }
 
-    static public void RemoveData(string name, Tracer tracer)
+    static public void RemoveData(string name, Tracer tracer, List<string> options)
     {
         if (CachedDataList.ContainsKey(name))
         {
             CachedDataList.Remove(name);
-            tracer.AddMessage(name + "を削除しました．", Tracer.MessageLevel.normal);
+            Command.AddMessage(name + "を削除しました．", Tracer.MessageLevel.normal, tracer, options);
         }
 
         else
         {
-            tracer.AddMessage(name + "というデータは存在しません．", Tracer.MessageLevel.error);
+            Command.AddMessage(name + "というデータは存在しません．", Tracer.MessageLevel.error, tracer, options);
             return;
         }
     }

@@ -45,35 +45,51 @@ public class BindCommand : Command
         return new List<string>();
     }
 
-    public override void CommandMethod(Tracer tracer, List<string> values)
+    public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)
     {
         if (values == null || values.Count == 0) { return; }
 
         if (values.Count == 1)
         {
-            tracer.AddMessage(CurrentBindings(), Tracer.MessageLevel.normal);
-            return;
+            AddMessage(CurrentBindings(), Tracer.MessageLevel.normal, tracer, options);
         }
 
         else if (values.Count == 2)
         {
-            tracer.AddMessage("キーのあとに，バインドするコマンドを指定してください．", Tracer.MessageLevel.error);
-            return;
+            AddMessage("キーのあとに，バインドするコマンドを指定してください．", Tracer.MessageLevel.error, tracer, options);
         }
 
-        else if (values.Count > 2)
+        // ex) bind(0) i(1) /timer/stop/(2)
+        else if (values.Count == 3)
         {
             if (KeyBindingList == null) { KeyBindingList = new List<Binding>(); }
 
             var keyString = values[1];
-            var key = GetKey(keyString, tracer);
+            var key = GetKey(keyString, tracer, options);
 
-            if (key == null) { return; }
+            if (key == null) 
+            {
+                AddMessage(keyString + "を有効なキーに変換できません．", Tracer.MessageLevel.error, tracer, options);
+                return;
+            }
 
-            var command = GetCommand(values);
-            KeyBindingList.Add(new Binding(key.keyCode, key.wheelDelta, command));
+            var command = CommandReceiver.UnpackGrouping(values[2]);
 
-            tracer.AddMessage("バインドを追加しました：" + BindingInfo(KeyBindingList.Last()), Tracer.MessageLevel.normal);
+            if (CheckDuplication(key, command))
+            {
+                AddMessage("すでに同じ内容のバインドが存在します．", Tracer.MessageLevel.error, tracer, options);
+            }
+
+            else
+            {
+                KeyBindingList.Add(new Binding(key.keyCode, key.wheelDelta, command));
+                AddMessage("バインドを追加しました：" + BindingInfo(KeyBindingList.Last()), Tracer.MessageLevel.normal, tracer, options);
+            }
+        }
+
+        else
+        {
+            AddMessage(ERROR_OverValues(2), Tracer.MessageLevel.error, tracer, options);
         }
 
         // - inner function
@@ -97,20 +113,7 @@ public class BindCommand : Command
         }
 
         // - inner function
-        static string GetCommand(List<string> values)
-        {
-            var command = "";
-
-            for(var n = 2; n < values.Count; n++)
-            {
-                command += values[n] + " ";
-            }
-
-            return command.TrimEnd();
-        }
-
-        // - inner function
-        static Keyconfig.Key GetKey(string keyString, Tracer tracer)
+        static Keyconfig.Key GetKey(string keyString, Tracer tracer, List<string> options)
         {
             foreach (KeyCode keyCode in Enum.GetValues(typeof(KeyCode)))
             {
@@ -134,13 +137,29 @@ public class BindCommand : Command
 
                 else
                 {
-                    tracer.AddMessage("マウスホイールの上下にコマンドを割り当てたい場合は，0でない値を指定してください．", Tracer.MessageLevel.error);
+                    AddMessage("マウスホイールの上下にコマンドを割り当てたい場合は，0でない値を指定してください．", Tracer.MessageLevel.error, tracer, options);
                     return null;
                 }
             }
 
-            tracer.AddMessage(keyString + "を有効なキーに変換できません．", Tracer.MessageLevel.error);
+            AddMessage(keyString + "を有効なキーに変換できません．", Tracer.MessageLevel.error, tracer, options);
             return null;
+        }
+
+        // - inner function
+        static bool CheckDuplication(Keyconfig.Key key, string command)
+        {
+            if (KeyBindingList == null) { KeyBindingList = new List<Binding>(); }
+
+            foreach(var keybind in KeyBindingList)
+            {
+                if (keybind.key.GetKeyString() == key.GetKeyString() && keybind.command == command)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 
@@ -155,32 +174,44 @@ public class BindCommand : Command
             // key
             if (InputSystem.CheckInput(keybind.key, true))
             {
-                CommandReceiver.RequestCommand(keybind.command, false);
+                CommandReceiver.RequestCommand(keybind.command);
             }
         }
     }
 
-    static public void RemoveKeybind(int n, Tracer tracer)
+    static public void RemoveKeybind(List<int> indexes, Tracer tracer, List<string> options)
     {
         if (KeyBindingList == null || KeyBindingList.Count == 0)
         {
-            tracer.AddMessage("現在バインドは作成されていません．", Tracer.MessageLevel.error);
+            AddMessage("現在バインドは作成されていません．", Tracer.MessageLevel.error, tracer, options);
             return;
         }
 
-        if (0 <= n && n < KeyBindingList.Count)
+        var indexLim = KeyBindingList.Count - 1;
+
+        foreach(var index in indexes)
         {
-            var bind = KeyBindingList[n];
-            
-            KeyBindingList.RemoveAt(n);
-            tracer.AddMessage("バインドを削除しました：" + BindingInfo(bind), Tracer.MessageLevel.normal);
+            if (index < 0 || index > indexLim)
+            {
+                AddMessage(ERROR_OutOfRange(index, indexLim), Tracer.MessageLevel.error, tracer, options);
+            }
         }
 
-        else
+        if (!tracer.NoError) { return; }
+        
+        foreach(var index in indexes)
         {
-            var message = n.ToString() + "は有効な値の範囲外です．有効な値の範囲は0から" + (KeyBindingList.Count - 1).ToString() + "までです．";
-            tracer.AddMessage(message, Tracer.MessageLevel.error);
+            var bind = KeyBindingList[index];
+
+            KeyBindingList.RemoveAt(index);
+            AddMessage("バインドを削除しました：" + BindingInfo(bind), Tracer.MessageLevel.normal, tracer, options);
         }
+    }
+
+    static public void RemoveAll(Tracer tracer, List<string> options)
+    {
+        KeyBindingList = new List<Binding>();
+        AddMessage("バインドをすべて削除しました．", Tracer.MessageLevel.normal, tracer, options);
     }
 
     static string BindingInfo(BindCommand.Binding binding)

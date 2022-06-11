@@ -10,10 +10,10 @@ public class RecorderCommand : Command
         commandName = "recorder";
         description = "プレイヤーの動きを記録する機能（レコーダー）を提供します．\n" +
             "レコーダーは，無効なエリアに侵入したとき，もしくは" + ((int)PlayerRecorder.limitTime).ToString() + "秒経過すると自動で停止します．\n" +
-            "'recorder begin'で記録を開始し，'recorder end'で記録を停止します．記録したデータは，次の記録が終了するまで一時的に保存されます．\n" +
+            "'recorder start'で記録を開始し，'recorder end'で記録を停止します．記録したデータは，次の記録が終了するまで一時的に保存されます．\n" +
             "一時的に保存されている間に'recorder save <name>'を実行すると，ゲームを起動している間だけ名前付きでデータを保持し続けます（<name>の部分に任意の名前を入力します．" +
             "ここで作成した名前付きデータは，demoコマンドやghostコマンドで利用可能となります．\n" +
-            "保存したデータを削除するには，'recorder begin <name>'を実行してください．";
+            "保存したデータを削除するには，'recorder start <name>'を実行してください．";
     }
 
     public override List<string> AvailableValues(List<string> values)
@@ -22,89 +22,84 @@ public class RecorderCommand : Command
 
         if (values.Count < 3)
         {
-            return new List<string>() { "begin", "end", "stop", "save", "remove" };
+            return new List<string>() { "start", "end", "stop", "save", "remove" };
         }
 
         return new List<string>();
     }
 
-    public override void CommandMethod(Tracer tracer, List<string> values)
+    public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)
     {
         if (values == null || values.Count == 0) { return; }
 
         if (values.Count == 1)
         {
-            tracer.AddMessage(AvailabeDataList(), Tracer.MessageLevel.normal);
-            PlayerRecorder.CurrentRecorderStatus(tracer);
-            return;
+            AddMessage(AvailabeDataList(), Tracer.MessageLevel.normal, tracer, options);
         }
 
-        if (values.Count == 2)
+        else if (values.Count == 2)
         {
             var value = values[1];
 
-            if (value == "begin")
+            if (value == "start")
             {
                 PlayerRecorder.BeginRecording();
-
-                tracer.AddMessage("レコーダーを起動しました．", Tracer.MessageLevel.normal);
-                return;
+                AddMessage("レコーダーを起動しました．", Tracer.MessageLevel.normal, tracer, options);
             }
 
-            if (value == "end")
+            else if (value == "end")
             {
                 PlayerRecorder.FinishRecording(true);
-
-                tracer.AddMessage("レコーダーを停止しました．", Tracer.MessageLevel.normal);
-                return;
+                AddMessage("レコーダーを停止しました．", Tracer.MessageLevel.normal, tracer, options);
             }
 
-            if (value == "stop")
+            else if (value == "stop")
             {
-                PlayerRecorder.FinishRecording(false, true);
-
-                tracer.AddMessage("レコーダーによる記録を中断しました．", Tracer.MessageLevel.normal);
-                return;
+                PlayerRecorder.FinishRecording(false);
+                AddMessage("レコーダーによる記録を中断しました．", Tracer.MessageLevel.normal, tracer, options);
             }
 
-            if (value == "save")
+            else if (value == "save")
             {
-                tracer.AddMessage("データを保存するには，名前を指定してください．", Tracer.MessageLevel.error);
-                return;
+                AddMessage("データを保存するには，名前を指定してください．", Tracer.MessageLevel.error, tracer, options);
             }
 
-            if (value == "remove")
+            else if (value == "remove")
             {
-                tracer.AddMessage("データを削除するには，名前を指定してください．", Tracer.MessageLevel.error);
-                return;
-            }
-
-            tracer.AddMessage("一番目の値としては，'begin', 'end', 'stop', 'save', 'remove' のみ指定可能です．", Tracer.MessageLevel.error);
-            return;
-        }
-        
-        if (values.Count == 3)
-        {
-            if (values[1] == "save")
-            {
-                RecordCacheSystem.CacheData(values[2], tracer);
-                return;
-            }
-
-            if (values[1] == "remove")
-            {
-                RecordCacheSystem.RemoveData(values[2], tracer);
-                return;
+                AddMessage("データを削除するには，名前を指定してください．", Tracer.MessageLevel.error, tracer, options);
             }
 
             else
             {
-                tracer.AddMessage("一番目の値としては，'begin', 'end', 'stop', 'save', 'remove' のみ指定可能です．", Tracer.MessageLevel.error);
-                return;
+                AddMessage("一番目の値としては，'start', 'end', 'stop', 'save', 'remove' のみ指定可能です．", Tracer.MessageLevel.error, tracer, options);
+            }
+        }
+        
+        else if (values.Count == 3)
+        {
+            var value = values[1];
+            var name = values[2];
+
+            if (value == "save")
+            {
+                RecordCacheSystem.CacheData(name, tracer, options);
+            }
+
+            else if (value == "remove")
+            {
+                RecordCacheSystem.RemoveData(name, tracer, options);
+            }
+
+            else
+            {
+                AddMessage("一番目の値としては，'start', 'end', 'stop', 'save', 'remove' のみ指定可能です．", Tracer.MessageLevel.error, tracer, options);
             }
         }
 
-        tracer.AddMessage("3個以上の値を指定することはできません．", Tracer.MessageLevel.error);
+        else
+        {
+            AddMessage("3個以上の値を指定することはできません．", Tracer.MessageLevel.error, tracer, options);
+        }
     }
 
     static string AvailabeDataList()

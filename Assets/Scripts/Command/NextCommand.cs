@@ -10,20 +10,30 @@ public class NextCommand : Command
         description = "中間地点が複数設定されているマップで，次の中間地点に移動する機能を提供します．";
     }
 
-    public override void CommandMethod(Tracer tracer, List<string> values)
+    public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)
     {
-        var prev = MapsManager.CurrentMap.Index;
-        MapsManager.CurrentMap.Next();
-        var current = MapsManager.CurrentMap.Index;
+        if (values == null || values.Count == 0) { return; }
 
-        if (MapsManager.CurrentMap.respawnPositions.Length == 1)
+        else if (values.Count == 1)
         {
-            tracer.AddMessage("現在のマップにはチェックポイントが1つしかありません．", Tracer.MessageLevel.warning);
+            var prev = MapsManager.CurrentMap.Index;
+            MapsManager.CurrentMap.Next();
+            var current = MapsManager.CurrentMap.Index;
+
+            if (MapsManager.CurrentMap.respawnPositions.Length == 1)
+            {
+                AddMessage("現在のマップにはチェックポイントが1つしかありません．", Tracer.MessageLevel.warning, tracer, options);
+            }
+
+            else
+            {
+                AddMessage("check point : " + prev.ToString() + " -> " + current.ToString(), Tracer.MessageLevel.normal, tracer, options);
+            }
         }
 
         else
         {
-            tracer.AddMessage("check point : " + prev.ToString() + " -> " + current.ToString(), Tracer.MessageLevel.normal);
+            AddMessage(ERROR_OverValues(0), Tracer.MessageLevel.error, tracer, options);
         }
     }
 }

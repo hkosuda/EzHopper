@@ -5,10 +5,9 @@ using UnityEngine;
 
 public class PlayerRecorder : IKernelManager
 {
-    static public readonly float limitTime = 10.0f;
+    static public readonly float limitTime = 120.0f;
     static public readonly int dataSize = 10;
 
-    static public EventHandler<bool> RecordingBegin { get; set; }
     static public EventHandler<List<float[]>> RecordingEnd { get; set; }
 
     static List<float[]> dataList;
@@ -90,21 +89,14 @@ public class PlayerRecorder : IKernelManager
 
     static public void BeginRecording()
     {
-        RecordingBegin?.Invoke(null, false);
-
-        var prev = Recording;
-
         dataList = new List<float[]>();
         Recording = true;
         pastTime = 0.0f;
 
-        if (!prev)
-        {
-            ChatMessages.SendChat("レコーダーを起動しました．", ChatMessages.Sender.system);
-        }
+        ChatMessages.SendChat("レコーダーを起動しました．", ChatMessages.Sender.system);
     }
 
-    static public void FinishRecording(bool ghostReplay, bool mute = false)
+    static public void FinishRecording(bool ghostReplay)
     {
         if (!Recording) { return; }
         Recording = false;
@@ -116,18 +108,8 @@ public class PlayerRecorder : IKernelManager
             Ghost.BeginReplay(dataList);
         }
 
-        if (mute) 
-        {
-            ChatMessages.SendChat("レコーダーによる記録を中断しました．", ChatMessages.Sender.system);
-        }
-
-        else
-        {
-            ChatMessages.SendChat("レコーダーを停止しました．", ChatMessages.Sender.system);
-            RecordingEnd?.Invoke(null, new List<float[]>(dataList));
-        }
-        
-        
+        ChatMessages.SendChat("レコーダーを停止しました．", ChatMessages.Sender.system);
+        RecordingEnd?.Invoke(null, new List<float[]>(dataList));
 
         dataList = new List<float[]>();
     }
@@ -146,21 +128,5 @@ public class PlayerRecorder : IKernelManager
     static void StopRecorderOnMapInitialized(object obj, bool mute)
     {
         FinishRecording(false);
-    }
-
-    static public void CurrentRecorderStatus(Tracer tracer)
-    {
-        if (!Recording || dataList == null)
-        {
-            tracer.AddMessage("現在レコーダーは起動していません", Tracer.MessageLevel.normal);
-        }
-
-        else
-        {
-            var status = "現在のレコーダーのステータス：\n";
-            status += "\t\t" + "経過時間：" + pastTime.ToString("f4") + "\n";
-            status += "\t\t" + "データサイズ：" + dataList.Count.ToString();
-            tracer.AddMessage(status, Tracer.MessageLevel.normal);
-        }
     }
 }

@@ -31,7 +31,7 @@ public class ConsoleInputField : MonoBehaviour
         var value = inputField.text;
         if (value.Trim() == "") { return; }
 
-        CommandReceiver.RequestCommand(value, true);
+        CommandReceiver.RequestCommand(value);
     }
 
     void Start()
@@ -48,12 +48,14 @@ public class ConsoleInputField : MonoBehaviour
     {
         if (indicator > 0)
         {
-            CommandReceiver.CommandRequestEnd += UpdateInputFieldText;
+            CommandReceiver.UnknownCommandRequest += UpdateInputFieldOnUnknownCommand;
+            CommandReceiver.CommandRequestEnd += UpdateInputFieldOnRequestEnd;
         }
 
         else
         {
-            CommandReceiver.CommandRequestEnd -= UpdateInputFieldText;
+            CommandReceiver.UnknownCommandRequest -= UpdateInputFieldOnUnknownCommand;
+            CommandReceiver.CommandRequestEnd -= UpdateInputFieldOnRequestEnd;
         }
     }
 
@@ -65,9 +67,19 @@ public class ConsoleInputField : MonoBehaviour
         }
     }
 
-    static void UpdateInputFieldText(object obj, Tracer tracer)
+    static void UpdateInputFieldOnUnknownCommand(object obj, string sentence)
     {
-        if (tracer.NoError)
+        UpdateInputField(false);
+    }
+
+    static void UpdateInputFieldOnRequestEnd(object obj, Tracer tracer)
+    {
+        UpdateInputField(tracer.NoError);
+    }
+
+    static void UpdateInputField(bool noError)
+    {
+        if (noError)
         {
             inputField.text = "";
         }
@@ -92,7 +104,7 @@ public class ConsoleInputField : MonoBehaviour
         // - inner function
         static string CorrectValues(List<string> values)
         {
-            if (values == null || values.Count < 2) { return ""; }
+            if (values == null || values.Count == 0) { return ""; }
 
             var text = "";
 

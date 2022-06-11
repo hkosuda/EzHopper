@@ -55,7 +55,7 @@ public class MenuButtonGroup : MonoBehaviour
 
     static void RequestRestart()
     {
-        CommandReceiver.RequestCommand("begin " + MapsManager.CurrentMap.MapName.ToString().ToLower(), false);
+        CommandReceiver.RequestCommand("begin " + MapsManager.CurrentMap.MapName.ToString().ToLower() + " -mute");
     }
 
     static void BackToStart()
@@ -65,7 +65,7 @@ public class MenuButtonGroup : MonoBehaviour
 
     static void RequestBeginAthletic()
     {
-        CommandReceiver.RequestCommand("begin " + MapName.ez_athletic.ToString(), false);
+        CommandReceiver.RequestCommand("begin " + MapName.ez_athletic.ToString() + " -mute");
     }
 
     static void FinishTheGame()

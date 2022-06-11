@@ -19,7 +19,7 @@ public class FlSetting : MySetting
         Validations = validations;
     }
 
-    public bool ValidationCheck(float value, Tracer tracer = null)
+    public bool ValidationCheck(float value, Tracer tracer = null, List<string> options = null)
     {
         if (Validations == null)
         {
@@ -30,7 +30,7 @@ public class FlSetting : MySetting
 
         foreach (var validation in Validations)
         {
-            if (!validation.Check(value, tracer)) { flag = false; }
+            if (!validation.Check(value, tracer, options)) { flag = false; }
         }
 
         return flag;
@@ -57,5 +57,5 @@ public abstract class Validation
 
 public abstract class FlValidation : Validation
 {
-    public abstract bool Check(float value, Tracer tracer = null);
+    public abstract bool Check(float value, Tracer tracer = null, List<string> options = null);
 }

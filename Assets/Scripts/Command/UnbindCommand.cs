@@ -25,40 +25,77 @@ public class UnbindCommand : Command
                 available.Add(n.ToString());
             }
 
+            available.Add("all");
+
             return available;
         }
 
         return new List<string>();
     }
 
-    public override void CommandMethod(Tracer tracer, List<string> values)
+    public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)
     {
         if (values == null || values.Count == 0) { return; }
 
         if (values.Count == 1)
         {
-            tracer.AddMessage("値を指定してください", Tracer.MessageLevel.error);
+            AddMessage("削除するバインドのインデックスを指定してください", Tracer.MessageLevel.error, tracer, options);
         }
 
-        if (values.Count == 2)
+        // unbind(0) 1(1) 4(2) 5(3) ... / unbinid(0) all(1)
+        else
         {
             var value = values[1];
 
-            if (int.TryParse(value, out var num))
+            if (values.Count == 2 && value == "all")
             {
-                BindCommand.RemoveKeybind(num, tracer);
+                BindCommand.RemoveAll(tracer, options);
                 return;
+            }
+
+            var indexes = GetIndexes(values, 1, tracer, options);
+            if (indexes == null) { return; }
+
+            BindCommand.RemoveKeybind(indexes, tracer, options);
+        }
+    }
+
+
+    static public List<int> GetIndexes(List<string> values, int startIndex, Tracer tracer, List<string> options)
+    {
+        var indexLim = values.Count - 1;
+        if (startIndex < 0 || startIndex > indexLim) { return null; }
+
+        var list = new List<int>();
+
+        for (var n = startIndex; n < values.Count; n++)
+        {
+            var value = values[n];
+
+            if (int.TryParse(value, out var index))
+            {
+                if (list.Contains(index))
+                {
+                    AddMessage("同じインデックス（" + index.ToString() + "）が含まれています．", Tracer.MessageLevel.error, tracer, options);
+                }
+
+                else
+                {
+                    list.Add(index);
+                }
             }
 
             else
             {
-                tracer.AddMessage(value + "を整数に変換できません．", Tracer.MessageLevel.error);
+                AddMessage(ERROR_NotInteger(value), Tracer.MessageLevel.error, tracer, options);
             }
         }
 
-        else
-        {
-            tracer.AddMessage("2個以上の値を指定することはできません．", Tracer.MessageLevel.error);
-        }
+        if (!tracer.NoError) { return null; }
+
+        list.Sort();
+        list.Reverse();
+
+        return list;
     }
 }

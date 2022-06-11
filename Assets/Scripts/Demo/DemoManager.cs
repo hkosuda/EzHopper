@@ -68,6 +68,7 @@ public class DemoManager : IKernelManager
         PlaySpeed = 1.0f;
         Duration = _dataList.Last()[0];
 
+        Ghost.BeginReplay(dataList);
         PlayerStatusRecorder.Save();
 
         DemoTimer.Resume();

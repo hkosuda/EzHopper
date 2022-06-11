@@ -11,11 +11,11 @@ public class DRecorderCommand : Command
         description = "デバッグ用の記録システムを提供します．";
     }
 
-    public override void CommandMethod(Tracer tracer, List<string> values)
+    public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)
     {
         var dataList = DebugPlayerRecorder.CachedDataList;
 
-        if (dataList == null || dataList.Count == 0) { NoData(tracer); return; }
+        if (dataList == null || dataList.Count == 0) { NoData(tracer, options); return; }
         if (values == null || values.Count < 2) { return; }
         if (values[1] != "save") { return; }
 
@@ -36,9 +36,9 @@ public class DRecorderCommand : Command
         }
 
         // - inner function
-        static void NoData(Tracer tracer)
+        static void NoData(Tracer tracer, List<string> options)
         {
-            tracer.AddMessage("データが存在しないため，保存に失敗しました．", Tracer.MessageLevel.error);
+            AddMessage("データが存在しないため，保存に失敗しました．", Tracer.MessageLevel.error, tracer, options);
         }
 
         // - inner function

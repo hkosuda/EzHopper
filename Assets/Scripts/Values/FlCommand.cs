@@ -12,15 +12,20 @@ public class FlCommand : Command
 
         commandName = item.ToString();
         commandType = CommandType.values;
+
+        var setting = Floats.Settings[item];
+
+        description = setting.Description;
+        description += "\n現在の値：" + CurrentValue() + ", デフォルト値：" + DefaultValue();
     }
 
-    public override void CommandMethod(Tracer tracer, List<string> values)
+    public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)
     {
         if (values == null || values.Count == 0) { return; }
 
         if (values.Count == 1)
         {
-            tracer.AddMessage(HelpText(item), Tracer.MessageLevel.normal);
+            AddMessage(HelpText(item), Tracer.MessageLevel.normal, tracer, options);
             return;
         }
 
@@ -40,22 +45,32 @@ public class FlCommand : Command
 
                 else
                 {
-                    tracer.AddMessage("不適切な値：", Tracer.MessageLevel.error);
+                    AddMessage("不適切な値：", Tracer.MessageLevel.error, tracer, options);
                     return;
                 }
             }
 
             else
             {
-                tracer.AddMessage(value + "を数値に変換できません．", Tracer.MessageLevel.error);
+                AddMessage(value + "を数値に変換できません．", Tracer.MessageLevel.error, tracer, options);
                 return;
             }
         }
 
         else
         {
-            tracer.AddMessage("値を2個以上指定することはできません．", Tracer.MessageLevel.error);
+            AddMessage("値を2個以上指定することはできません．", Tracer.MessageLevel.error, tracer, options);
         }
+    }
+
+    public override string CurrentValue()
+    {
+        return Floats.Settings[item].CurrentValue.ToString();
+    }
+
+    public override string DefaultValue()
+    {
+        return Floats.Settings[item].DefaultValue.ToString();
     }
 
     static string HelpText(Floats.Item item)

@@ -27,7 +27,7 @@ public class VirtualPlayer : MonoBehaviour
         {
             if (noCollision)
             {
-                GodCommand.Land(gameObject.transform.position, PM_Camera.EulerAngles());
+                ObserverCommand.Land(gameObject.transform.position, PM_Camera.EulerAngles());
             }
 
             else

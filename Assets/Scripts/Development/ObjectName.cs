@@ -21,8 +21,15 @@ public class ObjectName : MonoBehaviour
 
         gameObject.name = name;
 
+        var labelPosition = gameObject.transform.position;
+
+        if (gameObject.transform.childCount > 0)
+        {
+            labelPosition = gameObject.transform.GetChild(0).position;
+        }
+
         Handles.color = new Color(0.0f, 0.0f, 1.0f);
-        Handles.Label(gameObject.transform.GetChild(0).position + new Vector3(0.0f, 0.2f, 0.2f), name);
+        Handles.Label(labelPosition + new Vector3(0.0f, 0.2f, 0.2f), name);
         Handles.color = new Color(0.0f, 0.0f, 1.0f);
 
         // - inner function

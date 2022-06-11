@@ -33,15 +33,15 @@ public class CommandBlock : MonoBehaviour
     private void Update()
     {
 #if UNITY_EDITOR
-        if (!initialized)
-        {
-            initialized = true;
+        //if (!initialized)
+        //{
+        //    initialized = true;
 
-            if (!CommandReceiver.RequestCommand(command, false, false))
-            {
-                Debug.LogError("Command Failed : " + command);
-            }
-        }
+        //    if (!CommandReceiver.RequestCommand(command, false, false))
+        //    {
+        //        Debug.LogError("Command Failed : " + command);
+        //    }
+        //}
 #endif
     }
 
@@ -64,7 +64,7 @@ public class CommandBlock : MonoBehaviour
     {
         if (hit.collider.gameObject != gameObject) { return; }
 
-        CommandReceiver.RequestCommand(command, false);
+        CommandReceiver.RequestCommand(command + " -mute");
     }
 
     void UpdateVisibility(object obj, bool prev)

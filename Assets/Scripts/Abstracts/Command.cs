@@ -21,7 +21,46 @@ public abstract class Command
         return new List<string>();
     }
 
-    public abstract void CommandMethod(Tracer tracer, List<string> values);
+    public virtual string CurrentValue() { return ""; }
+
+    public virtual string DefaultValue() { return ""; }
+
+    public abstract void CommandMethod(Tracer tracer, List<string> values, List<string> options);
+
+    static public void AddMessage(string message, Tracer.MessageLevel level, Tracer tracer, List<string> options, int tabOffset = 1)
+    {
+        tracer.AddMessage(message, level, options, tabOffset);
+    }
+
+    static protected string ERROR_NotInteger(string str)
+    {
+        return str + "を整数に変換できません．";
+    }
+
+    static protected string ERROR_OutOfRange(int index, int indexLim)
+    {
+        return index.ToString() + "は有効なインデックスの範囲外です．有効な範囲は' 0 ～ " + indexLim.ToString() + "' です．";
+    }
+
+    static protected string ERROR_OverValues(int correctValues)
+    {
+        return (correctValues + 1).ToString() + "個以上の値を指定することはできません．";
+    }
+
+    static protected string ERROR_AvailableOnly(int place, List<string> values)
+    {
+        if(values == null || values.Count == 0) { return ""; }
+
+        var message = place.ToString() +  "番目の値としては，";
+
+        foreach(var value in values)
+        {
+            message += "'" + value + "' ";
+        }
+
+        message += "のみ利用可能です．";
+        return message;
+    }
 }
 
 public class Tracer
@@ -33,48 +72,117 @@ public class Tracer
         error,
     }
 
+    public enum Option
+    {
+        mute,
+        echo,
+        flash,
+    }
+
     public bool NoError { get; private set; }
-    List<MsgLvl> messageList;
+
+    List<MsgLv> consoleMessageList;
+    List<MsgLv> chatMessageList;
 
     public Tracer()
     {
         NoError = true;
-        messageList = new List<MsgLvl>();
+
+        consoleMessageList = new List<MsgLv>();
+        chatMessageList = new List<MsgLv>();
     }
 
-    public void AddMessage(string message, MessageLevel level)
+    public void AddMessage(string message, MessageLevel level, List<string> options, int tabOffset = 1)
     {
-        if (messageList == null) { messageList = new List<MsgLvl>(); }
+        if (consoleMessageList == null) { consoleMessageList = new List<MsgLv>(); }
+        if (chatMessageList == null) { chatMessageList = new List<MsgLv>(); }
+
         if (level == MessageLevel.error) { NoError = false; }
 
-        messageList.Add(new MsgLvl(message, level));
+        var offset = "";
+        for(var n = 0; n < tabOffset; n++) { offset += "\t"; }
+
+        if (CheckOption(Option.mute, options))
+        {
+            return; // nothing to do.
+        }
+
+        else if (CheckOption(Option.echo, options))
+        {
+            consoleMessageList.Add(new MsgLv(offset + message, level));
+            chatMessageList.Add(new MsgLv(message, level));
+        }
+
+        else if (CheckOption(Option.flash, options))
+        {
+            chatMessageList.Add(new MsgLv(message, level));
+        }
+
+        else
+        {
+            consoleMessageList.Add(new MsgLv(offset + message, level));
+        }
     }
 
-    public string GetFullMessage()
+    public string ConsoleMessage()
+    {
+        return GetFullMessage(consoleMessageList);
+    }
+
+    public string ChatMessage()
+    {
+        return GetFullMessage(chatMessageList);
+    }
+
+    static string GetFullMessage(List<MsgLv> messageList)
     {
         if (messageList == null) { return ""; }
 
         var fullMessage = "";
 
-        foreach (var msgLvl in messageList)
+        for(var n = messageList.Count - 1; n > -1; n--)
         {
-            var level = msgLvl.level;
-            var message = msgLvl.message;
+            var msgLv = messageList[n];
 
-            if (level == MessageLevel.normal) { fullMessage += "\t" + message + "\n"; continue; }
-            if (level == MessageLevel.warning) { fullMessage += "\t<color=orange>" + message + "</color>\n"; continue; }
-            if (level == MessageLevel.error) { fullMessage += "\t<color=red>" + message + "</color>\n"; }
+            var level = msgLv.level;
+            var message = msgLv.message;
+
+            if (level == MessageLevel.normal) { fullMessage += message + "\n"; continue; }
+            if (level == MessageLevel.warning) { fullMessage += "<color=orange>" + message + "</color>\n"; continue; }
+            if (level == MessageLevel.error) { fullMessage += "<color=red>" + message + "</color>\n"; }
         }
 
         return fullMessage.TrimEnd(new char[] { '\n' });
     }
 
-    class MsgLvl
+    static public bool CheckOption(Option option, List<string> options)
+    {
+        if (options == null || options.Count == 0) { return false; }
+
+        if (option == Option.mute)
+        {
+            return options.Contains("-m") || options.Contains("-mute");
+        }
+
+        else if (option == Option.echo)
+        {
+            return options.Contains("-e") || options.Contains("-echo");
+        }
+
+        else if (option == Option.flash)
+        {
+            return options.Contains("-f") || options.Contains("-flash");
+        }
+
+        return false;
+    }
+
+    class MsgLv
     {
         public string message;
         public MessageLevel level;
 
-        public MsgLvl(string message, MessageLevel level)
+        public MsgLv(string message, MessageLevel level)
         {
             this.message = message;
             this.level = level;

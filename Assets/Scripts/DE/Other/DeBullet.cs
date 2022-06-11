@@ -43,6 +43,7 @@ public class DeBullet : MonoBehaviour
             DE_Shooter.ShootingHit += UpdateExistTime;
 
             Timer.Updated += UpdateMethod;
+            Timer.TimerPaused += HideBullets;
         }
 
         else
@@ -51,6 +52,7 @@ public class DeBullet : MonoBehaviour
             DE_Shooter.ShootingHit -= UpdateExistTime;
 
             Timer.Updated -= UpdateMethod;
+            Timer.TimerPaused -= HideBullets;
         }
     }
 
@@ -62,6 +64,14 @@ public class DeBullet : MonoBehaviour
         if (pastTime > bulletExistTime) { Destroy(bullet); return; }
 
         bullet.transform.position = origin + direction * bulletSpeed * pastTime;
+    }
+
+    static void HideBullets(object obj, bool mute)
+    {
+        if (bullet != null)
+        {
+            bullet.SetActive(false);
+        }
     }
 
     static void StartPreview(object obj, Vector3 _direction)

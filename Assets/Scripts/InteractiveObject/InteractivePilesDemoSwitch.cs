@@ -12,6 +12,6 @@ public class InteractivePilesDemoSwitch : MonoBehaviour
 
     void RequestCommand()
     {
-        CommandReceiver.RequestCommand("demo ez_athletic_piles", true);
+        CommandReceiver.RequestCommand("demo ez_athletic_piles -mute");
     }
 }

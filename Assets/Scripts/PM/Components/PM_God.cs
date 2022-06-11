@@ -8,7 +8,7 @@ public class PM_God : ControllerComponent
 
     public override bool Update(float dt)
     {
-        if (!GodCommand.Active) { currentSpeed = 0.0f; return true; }
+        if (!ObserverCommand.Active) { currentSpeed = 0.0f; return true; }
 
         PM_Main.Rb.velocity = Vector3.zero;
 
@@ -17,7 +17,7 @@ public class PM_God : ControllerComponent
 
         if (vec.magnitude > 0.0f) 
         {
-            currentSpeed += Floats.Get(Floats.Item.god_moving_accel) * dt;
+            currentSpeed += Floats.Get(Floats.Item.observer_moving_accel) * dt;
         }
 
         else
@@ -25,7 +25,7 @@ public class PM_God : ControllerComponent
             currentSpeed = 0.0f;
         }
 
-        if (currentSpeed > Floats.Get(Floats.Item.god_moving_speed)) { currentSpeed = Floats.Get(Floats.Item.god_moving_speed); }
+        if (currentSpeed > Floats.Get(Floats.Item.observer_moving_speed)) { currentSpeed = Floats.Get(Floats.Item.observer_moving_speed); }
 
         PM_Main.Myself.transform.position = pos + GetVector() * currentSpeed * dt;
 

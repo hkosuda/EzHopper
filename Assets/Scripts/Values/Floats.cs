@@ -42,8 +42,8 @@ static public class Floats
         pm_jumping_velocity,
         pm_gravity,
 
-        god_moving_speed,
-        god_moving_accel,
+        observer_moving_speed,
+        observer_moving_accel,
 
         crosshair_length,
         crosshair_width,
@@ -108,15 +108,15 @@ static public class Floats
                 new List<FlValidation>(){ new Negative() })
         },
 
-        // god
+        // observer
         {
-            Item.god_moving_speed, new FlSetting(
+            Item.observer_moving_speed, new FlSetting(
                 25.0f, "神視点モードでのカメラの移動速度の大きさ．",
                 new List<FlValidation>() { new Positive() })
         },
 
         {
-            Item.god_moving_accel, new FlSetting(
+            Item.observer_moving_accel, new FlSetting(
                 50.0f, "神視点モードでのカメラの加速度の大きさ．",
                 new List<FlValidation>() { new NotNegative() })
         },
@@ -143,7 +143,7 @@ static public class Floats
 
     class Positive : FlValidation
     {
-        public override bool Check(float value, Tracer tracer = null)
+        public override bool Check(float value, Tracer tracer = null, List<string> options = null)
         {
             if (value > 0.0f)
             {
@@ -152,7 +152,7 @@ static public class Floats
 
             else
             {
-                if (tracer != null) { tracer.AddMessage(GetDiscription(), Tracer.MessageLevel.error); }
+                if (tracer != null) { Command.AddMessage(GetDiscription(), Tracer.MessageLevel.error, tracer, options); }
                 return false;
             }
         }
@@ -165,7 +165,7 @@ static public class Floats
 
     class Negative : FlValidation
     {
-        public override bool Check(float value, Tracer tracer = null)
+        public override bool Check(float value, Tracer tracer = null, List<string> options = null)
         {
             if (value < 0.0f)
             {
@@ -174,7 +174,7 @@ static public class Floats
 
             else
             {
-                if (tracer != null) { tracer.AddMessage("負の値でなければなりません．", Tracer.MessageLevel.error); }
+                if (tracer != null) { Command.AddMessage("負の値でなければなりません．", Tracer.MessageLevel.error, tracer, options); }
                 return false;
             }
         }
@@ -187,7 +187,7 @@ static public class Floats
 
     class NotNegative : FlValidation
     {
-        public override bool Check(float value, Tracer tracer = null)
+        public override bool Check(float value, Tracer tracer = null, List<string> options = null)
         {
             if (value >= 0.0f)
             {
@@ -196,7 +196,7 @@ static public class Floats
 
             else
             {
-                if (tracer != null) { tracer.AddMessage(GetDiscription(), Tracer.MessageLevel.error); }
+                if (tracer != null) { Command.AddMessage(GetDiscription(), Tracer.MessageLevel.error, tracer, options); }
                 return false;
             }
         }
@@ -209,7 +209,7 @@ static public class Floats
 
     class OnlyInteger : FlValidation
     {
-        public override bool Check(float value, Tracer tracer = null)
+        public override bool Check(float value, Tracer tracer = null, List<string> options = null)
         {
             if ((int)value == value)
             {
@@ -218,7 +218,7 @@ static public class Floats
 
             else
             {
-                if (tracer != null) { tracer.AddMessage(GetDiscription(), Tracer.MessageLevel.error); }
+                if (tracer != null) { Command.AddMessage(GetDiscription(), Tracer.MessageLevel.error, tracer, options); }
                 return false;
             }
         }
@@ -238,7 +238,7 @@ static public class Floats
             this.value = value;
         }
 
-        public override bool Check(float value, Tracer tracer = null)
+        public override bool Check(float value, Tracer tracer = null, List<string> options = null)
         {
             if (value < this.value)
             {
@@ -247,7 +247,7 @@ static public class Floats
 
             else
             {
-                if (tracer != null) { tracer.AddMessage(GetDiscription(), Tracer.MessageLevel.error); }
+                if (tracer != null) { Command.AddMessage(GetDiscription(), Tracer.MessageLevel.error, tracer, options); }
                 return false;
             }
         }

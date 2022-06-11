@@ -7,6 +7,11 @@ using UnityEngine;
 
 public class CrosshairCommand : Command
 {
+    static readonly List<string> profiles = new List<string>()
+    {
+        "length", "width", "gap", "color"
+    };
+
     public CrosshairCommand()
     {
         commandName = "crosshair";
@@ -42,10 +47,7 @@ public class CrosshairCommand : Command
 
         if (values.Count < 3)
         {
-            return new List<string>()
-            {
-                "length", "width", "gap", "color"
-            };
+            return profiles;
         }
 
         if (values.Count < 4)
@@ -66,7 +68,7 @@ public class CrosshairCommand : Command
         return new List<string>();
     }
 
-    public override void CommandMethod(Tracer tracer, List<string> values)
+    public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)
     {
         if (values == null || values.Count == 0) { return; }
 
@@ -79,70 +81,61 @@ public class CrosshairCommand : Command
 
             var profile = length.ToString() + width.ToString() + gap.ToString() + colorIndex.ToString();
 
-            tracer.AddMessage("現在のクロスヘアのプロファイル：" + profile, Tracer.MessageLevel.normal);
-            return;
+            AddMessage("現在のクロスヘアのプロファイル：" + profile, Tracer.MessageLevel.normal, tracer, options);
         }
 
-        if (values.Count == 2)
+        else if (values.Count == 2)
         {
             var profile = values[1];
-
-            ApplyCrosshairSettings(profile, tracer);
-            return;
+            ApplyCrosshairSettings(profile, tracer, options);
         }
 
-        if (values.Count == 3)
+        else if (values.Count == 3)
         {
             var option = values[1];
             var value = values[2];
 
             if (option == "length")
             {
-                SetValue(Floats.Item.crosshair_length, value, tracer);
-                return;
+                SetValue(Floats.Item.crosshair_length, value, tracer, options);
             }
 
-            if (option == "width")
+            else if (option == "width")
             {
-                SetValue(Floats.Item.crosshair_width, value, tracer);
-                return;
+                SetValue(Floats.Item.crosshair_width, value, tracer, options);
             }
 
-            if (option == "gap")
+            else if (option == "gap")
             {
-                SetValue(Floats.Item.crosshair_gap, value, tracer);
-                return;
+                SetValue(Floats.Item.crosshair_gap, value, tracer, options);
             }
 
-            if (option == "color")
+            else if (option == "color")
             {
                 var color = GetColor(value);
 
                 if (color == CrosshairColor.none)
                 {
-                    tracer.AddMessage(color + "は有効な色ではありません．", Tracer.MessageLevel.error);
-                    return;
+                    AddMessage(color + "は有効な色ではありません．", Tracer.MessageLevel.error, tracer, options);
                 }
 
                 else
                 {
                     currentColor = color;
                     Crosshair.UpdateCrosshair();
-
-                    tracer.AddMessage("クロスヘアの色を変更しました．", Tracer.MessageLevel.normal);
-                    return;
+                    AddMessage("クロスヘアの色を変更しました．", Tracer.MessageLevel.normal, tracer, options);
                 }
             }
 
             else
             {
-                tracer.AddMessage(option + "は有効なオプションではありません．", Tracer.MessageLevel.error);
+                AddMessage(ERROR_AvailableOnly(1, profiles) + "もしくは，クロスヘアのプロファイルを指定してください．", Tracer.MessageLevel.error, tracer, options);
             }
         }
 
         else
         {
-            tracer.AddMessage("値を3つ以上指定することはできません．", Tracer.MessageLevel.error);
+            AddMessage(ERROR_OverValues(3), Tracer.MessageLevel.error, tracer, options);
         }
 
         // - inner function
@@ -160,7 +153,7 @@ public class CrosshairCommand : Command
         }
 
         // - inner function
-        static void SetValue(Floats.Item item, string value, Tracer tracer)
+        static void SetValue(Floats.Item item, string value, Tracer tracer, List<string> options)
         {
             var setting = Floats.Settings[item];
 
@@ -174,12 +167,12 @@ public class CrosshairCommand : Command
 
             else
             {
-                tracer.AddMessage(value + "を有効な数値に変換できません．", Tracer.MessageLevel.error);
+                AddMessage(value + "を有効な数値に変換できません．", Tracer.MessageLevel.error, tracer, options);
             }
         }
     }
 
-    static void ApplyCrosshairSettings(string profile, Tracer tracer)
+    static void ApplyCrosshairSettings(string profile, Tracer tracer, List<string> options)
     {
         if (profile.Length == 4)
         {
@@ -188,9 +181,9 @@ public class CrosshairCommand : Command
             var gap = profile[2].ToString();
             var color = profile[3].ToString();
 
-            TryUpdate(Floats.Item.crosshair_length, length, tracer);
-            TryUpdate(Floats.Item.crosshair_width, width, tracer);
-            TryUpdate(Floats.Item.crosshair_gap, gap, tracer);
+            TryUpdate(Floats.Item.crosshair_length, length, tracer, options);
+            TryUpdate(Floats.Item.crosshair_width, width, tracer, options);
+            TryUpdate(Floats.Item.crosshair_gap, gap, tracer, options);
             
             if (int.TryParse(color, out var index))
             {
@@ -199,28 +192,28 @@ public class CrosshairCommand : Command
                     currentColor = (CrosshairColor)index;
                     Crosshair.UpdateCrosshair();
 
-                    tracer.AddMessage("プロファイルの読み込みに成功しました．", Tracer.MessageLevel.normal);
+                    AddMessage("プロファイルの読み込みに成功しました．", Tracer.MessageLevel.normal, tracer, options);
                 }
 
                 else
                 {
-                    tracer.AddMessage("色の指定が有効ではありません．1から6までの整数で指定してください．", Tracer.MessageLevel.error);
+                    AddMessage("色の指定が有効ではありません．1から6までの整数で指定してください．", Tracer.MessageLevel.error, tracer, options);
                 }
             }
 
             else
             {
-                tracer.AddMessage(color + "を整数に変換できません．", Tracer.MessageLevel.error);
+                AddMessage(color + "を整数に変換できません．", Tracer.MessageLevel.error, tracer, options);
             }
         }
 
         else
         {
-            tracer.AddMessage("プロファイルは長さ4の文字列でなければなりません．", Tracer.MessageLevel.error);
+            AddMessage("プロファイルは長さ4の文字列でなければなりません．", Tracer.MessageLevel.error, tracer, options);
         }
 
         // - inner function
-        static void TryUpdate(Floats.Item item, string value, Tracer tracer)
+        static void TryUpdate(Floats.Item item, string value, Tracer tracer, List<string> options)
         {
             var setting = Floats.Settings[item];
 
@@ -234,7 +227,7 @@ public class CrosshairCommand : Command
 
             else
             {
-                tracer.AddMessage(value + "を整数に変換できません．", Tracer.MessageLevel.error);
+                AddMessage(value + "を整数に変換できません．", Tracer.MessageLevel.error, tracer, options);
             }
         }
     }

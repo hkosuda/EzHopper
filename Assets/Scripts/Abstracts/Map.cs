@@ -11,6 +11,7 @@ public enum MapName
     ez_horizon,
     ez_training,
     ez_flyer,
+    ez_settingroom,
 
     none,
 }
@@ -51,6 +52,14 @@ public abstract class Map : MonoBehaviour
         var rot = respawnPositions[Index].transform.eulerAngles;
 
         PM_Main.Initialize(pos, rot.y);
+    }
+
+    public void Back()
+    {
+        var pos = respawnPositions[Index].transform.position;
+        var rot = respawnPositions[Index].transform.eulerAngles;
+
+        PM_Main.ResetPosition(pos, rot.y);
     }
 
     public void SetIndex(int Index)
