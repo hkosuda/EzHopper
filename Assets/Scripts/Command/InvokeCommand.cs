@@ -3,18 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IgniteCommand : Command
+public class InvokeCommand : Command
 {
     static readonly List<string> availables = new List<string>()
     {
-        "add", "insert", "replace", "swap", "remove", "remove_all"
+        "add", "insert", "replace", "swap", "remove", "inactivate", "activate", "remove_all"
     };
 
-    public enum Igniter
+    public enum GameEvent
     {
         none,
 
         on_course_out,
+        on_enter_next_checkpoint,
         on_enter_checkpoint,
         on_exit_checkpoint,
         on_enter_start,
@@ -22,28 +23,27 @@ public class IgniteCommand : Command
         on_enter_goal,
     }
 
-    static public Dictionary<Igniter, List<string>> BindingListList { get; private set; } = new Dictionary<Igniter, List<string>>();
+    static public Dictionary<GameEvent, List<SwitchCommand>> BindingListList { get; private set; } = new Dictionary<GameEvent, List<SwitchCommand>>();
 
-    public IgniteCommand()
+    public InvokeCommand()
     {
-        commandName = "ignite";
+        commandName = "invoke";
         description = "ゲーム内の特定のイベントが発生したときにコマンドを呼び出す機能を提供します．\n" +
             "";
 
         InitializeList();
         SetEvent(1);
+    }
 
-        // - inner function
-        static void InitializeList()
+    static void InitializeList()
+    {
+        BindingListList = new Dictionary<GameEvent, List<SwitchCommand>>();
+
+        foreach (GameEvent igniter in Enum.GetValues(typeof(GameEvent)))
         {
-            BindingListList = new Dictionary<Igniter, List<string>>();
+            if (igniter == GameEvent.none) { continue; }
 
-            foreach (Igniter igniter in Enum.GetValues(typeof(Igniter)))
-            {
-                if (igniter == Igniter.none) { continue; }
-
-                BindingListList.Add(igniter, new List<string>());
-            }
+            BindingListList.Add(igniter, new List<SwitchCommand>());
         }
     }
 
@@ -52,6 +52,7 @@ public class IgniteCommand : Command
         if (indicator > 0)
         {
             InvalidArea.CourseOut += IgniteCourseOut;
+            CheckPoint.EnterAnotherCheckpoint += IgniteEnterAnotherCheckpoint;
             CheckPoint.EnterCheckpoint += IgniteEnterCheckpoint;
             CheckPoint.ExitCheckpoint += IgniteExitCheckpoint;
             CheckPoint.EnterStart += IgniteEnterStart;
@@ -62,6 +63,7 @@ public class IgniteCommand : Command
         else
         {
             InvalidArea.CourseOut -= IgniteCourseOut;
+            CheckPoint.EnterAnotherCheckpoint -= IgniteEnterAnotherCheckpoint;
             CheckPoint.EnterCheckpoint -= IgniteEnterCheckpoint;
             CheckPoint.ExitCheckpoint -= IgniteExitCheckpoint;
             CheckPoint.EnterStart -= IgniteEnterStart;
@@ -72,42 +74,48 @@ public class IgniteCommand : Command
 
     static void IgniteCourseOut(object obj, Vector3 pos)
     {
-        Ignite(Igniter.on_course_out);
+        Ignite(GameEvent.on_course_out);
+    }
+
+    static void IgniteEnterAnotherCheckpoint(object obj, int index)
+    {
+        Ignite(GameEvent.on_enter_next_checkpoint);
     }
 
     static void IgniteEnterCheckpoint(object obj, Vector3 pos)
     {
-        Ignite(Igniter.on_enter_checkpoint);
+        Ignite(GameEvent.on_enter_checkpoint);
     }
 
     static void IgniteExitCheckpoint(object obj, Vector3 pos)
     {
-        Ignite(Igniter.on_exit_checkpoint);
+        Ignite(GameEvent.on_exit_checkpoint);
     }
 
     static void IgniteEnterStart(object obj, Vector3 pos)
     {
-        Ignite(Igniter.on_enter_start);
+        Ignite(GameEvent.on_enter_start);
     }
 
     static void IgniteExitStart(object obj, Vector3 pos)
     {
-        Ignite(Igniter.on_exit_start);
+        Ignite(GameEvent.on_exit_start);
     }
 
     static void IgniteEnterGoal(object obj, Vector3 pos)
     {
-        Ignite(Igniter.on_enter_goal);
+        Ignite(GameEvent.on_enter_goal);
     }
 
-    static void Ignite(Igniter igniter)
+    static void Ignite(GameEvent igniter)
     {
         var commandList = BindingListList[igniter];
         if (commandList == null || commandList.Count == 0) { return; }
 
         foreach (var command in commandList)
         {
-            CommandReceiver.RequestCommand(command);
+            if (!command.active) { continue; }
+            CommandReceiver.RequestCommand(command.command);
         }
     }
 
@@ -124,9 +132,9 @@ public class IgniteCommand : Command
         {
             var available = new List<string>();
 
-            foreach(Igniter igniter in Enum.GetValues(typeof(Igniter)))
+            foreach(GameEvent igniter in Enum.GetValues(typeof(GameEvent)))
             {
-                if (igniter == Igniter.none) { continue; }
+                if (igniter == GameEvent.none) { continue; }
                 available.Add(igniter.ToString());
             }
 
@@ -169,7 +177,7 @@ public class IgniteCommand : Command
                 var igniterString = values[2];
                 var igniter = GetIgniter(igniterString);
 
-                if (igniter == Igniter.none)
+                if (igniter == GameEvent.none)
                 {
                     AddMessage(ERROR_UnknownIgniter(igniterString), Tracer.MessageLevel.error, tracer, options);
                     return;
@@ -180,13 +188,13 @@ public class IgniteCommand : Command
 
                 if (CheckDuplication(command, igniter))
                 {
-                    AddMessage(ERROR_DuplicationAlert(), Tracer.MessageLevel.warning, tracer, options);
                     AddMessage(ERROR_Duplication(), Tracer.MessageLevel.error, tracer, options);
+                    AddMessage(ERROR_DuplicationAlert(), Tracer.MessageLevel.warning, tracer, options);
                 }
 
                 else
                 {
-                    BindingListList[igniter].Add(command);
+                    BindingListList[igniter].Add(new SwitchCommand(command));
                     AddMessage("コマンドを追加しました．", Tracer.MessageLevel.normal, tracer, options);
                 }
             }
@@ -222,7 +230,7 @@ public class IgniteCommand : Command
 
                 var igniter = GetIgniter(igniterString);
 
-                if (igniter == Igniter.none)
+                if (igniter == GameEvent.none)
                 {
                     AddMessage(ERROR_UnknownIgniter(igniterString), Tracer.MessageLevel.error, tracer, options);
                 }
@@ -233,8 +241,8 @@ public class IgniteCommand : Command
 
                     if (CheckDuplication(command, igniter))
                     {
-                        AddMessage(ERROR_DuplicationAlert(), Tracer.MessageLevel.warning, tracer, options);
                         AddMessage(ERROR_Duplication(), Tracer.MessageLevel.error, tracer, options);
+                        AddMessage(ERROR_DuplicationAlert(), Tracer.MessageLevel.warning, tracer, options);
                     }
 
                     else
@@ -275,7 +283,7 @@ public class IgniteCommand : Command
 
                 var igniter = GetIgniter(igniterString);
 
-                if(igniter == Igniter.none)
+                if(igniter == GameEvent.none)
                 {
                     AddMessage(ERROR_UnknownIgniter(igniterString), Tracer.MessageLevel.error, tracer, options);
                 }
@@ -331,7 +339,7 @@ public class IgniteCommand : Command
                 var igniterString = values[2];
                 var igniter = GetIgniter(igniterString);
 
-                if (igniter == Igniter.none)
+                if (igniter == GameEvent.none)
                 {
                     AddMessage(ERROR_UnknownIgniter(igniterString), Tracer.MessageLevel.error, tracer, options);
                     return;
@@ -361,6 +369,68 @@ public class IgniteCommand : Command
             }
         }
 
+        // ex) invoke(0) suspend(1) on_course_out(2) 0(3) 2(4) ...
+        else if (action == "inactivate")
+        {
+            if (values.Count == 2)
+            {
+                AddMessage(ERROR_TriggerIsNeccesary(), Tracer.MessageLevel.error, tracer, options);
+            }
+
+            else if (values.Count == 3)
+            {
+                AddMessage("停止するコマンドのインデックスを指定してください．", Tracer.MessageLevel.normal, tracer, options);
+            }
+
+            else
+            {
+                var igniterString = values[2];
+                var igniter = GetIgniter(igniterString);
+
+                if (igniter == GameEvent.none)
+                {
+                    AddMessage(ERROR_UnknownIgniter(igniterString), Tracer.MessageLevel.error, tracer, options);
+                    return;
+                }
+
+                var indexes = UnbindCommand.GetIndexes(values, 3, tracer, options);
+                if (indexes == null) { return; }
+
+                TryChangeActiveStatus(false, indexes, igniter, tracer, options);
+            }
+        }
+
+        // ex) invoke(0) suspend(1) on_course_out(2) 0(3) 2(4) ...
+        else if (action == "activate")
+        {
+            if (values.Count == 2)
+            {
+                AddMessage(ERROR_TriggerIsNeccesary(), Tracer.MessageLevel.error, tracer, options);
+            }
+
+            else if (values.Count == 3)
+            {
+                AddMessage("アクティブにするコマンドのインデックスを指定してください．", Tracer.MessageLevel.normal, tracer, options);
+            }
+
+            else
+            {
+                var igniterString = values[2];
+                var igniter = GetIgniter(igniterString);
+
+                if (igniter == GameEvent.none)
+                {
+                    AddMessage(ERROR_UnknownIgniter(igniterString), Tracer.MessageLevel.error, tracer, options);
+                    return;
+                }
+
+                var indexes = UnbindCommand.GetIndexes(values, 3, tracer, options);
+                if (indexes == null) { return; }
+
+                TryChangeActiveStatus(true, indexes, igniter, tracer, options);
+            }
+        }
+
         // ex) ignite(0) remove(1) on_course_out(2) 0(3) 1(4) 4(5) 8(6) ... 
         else if (action == "remove")
         {
@@ -379,7 +449,7 @@ public class IgniteCommand : Command
                 var igniterString = values[2];
                 var igniter = GetIgniter(igniterString);
 
-                if (igniter == Igniter.none)
+                if (igniter == GameEvent.none)
                 {
                     AddMessage(ERROR_UnknownIgniter(igniterString), Tracer.MessageLevel.error, tracer, options);
                     return;
@@ -403,22 +473,30 @@ public class IgniteCommand : Command
             else
             {
                 var igniterString = values[2];
+
+                if (igniterString == "all")
+                {
+                    InitializeList();
+                    AddMessage("すべてのコマンドを削除しました．", Tracer.MessageLevel.normal, tracer, options);
+                    return;
+                }
+
+
                 var igniter = GetIgniter(igniterString);
 
-                if (igniter == Igniter.none)
+                if (igniter == GameEvent.none)
                 {
                     AddMessage(ERROR_UnknownIgniter(igniterString), Tracer.MessageLevel.error, tracer, options);
                     return;
                 }
 
-                BindingListList[igniter] = new List<string>();
+                BindingListList[igniter] = new List<SwitchCommand>();
                 AddMessage(igniter + "に結びつけられたコマンドをすべて削除しました．", Tracer.MessageLevel.normal, tracer, options);
             }
         }
 
         else
         {
-            Debug.Log(action);
             AddMessage(ERROR_AvailableOnly(1, availables), Tracer.MessageLevel.error, tracer, options);
         }
 
@@ -443,13 +521,13 @@ public class IgniteCommand : Command
         // - inner function
         static string ERROR_DuplicationAlert()
         {
-            return "重複の判定は，オプションの有無を無視して行われます．";
+            return "※ 重複の判定は，オプションの有無を無視して行われます．";
         }
     }
 
-    static Igniter GetIgniter(string name)
+    static GameEvent GetIgniter(string name)
     {
-        foreach(Igniter igniter in Enum.GetValues(typeof(Igniter)))
+        foreach(GameEvent igniter in Enum.GetValues(typeof(GameEvent)))
         {
             if (igniter.ToString().ToLower() == name.ToLower())
             {
@@ -457,10 +535,10 @@ public class IgniteCommand : Command
             }
         }
 
-        return Igniter.none;
+        return GameEvent.none;
     }
 
-    static void TryReplace(int index, Igniter igniter, string command, Tracer tracer, List<string> options)
+    static void TryReplace(int index, GameEvent igniter, string command, Tracer tracer, List<string> options)
     {
         var list = BindingListList[igniter];
 
@@ -470,11 +548,11 @@ public class IgniteCommand : Command
             return;
         }
 
-        list[index] = command;
+        list[index].command = command;
         AddMessage(index.ToString() + "番目のコマンドを" + command + "に置換しました．", Tracer.MessageLevel.normal, tracer, options);
     }
 
-    static void TryInsert(int index, Igniter igniter, string command, Tracer tracer, List<string> options)
+    static void TryInsert(int index, GameEvent igniter, string command, Tracer tracer, List<string> options)
     {
         var list = BindingListList[igniter];
 
@@ -488,15 +566,15 @@ public class IgniteCommand : Command
         AddMessage(index + "番に" + command + "を挿入しました．", Tracer.MessageLevel.normal, tracer, options);
         
         // - inner function
-        static List<string> NewList(int index, string insertContent, List<string> originalList)
+        static List<SwitchCommand> NewList(int index, string insertContent, List<SwitchCommand> originalList)
         {
-            var newList = new List<string>();
+            var newList = new List<SwitchCommand>();
 
             for(var n = 0; n < originalList.Count; n++)
             {
                 if (n == index)
                 {
-                    newList.Add(insertContent);
+                    newList.Add(new SwitchCommand(insertContent));
                 }
 
                 newList.Add(originalList[n]);
@@ -506,7 +584,7 @@ public class IgniteCommand : Command
         }
     }
 
-    static void TrySwap(int i1, int i2, Igniter igniter, Tracer tracer, List<string> options)
+    static void TrySwap(int i1, int i2, GameEvent igniter, Tracer tracer, List<string> options)
     {
         var list = BindingListList[igniter];
         var indexLim = list.Count - 1;
@@ -525,7 +603,7 @@ public class IgniteCommand : Command
         AddMessage(i1.ToString() + "番目のコマンドと" + i2.ToString() + "番目のコマンドの実行順序を入れ替えました．", Tracer.MessageLevel.normal, tracer, options);
     }
 
-    static void TryRemove(List<int> indexes, Igniter igniter, Tracer tracer, List<string> options)
+    static void TryChangeActiveStatus(bool active, List<int> indexes, GameEvent igniter, Tracer tracer, List<string> options)
     {
         var list = BindingListList[igniter];
         var indexLim = list.Count - 1;
@@ -542,12 +620,34 @@ public class IgniteCommand : Command
 
         foreach(var index in indexes)
         {
-            list.RemoveAt(index);
-            AddMessage(index.ToString() + "番目のコマンドを削除しました", Tracer.MessageLevel.error, tracer, options);
+            list[index].active = active;
+            AddMessage(index.ToString() + "番目のコマンドを停止しました", Tracer.MessageLevel.normal, tracer, options);
         }
     }
 
-    static bool CheckDuplication(string command, Igniter igniter, int ignoreIndex = -1)
+    static void TryRemove(List<int> indexes, GameEvent igniter, Tracer tracer, List<string> options)
+    {
+        var list = BindingListList[igniter];
+        var indexLim = list.Count - 1;
+
+        foreach (var index in indexes)
+        {
+            if (index < 0 || index > indexLim)
+            {
+                AddMessage(ERROR_OutOfRange(index, indexLim), Tracer.MessageLevel.error, tracer, options);
+            }
+        }
+
+        if (!tracer.NoError) { return; }
+
+        foreach (var index in indexes)
+        {
+            list.RemoveAt(index);
+            AddMessage(index.ToString() + "番目のコマンドを削除しました", Tracer.MessageLevel.normal, tracer, options);
+        }
+    }
+
+    static bool CheckDuplication(string command, GameEvent igniter, int ignoreIndex = -1)
     {
         var values = CommandReceiver.GetValues(command);
         var corrected = CorrectValues(values);
@@ -558,7 +658,7 @@ public class IgniteCommand : Command
         {
             if (n == ignoreIndex) { continue; }
 
-            var _values = CommandReceiver.GetValues(list[n]);
+            var _values = CommandReceiver.GetValues(list[n].command);
             var _corrected = CorrectValues(_values);
 
             if (corrected == _corrected)
@@ -597,6 +697,7 @@ public class IgniteCommand : Command
             foreach(var command in pair.Value)
             {
                 message += "\t\t【" + counter.ToString() + "】 " + command + "\n";
+                counter++;
             }
         }
 
@@ -607,5 +708,17 @@ public class IgniteCommand : Command
         }
 
         AddMessage("現在の割り当ては次の通りです\n" + message, Tracer.MessageLevel.normal, tracer, options);
+    }
+
+    public class SwitchCommand
+    {
+        public string command;
+        public bool active;
+
+        public SwitchCommand(string command, bool suspended = true)
+        {
+            this.command = command;
+            this.active = suspended;
+        }
     }
 }

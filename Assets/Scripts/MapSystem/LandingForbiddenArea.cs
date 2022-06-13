@@ -2,49 +2,44 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(BoxCollider))]
 public class LandingForbiddenArea : MonoBehaviour
 {
     readonly int counterLimit = 2;
-    int counter = 0;
-
-    private void Start()
+    bool flag;
+    
+    private void Awake()
     {
-        SetEvent(1);
+        gameObject.layer = 2;
     }
 
-    private void OnDestroy()
+    private void OnTriggerEnter(Collider other)
     {
-        SetEvent(-1);
+        if (InGameTimer.Paused) { return; }
+        flag = true;
     }
 
-    void SetEvent(int indicator)
+    private void OnTriggerExit(Collider other)
     {
-        if (indicator > 0)
-        {
-            InvalidArea.CourseOut += ResetCounter;
-        }
-
-        else
-        {
-            InvalidArea.CourseOut -= ResetCounter;
-        }
-    }
-
-    void ResetCounter(object obj, Vector3 pos)
-    {
-        counter = 0;
+        if (InGameTimer.Paused) { return; }
+        flag = true;
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (Timer.Paused) { return; }
+        if (InGameTimer.Paused) { return; }
 
         if (PM_Landing.LandingIndicator > 0)
         {
-            counter++;
-
-            if (counter > counterLimit)
+            if (flag)
             {
+                flag = false;
+
+                if (Bools.Get(Bools.Item.write_events))
+                {
+                    CheckPoint.WriteToLog(InvokeCommand.GameEvent.on_course_out);
+                }
+
                 var position = PM_Main.Myself.transform.position;
                 InvalidArea.CourseOut?.Invoke(null, position);
             }

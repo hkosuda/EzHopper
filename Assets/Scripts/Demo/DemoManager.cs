@@ -62,13 +62,14 @@ public class DemoManager : IKernelManager
 
     static public void BeginDemo(List<float[]> _dataList)
     {
+        SetPlayerPhysics(false);
+
         dataList = _dataList;
 
         PastTime = 0.0f;
         PlaySpeed = 1.0f;
         Duration = _dataList.Last()[0];
 
-        Ghost.BeginReplay(dataList);
         PlayerStatusRecorder.Save();
 
         DemoTimer.Resume();
@@ -81,11 +82,19 @@ public class DemoManager : IKernelManager
     {
         PlayerStatusRecorder.Load();
         DemoTimer.Pause();
-        Timer.Resume();
+        InGameTimer.Resume();
 
         InputSystem.Activate();
 
+        SetPlayerPhysics(true);
+
         if (ui != null) { GameObject.Destroy(ui); }
+    }
+
+    static void SetPlayerPhysics(bool status)
+    {
+        PM_Main.Rb.useGravity = status;
+        PM_Main.Collider.enabled = status;
     }
 
     static public void ChangePastTime(float dt, bool directly = false)

@@ -31,12 +31,12 @@ public class Menu : MonoBehaviour
     {
         if (indicator > 0)
         {
-            Timer.Updated += UpdateMethod;
+            InGameTimer.Updated += UpdateMethod;
         }
 
         else
         {
-            Timer.Updated -= UpdateMethod;
+            InGameTimer.Updated -= UpdateMethod;
         }
     }
 
@@ -51,12 +51,12 @@ public class Menu : MonoBehaviour
     static void OpenMenu()
     {
         canvas.SetActive(true);
-        Timer.Pause();
+        InGameTimer.Pause();
     }
 
     static void CloseMenu()
     {
         canvas.SetActive(false);
-        Timer.Resume();
+        InGameTimer.Resume();
     }
 }

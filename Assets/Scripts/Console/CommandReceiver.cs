@@ -7,10 +7,11 @@ using UnityEngine;
 
 static public class CommandReceiver
 {
+    static readonly List<string> symbols = new List<string>() { "now", "time", "map", "section", "count" };
+
     static public EventHandler<string> CommandRequestBegin { get; set; }
     static public EventHandler<string> UnknownCommandRequest { get; set; }
     static public EventHandler<Tracer> CommandRequestEnd { get; set; }
-
     static public Dictionary<string, Command> CommandList { get; private set; }
 
     static public void AddCommand(Command command)
@@ -28,18 +29,19 @@ static public class CommandReceiver
         CommandList.Remove(commandName);
     }
 
-    static public bool RequestCommand(string sentence)
+    static public bool RequestCommand(string _sentence)
     {
+        var sentence = string.Copy(_sentence);
+
         sentence = sentence.ToLower();
         sentence = Grouping(sentence);
         sentence = ReplaceSymbol(sentence);
+        sentence = ReplaceEscapedSymbol(sentence);
         sentence = OverrideCommand.OverrideSentence(sentence);
         sentence = CorrectSentence(sentence);
 
         // start //
         CommandRequestBegin?.Invoke(null, sentence);
-
-        var tracer = new Tracer();
 
         var values = GetValues(sentence);
         if (values == null || values.Count == 0) { return false; }
@@ -51,6 +53,8 @@ static public class CommandReceiver
         var command = CommandList[commandName];
         var options = GetOptions(sentence);
 
+        var tracer = new Tracer(command);
+
         command.CommandMethod(tracer, values, options);
         CommandRequestEnd?.Invoke(null, tracer);
 
@@ -60,9 +64,10 @@ static public class CommandReceiver
         // end //
     }
 
-    static string Grouping(string sentence)
+    static public string Grouping(string sentence)
     {
-        var rgx = new Regex(@"\"".*\""");
+        var rgx = new Regex(@"\"".*?\""");
+
         sentence = rgx.Replace(sentence, _Grouping);
 
         return sentence;
@@ -87,29 +92,71 @@ static public class CommandReceiver
                 group += s + "/";
             }
 
+            group = EscapeSymbol(group);
+
             return group;
+
+            // - - inner function
+            static string EscapeSymbol(string sentence)
+            {
+                foreach(var symbol in symbols)
+                {
+                    var sym = "%" + symbol + "%";
+                    var esc = "&" + symbol + "&";
+
+                    sentence = Regex.Replace(sentence, sym, esc);
+                }
+
+                return sentence;
+            }
         }
     }
 
-    static string ReplaceSymbol(string sentence)
+    static public string ReplaceSymbol(string sentence)
     {
-        sentence = Regex.Replace(sentence, @"\%now\%", ReplaceNow);
-        sentence = Regex.Replace(sentence, @"\%map\%", ReplaceCurrentMap);
+        sentence = Regex.Replace(sentence, "%now%", ReplaceNow);
+        sentence = Regex.Replace(sentence, "%time%", ReplaceTime);
+        sentence = Regex.Replace(sentence, "%map%", ReplaceMap);
+        sentence = Regex.Replace(sentence, "%section%", ReplaceSection);
 
         return sentence;
 
         // - inner function
         static string ReplaceNow(Match match)
         {
-            var now = DateTime.Now;
-            return now.Hour.ToString() + "h" + now.Minute.ToString() + "m" + now.Second.ToString() + "s";
+            return TimerCommand.DateTimeString();
         }
 
         // - inner function
-        static string ReplaceCurrentMap(Match match)
+        static string ReplaceMap(Match match)
         {
             return MapsManager.CurrentMap.MapName.ToString();
         }
+
+        // - inner function
+        static string ReplaceTime(Match match)
+        {
+            return TimerCommand.SecMSec(TimerCommand.PastTime, separator: "s");
+        }
+
+        // - inner function
+        static string ReplaceSection(Match match)
+        {
+            return TimerCommand.PaddingZero(MapsManager.CurrentMap.Index);
+        }
+    }
+
+    static string ReplaceEscapedSymbol(string sentence)
+    {
+        foreach(var symbol in symbols)
+        {
+            var esc = "&" + symbol + "&";
+            var sym = "%" + symbol + "%";
+
+            sentence = Regex.Replace(sentence, esc, sym);
+        }
+
+        return sentence;
     }
 
     static List<string> SplitString(string str)

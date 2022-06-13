@@ -36,13 +36,13 @@ public class DeImpactBox : MonoBehaviour
         if (indicator > 0)
         {
             DE_Shooter.ShootingHit += InstantiateImpactBox;
-            Timer.Updated += UpdateMethod;
+            InGameTimer.Updated += UpdateMethod;
         }
 
         else
         {
             DE_Shooter.ShootingHit -= InstantiateImpactBox;
-            Timer.Updated -= UpdateMethod;
+            InGameTimer.Updated -= UpdateMethod;
         }
     }
 
@@ -58,7 +58,7 @@ public class DeImpactBox : MonoBehaviour
 
     static void UpdateMethod(object obj, float dt)
     {
-        if (Timer.Paused)
+        if (InGameTimer.Paused)
         {
             foreach(var box in impactBoxList)
             {

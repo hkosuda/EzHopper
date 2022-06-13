@@ -42,8 +42,8 @@ public class DeBullet : MonoBehaviour
             DE_Shooter.Shot += StartPreview;
             DE_Shooter.ShootingHit += UpdateExistTime;
 
-            Timer.Updated += UpdateMethod;
-            Timer.TimerPaused += HideBullets;
+            InGameTimer.Updated += UpdateMethod;
+            InGameTimer.TimerPaused += HideBullets;
         }
 
         else
@@ -51,8 +51,8 @@ public class DeBullet : MonoBehaviour
             DE_Shooter.Shot -= StartPreview;
             DE_Shooter.ShootingHit -= UpdateExistTime;
 
-            Timer.Updated -= UpdateMethod;
-            Timer.TimerPaused -= HideBullets;
+            InGameTimer.Updated -= UpdateMethod;
+            InGameTimer.TimerPaused -= HideBullets;
         }
     }
 

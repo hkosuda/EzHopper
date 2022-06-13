@@ -80,6 +80,7 @@ public class DemoCommand : Command
                 if (mapName == MapName.none){ AddMessage("データに指定されたマップが見つかりません．", Tracer.MessageLevel.error, tracer, options); return; }
 
                 var dataList = DemoFileUtils.FullText2DataList(asset.text);
+
                 if (dataList == null || dataList.Count == 0)
                 {
                     AddMessage("データリストの読み込みに失敗しました", Tracer.MessageLevel.error, tracer, options);
@@ -98,7 +99,9 @@ public class DemoCommand : Command
                     AddMessage("現在のマップと異なるマップのデモデータであるため，マップを切り替えて実行します．", Tracer.MessageLevel.warning, tracer, options);
                 }
 
-                DemoManager.BeginDemo(dataList);
+                Ghost.BeginReplay(new List<float[]>(dataList));
+                DemoManager.BeginDemo(new List<float[]>(dataList));
+                
                 AddMessage("デモを起動しました．", Tracer.MessageLevel.normal, tracer, options);
             }
 

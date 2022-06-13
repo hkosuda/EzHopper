@@ -54,8 +54,13 @@ public abstract class Map : MonoBehaviour
         PM_Main.Initialize(pos, rot.y);
     }
 
-    public void Back()
+    public void Back(int index = -1)
     {
+        if (0 <= index && index < respawnPositions.Length - 1)
+        {
+            Index = index;
+        }
+
         var pos = respawnPositions[Index].transform.position;
         var rot = respawnPositions[Index].transform.eulerAngles;
 

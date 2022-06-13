@@ -23,13 +23,13 @@ public class ToxicVoice : MonoBehaviour
     {
         if (indicator > 0)
         {
-            Timer.Updated += UpdateMethod;
+            InGameTimer.Updated += UpdateMethod;
             MapsManager.Initialized += DestroyMyself;
         }
 
         else
         {
-            Timer.Updated -= UpdateMethod;
+            InGameTimer.Updated -= UpdateMethod;
             MapsManager.Initialized -= DestroyMyself;
         }
     }

@@ -24,12 +24,12 @@ public class TimerCommand : Command
     {
         if (indicator > 0)
         {
-            Timer.Updated += UpdateMethod;
+            InGameTimer.Updated += UpdateMethod;
         }
 
         else
         {
-            Timer.Updated -= UpdateMethod;
+            InGameTimer.Updated -= UpdateMethod;
         }
     }
 
@@ -71,7 +71,7 @@ public class TimerCommand : Command
 
             if(value == "now")
             {
-                var info = "現在の経過時間は【" + TimeString(PastTime) + "】です．";
+                var info = "経過時間：【" + TimeString(PastTime) + "】";
                 AddMessage(info, Tracer.MessageLevel.normal, tracer, options);
             }
 
@@ -88,7 +88,7 @@ public class TimerCommand : Command
             {
                 Active = false;
 
-                var info = "タイマーを停止しました．現在の経過時間は【" + TimeString(PastTime) + "】です．";
+                var info = "タイマーを停止しました．";
                 AddMessage(info, Tracer.MessageLevel.normal, tracer, options);
             }
 
@@ -110,7 +110,7 @@ public class TimerCommand : Command
         }
     }
 
-    static public string TimeString(float time, bool mSec = true)
+    static public string TimeString(float time, string separator = ":", bool mSec = true)
     {
         var min = Mathf.FloorToInt(time / 60.0f);
         time -= 60.0f * min;
@@ -121,26 +121,46 @@ public class TimerCommand : Command
         if (mSec)
         {
             var msec = (int)(time * 100.0f);
-            return PaddingZero(min) + ":" + PaddingZero(sec) + ":" + PaddingZero(msec);
+            return PaddingZero(min) + separator + PaddingZero(sec) + separator + PaddingZero(msec);
         }
 
         else
         {
-            return PaddingZero(min) + ":" + PaddingZero(sec);
+            return PaddingZero(min) + separator + PaddingZero(sec);
+        }
+    }
+
+    static public string SecMSec(float time, string separator = ":")
+    {
+        var sec = (int)time;
+        time -= sec;
+
+        var msec = (int)(time * 100.0f);
+        return PaddingZero(sec) + separator + PaddingZero(msec);
+    }
+
+    static public string DateTimeString()
+    {
+        var now = System.DateTime.Now;
+
+        var h = PaddingZero(now.Hour);
+        var m = PaddingZero(now.Minute);
+        var s = PaddingZero(now.Second);
+
+        return h + "h" + m + "m" + s;
+    }
+
+    // function
+    static public string PaddingZero(int n)
+    {
+        if (n < 10)
+        {
+            return "0" + n.ToString();
         }
 
-        // function
-        static string PaddingZero(int n)
+        else
         {
-            if (n < 10)
-            {
-                return "0" + n.ToString();
-            }
-
-            else
-            {
-                return n.ToString();
-            }
+            return n.ToString();
         }
     }
 }

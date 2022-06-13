@@ -27,8 +27,17 @@ public class CommandInitializer : IKernelManager
             new SettingsCommand(),
             new BackCommand(),
             new OverrideCommand(),
-            new IgniteCommand(),
+            new InvokeCommand(),
             new TimerCommand(),
+            new CopyCommand(),
+            new PasteCommand(),
+            new DefaultCommand(),
+            new KeyCommand(),
+            new ToggleCommand(),
+            new KeycheckCommand(),
+            new ChatCommand(),
+            new DelayedchatCommand(),
+            new CounterCommand(),
         };
 
 #if UNITY_EDITOR

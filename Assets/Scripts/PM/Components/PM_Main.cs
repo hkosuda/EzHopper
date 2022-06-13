@@ -63,16 +63,16 @@ public class PM_Main : MonoBehaviour
     {
         if (indicator > 0)
         {
-            Timer.Updated += UpdateMethod;
-            Timer.LateUpdated += LateUpdateMethod;
+            InGameTimer.Updated += UpdateMethod;
+            InGameTimer.LateUpdated += LateUpdateMethod;
 
             DemoTimer.Updated += DemoUpdateMethod;
         }
 
         else
         {
-            Timer.Updated -= UpdateMethod;
-            Timer.LateUpdated -= LateUpdateMethod;
+            InGameTimer.Updated -= UpdateMethod;
+            InGameTimer.LateUpdated -= LateUpdateMethod;
 
             DemoTimer.Updated -= DemoUpdateMethod;
         }

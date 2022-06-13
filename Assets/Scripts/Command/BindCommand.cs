@@ -20,7 +20,7 @@ public class BindCommand : Command
 
         // initialize method
         KeyBindingList = new List<Binding>();
-        Timer.Updated += UpdateMethod;
+        InGameTimer.Updated += UpdateMethod;
     }
 
     public override List<string> AvailableValues(List<string> values)
@@ -33,6 +33,7 @@ public class BindCommand : Command
 
             foreach (KeyCode keyCode in Enum.GetValues(typeof(KeyCode)))
             {
+                if (keyCode == KeyCode.None) { continue; }
                 available.Add(keyCode.ToString().ToLower());
             }
 
@@ -65,11 +66,12 @@ public class BindCommand : Command
             if (KeyBindingList == null) { KeyBindingList = new List<Binding>(); }
 
             var keyString = values[1];
-            var key = GetKey(keyString, tracer, options);
+            var key = Keyconfig.StringToKey(keyString);
 
             if (key == null) 
             {
-                AddMessage(keyString + "を有効なキーに変換できません．", Tracer.MessageLevel.error, tracer, options);
+                AddMessage(ERROR_InvalidKey(keyString), Tracer.MessageLevel.error, tracer, options);
+                AddMessage(ERROR_InvalidKeyAlert(), Tracer.MessageLevel.warning, tracer, options);
                 return;
             }
 
@@ -77,7 +79,8 @@ public class BindCommand : Command
 
             if (CheckDuplication(key, command))
             {
-                AddMessage("すでに同じ内容のバインドが存在します．", Tracer.MessageLevel.error, tracer, options);
+                AddMessage("※ 重複の判定はオプションを無視して行われます．", Tracer.MessageLevel.warning, tracer, options);
+                AddMessage("重複するコマンドがあるため，処理に失敗しました．", Tracer.MessageLevel.error, tracer, options);
             }
 
             else
@@ -113,53 +116,39 @@ public class BindCommand : Command
         }
 
         // - inner function
-        static Keyconfig.Key GetKey(string keyString, Tracer tracer, List<string> options)
-        {
-            foreach (KeyCode keyCode in Enum.GetValues(typeof(KeyCode)))
-            {
-                if (keyCode.ToString().ToLower() == keyString)
-                {
-                    return new Keyconfig.Key(keyCode);
-                }
-            }
-
-            if (float.TryParse(keyString, out var num))
-            {
-                if (num > 0.0f)
-                {
-                    return new Keyconfig.Key(KeyCode.None, 1.0f);
-                }
-
-                else if (num < 0.0f)
-                {
-                    return new Keyconfig.Key(KeyCode.None, -1.0f);
-                }
-
-                else
-                {
-                    AddMessage("マウスホイールの上下にコマンドを割り当てたい場合は，0でない値を指定してください．", Tracer.MessageLevel.error, tracer, options);
-                    return null;
-                }
-            }
-
-            AddMessage(keyString + "を有効なキーに変換できません．", Tracer.MessageLevel.error, tracer, options);
-            return null;
-        }
-
-        // - inner function
         static bool CheckDuplication(Keyconfig.Key key, string command)
         {
             if (KeyBindingList == null) { KeyBindingList = new List<Binding>(); }
 
+            command = CorrectCommand(command);
+
             foreach(var keybind in KeyBindingList)
             {
-                if (keybind.key.GetKeyString() == key.GetKeyString() && keybind.command == command)
+                if (keybind.key.GetKeyString() == key.GetKeyString())
                 {
-                    return true;
+                    var _command = CorrectCommand(keybind.command);
+
+                    if (command == _command)
+                    {
+                        return true;
+                    }
                 }
             }
 
             return false;
+
+            static string CorrectCommand(string command)
+            {
+                var values = CommandReceiver.GetValues(command);
+                var c = "";
+
+                foreach(var v in values)
+                {
+                    c += v + " ";
+                }
+
+                return c.Trim();
+            }
         }
     }
 

@@ -3,18 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Timer : MonoBehaviour
+public class InGameTimer : MonoBehaviour
 {
-    static public EventHandler<float> Updated;
-    static public EventHandler<bool> LateUpdated;
+    static public EventHandler<float> Updated { get; set; }
+    static public EventHandler<bool> LateUpdated { get; set; }
 
     static public EventHandler<bool> TimerResumed { get; set; }
     static public EventHandler<bool> TimerPaused { get; set; }
 
+    static public float ActiveTime { get; private set; } = 0.0f;
+    static public int Frame { get; private set; } = 0;
+
     static public bool Paused { get; private set; }
-    static public bool FirstFrame { get; private set; }
 
     static bool lateUpdate;
+
+    private void Start()
+    {
+        ActiveTime = 0.0f;
+    }
 
     void Update()
     {
@@ -23,6 +30,9 @@ public class Timer : MonoBehaviour
         lateUpdate = true;
 
         var dt = Time.deltaTime;
+        ActiveTime += dt;
+        Frame++;
+
         Updated?.Invoke(null, dt);
     }
 

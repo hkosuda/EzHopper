@@ -10,6 +10,28 @@ public class BackCommand : Command
         description = "最後に到達したチェックポイントまで戻ります";
     }
 
+    public override List<string> AvailableValues(List<string> values)
+    {
+        if (values == null || values.Count == 0) { return new List<string>(); }
+
+        else if (values.Count < 3)
+        {
+            var list = new List<string>();
+
+            for(var n = 0; n < MapsManager.CurrentMap.respawnPositions.Length; n++)
+            {
+                list.Add(n.ToString());
+            }
+
+            return list;
+        }
+
+        else
+        {
+            return new List<string>();
+        }
+    }
+
     public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)
     {
         if (values == null || values.Count == 0) { return; }
@@ -18,6 +40,23 @@ public class BackCommand : Command
         {
             MapsManager.CurrentMap.Back();
             AddMessage("check point : " + MapsManager.CurrentMap.Index.ToString(), Tracer.MessageLevel.normal, tracer, options);
+        }
+
+        // ex) back(0) 0(1)
+        else if (values.Count == 2)
+        {
+            var indexString = values[1];
+
+            if (int.TryParse(indexString, out var index))
+            {
+                MapsManager.CurrentMap.Back(index);
+                AddMessage("check point : " + MapsManager.CurrentMap.Index.ToString(), Tracer.MessageLevel.normal, tracer, options);
+            }
+
+            else
+            {
+                AddMessage(ERROR_NotInteger(indexString), Tracer.MessageLevel.error, tracer, options);
+            }
         }
 
         else

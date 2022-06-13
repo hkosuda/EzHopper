@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -95,25 +96,80 @@ public class ConsoleInputField : MonoBehaviour
 
     static public void AddValue(string value)
     {
-        var values = CommandReceiver.GetValues(inputField.text);
-        var text = CorrectValues(values);
+        var currentValue = inputField.text;
 
-        inputField.text = text + value;
+        var values = CommandReceiver.GetValues(currentValue);
+        var options = CommandReceiver.GetOptions(currentValue);
+
+        if (values == null || values.Count == 0) { inputField.text = ""; return; }
+
+        string corrected;
+
+        // pre processing
+        if (currentValue.EndsWith(" "))
+        {
+            corrected = CorrectValues(values);
+        }
+
+        else
+        {
+            corrected = CorrectValues(values, true);
+        }
+
+        // add
+        if (values.Last().StartsWith("\""))
+        {
+            corrected += "\"" + value;
+        }
+
+        else
+        {
+            corrected += value;
+        }
+
+        corrected = AddOptions(corrected, options);
+        inputField.text = corrected;
         inputField.caretPosition = inputField.text.Length;
 
         // - inner function
-        static string CorrectValues(List<string> values)
+        static string CorrectValues(List<string> values, bool offset = false)
         {
             if (values == null || values.Count == 0) { return ""; }
 
             var text = "";
 
-            for(var  n = 0; n < values.Count - 1; n++)
+            if (offset)
             {
-                text += values[n] + " ";
+                for (var n = 0; n < values.Count - 1; n++)
+                {
+                    text += values[n] + " ";
+                }
             }
 
-            return text;
+            else
+            {
+                for (var n = 0; n < values.Count; n++)
+                {
+                    text += values[n] + " ";
+                }
+            }
+
+            return text.TrimEnd() + " ";
+        }
+
+        static string AddOptions(string corrected, List<string> options)
+        {
+            corrected = corrected.TrimEnd() + " ";
+
+            if (options == null || options.Count == 0)
+            {
+                return corrected;
+            }
+
+            else
+            {
+                return corrected + options.Last() + " ";
+            }
         }
     }
 }

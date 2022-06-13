@@ -44,13 +44,13 @@ public class CurrentVector : MonoBehaviour
     {
         if (indicator > 0)
         {
-            Timer.Updated += UpdateMethod;
+            InGameTimer.Updated += UpdateMethod;
             Bools.Settings[_show].ValueUpdated += UpdateVisibility;
         }
 
         else
         {
-            Timer.Updated -= UpdateMethod;
+            InGameTimer.Updated -= UpdateMethod;
             Bools.Settings[_show].ValueUpdated -= UpdateVisibility;
         }
     }

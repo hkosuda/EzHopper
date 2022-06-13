@@ -27,13 +27,13 @@ public class GgBlock : MonoBehaviour
         if (indicator > 0)
         {
             MapsManager.Initialized += SetFlag;
-            Timer.Updated += UpdateMethod;
+            InGameTimer.Updated += UpdateMethod;
         }
 
         else
         {
             MapsManager.Initialized -= SetFlag;
-            Timer.Updated -= UpdateMethod;
+            InGameTimer.Updated -= UpdateMethod;
         }
     }
 

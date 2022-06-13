@@ -84,6 +84,16 @@ public class Suggest : MonoBehaviour
     {
         InactivateAllButtons();
 
+        content = CommandReceiver.Grouping(content);
+        content = RemoveBeforeOfQuatation(content);
+
+        if (Regex.IsMatch(content, @"\A.* +-\w*\z"))
+        {
+            ActivateSuggestButtons(new List<string>());
+            UpdatePanelSize();
+            return;
+        }
+
         var command = GetCommand(content);
 
         if (command == null)
@@ -99,6 +109,18 @@ public class Suggest : MonoBehaviour
         }
 
         UpdatePanelSize();
+
+        // - inner function
+        static string RemoveBeforeOfQuatation(string content)
+        {
+            if (!Regex.IsMatch(content, @"\A.*\"".*\z"))
+            {
+                return content;
+            }
+
+            var match = Regex.Match(content, @"\""[^\""]*\z");
+            return Regex.Replace(match.Value, @"\""", "");
+        }
 
         // - inner function
         static Command GetCommand(string content)
@@ -130,7 +152,8 @@ public class Suggest : MonoBehaviour
 
             if (availableValues.Contains(lastValue) && content.EndsWith(" "))
             {
-                return new List<string>();
+                values.Add("$");
+                return command.AvailableValues(values);
             }
 
             if (content.EndsWith(" "))

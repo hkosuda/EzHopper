@@ -21,12 +21,12 @@ public class ToxicChat : MonoBehaviour
     {
         if (indicator > 0)
         {
-            Timer.Updated += UpdateMethod;
+            InGameTimer.Updated += UpdateMethod;
         }
 
         else
         {
-            Timer.Updated -= UpdateMethod;
+            InGameTimer.Updated -= UpdateMethod;
         }
     }
 

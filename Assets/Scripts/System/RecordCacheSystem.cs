@@ -6,8 +6,9 @@ using UnityEngine;
 public class RecordCacheSystem : IKernelManager
 {
     static public DataListParams CachedData { get; private set; }
-
     static public Dictionary<string, DataListParams> CachedDataList { get; private set; }
+
+    static string lastDataName = "";
 
     public void Initialize()
     {
@@ -21,25 +22,25 @@ public class RecordCacheSystem : IKernelManager
         SetEvent(-1);
     }
 
-    static void SetEvent(int indicator)
-    {
-        if (indicator > 0)
-        {
-            PlayerRecorder.RecordingEnd += CacheData;
-        }
-
-        else
-        {
-            PlayerRecorder.RecordingEnd -= CacheData;
-        }
-    }
-
     public void Reset()
     {
 
     }
 
-    static void CacheData(object obj, List<float[]> dataList)
+    static void SetEvent(int indicator)
+    {
+        if (indicator > 0)
+        {
+            PlayerRecorder.RecordingEnd += CacheDataOnRecordingEnd;
+        }
+
+        else
+        {
+            PlayerRecorder.RecordingEnd -= CacheDataOnRecordingEnd;
+        }
+    }
+
+    static void CacheDataOnRecordingEnd(object obj, List<float[]> dataList)
     {
         CachedData = new DataListParams(MapsManager.CurrentMap.MapName, dataList);
     }
@@ -60,7 +61,7 @@ public class RecordCacheSystem : IKernelManager
 
         if (CachedDataList.ContainsKey(name))
         {
-            Command.AddMessage("すでに同名のデータが存在するため，保存できません．", Tracer.MessageLevel.error, tracer, options);
+            Command.AddMessage("すでに同名のデータが存在するため，保存できません：" + name, Tracer.MessageLevel.error, tracer, options);
             return;
         }
 
@@ -70,6 +71,8 @@ public class RecordCacheSystem : IKernelManager
         Command.AddMessage("名称：" + name, Tracer.MessageLevel.normal, tracer, options, 2);
         Command.AddMessage("マップ：" + CachedData.mapName.ToString(), Tracer.MessageLevel.normal, tracer, options, 2);
         Command.AddMessage("継続時間：" + CachedData.dataList.Last()[0].ToString("f1"), Tracer.MessageLevel.normal, tracer, options, 2);
+
+        lastDataName = name;
     }
 
     static public void RemoveData(string name, Tracer tracer, List<string> options)
@@ -84,6 +87,28 @@ public class RecordCacheSystem : IKernelManager
         {
             Command.AddMessage(name + "というデータは存在しません．", Tracer.MessageLevel.error, tracer, options);
             return;
+        }
+    }
+
+    static public void RemoveLast(Tracer tracer, List<string> options)
+    {
+        if (CachedDataList == null || CachedDataList.Count == 0)
+        {
+            Command.AddMessage("現在保存されているデータはありません．", Tracer.MessageLevel.warning, tracer, options);
+        }
+
+        else
+        {
+            if (CachedDataList.ContainsKey(lastDataName))
+            {
+                CachedDataList.Remove(lastDataName);
+                Command.AddMessage("最後に保存されたデータ（" + lastDataName + "を削除しました．", Tracer.MessageLevel.normal, tracer, options);
+            }
+
+            else
+            {
+                Command.AddMessage("最後に保存が行われたデータの名前（" + lastDataName + "）に対応するデータが存在しません．", Tracer.MessageLevel.warning, tracer, options);
+            }
         }
     }
 

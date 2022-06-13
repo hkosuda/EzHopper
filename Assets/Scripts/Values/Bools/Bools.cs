@@ -40,6 +40,7 @@ static  public class Bools
         show_weapon,
 
         left_hand,
+        write_events,
     }
 
     static public Dictionary<Item, BlSetting> Settings = new Dictionary<Item, BlSetting>()
@@ -70,6 +71,10 @@ static  public class Bools
 
         {
             Item.left_hand, new BlSetting(false, "銃を左手で持つ．") 
+        },
+
+        {
+            Item.write_events, new BlSetting(false, "ゲーム内で発生するイベントをコンソールに書き込む．")
         },
     };
 }

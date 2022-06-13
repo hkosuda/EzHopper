@@ -16,7 +16,7 @@ public class SettingRoomUI : MonoBehaviour
 
     static AudioClip sound;
 
-    static List<IgniteCommand.Igniter> invokedIgniters;
+    static List<InvokeCommand.GameEvent> invokedIgniters;
 
     private void Awake()
     {
@@ -42,10 +42,11 @@ public class SettingRoomUI : MonoBehaviour
     {
         if (indicator > 0)
         {
-            Timer.Updated += UpdateMethod;
-            Timer.LateUpdated += LateUpdateMethod;
+            InGameTimer.Updated += UpdateMethod;
+            InGameTimer.LateUpdated += LateUpdateMethod;
 
             InvalidArea.CourseOut += NotifyCourseOut;
+            CheckPoint.EnterAnotherCheckpoint += NotifyEnterAnotherCheckpoint;
             CheckPoint.EnterCheckpoint += NotifyEnterCheckpoint;
             CheckPoint.ExitCheckpoint += NotifyExitCheckpoint;
             CheckPoint.EnterStart += NotifyEnterStart;
@@ -55,10 +56,11 @@ public class SettingRoomUI : MonoBehaviour
 
         else
         {
-            Timer.Updated -= UpdateMethod;
-            Timer.LateUpdated -= LateUpdateMethod;
+            InGameTimer.Updated -= UpdateMethod;
+            InGameTimer.LateUpdated -= LateUpdateMethod;
 
             InvalidArea.CourseOut -= NotifyCourseOut;
+            CheckPoint.EnterAnotherCheckpoint -= NotifyEnterAnotherCheckpoint;
             CheckPoint.EnterCheckpoint -= NotifyEnterCheckpoint;
             CheckPoint.ExitCheckpoint -= NotifyExitCheckpoint;
             CheckPoint.EnterStart -= NotifyEnterStart;
@@ -87,44 +89,49 @@ public class SettingRoomUI : MonoBehaviour
             if (invokedIgniters != null && invokedIgniters.Count > 0)
             {
                 UpdateText();
-                invokedIgniters = new List<IgniteCommand.Igniter>();
+                invokedIgniters = new List<InvokeCommand.GameEvent>();
             }
         }
     }
 
+    static void NotifyEnterAnotherCheckpoint(object obj, int index)
+    {
+        Notify(InvokeCommand.GameEvent.on_enter_next_checkpoint);
+    }
+
     static void NotifyCourseOut(object obj, Vector3 pos)
     {
-        Notify(IgniteCommand.Igniter.on_course_out);
+        Notify(InvokeCommand.GameEvent.on_course_out);
     }
 
     static void NotifyEnterCheckpoint(object obj, Vector3 pos)
     {
-        Notify(IgniteCommand.Igniter.on_enter_checkpoint);
+        Notify(InvokeCommand.GameEvent.on_enter_checkpoint);
     }
 
     static void NotifyExitCheckpoint(object obj, Vector3 pos)
     {
-        Notify(IgniteCommand.Igniter.on_exit_checkpoint);
+        Notify(InvokeCommand.GameEvent.on_exit_checkpoint);
     }
 
     static void NotifyEnterStart(object obj, Vector3 pos)
     {
-        Notify(IgniteCommand.Igniter.on_enter_start);
+        Notify(InvokeCommand.GameEvent.on_enter_start);
     }
 
     static void NotifyExitStart(object obj, Vector3 pos)
     {
-        Notify(IgniteCommand.Igniter.on_exit_start);
+        Notify(InvokeCommand.GameEvent.on_exit_start);
     }
 
     static void NotifyEnterGoal(object obj, Vector3 pos)
     {
-        Notify(IgniteCommand.Igniter.on_enter_goal);
+        Notify(InvokeCommand.GameEvent.on_enter_goal);
     }
 
-    static void Notify(IgniteCommand.Igniter igniter)
+    static void Notify(InvokeCommand.GameEvent igniter)
     {
-        if (invokedIgniters == null) { invokedIgniters = new List<IgniteCommand.Igniter>(); }
+        if (invokedIgniters == null) { invokedIgniters = new List<InvokeCommand.GameEvent>(); }
 
         frameBufferRemain = frameBuffer;
         invokedIgniters.Add(igniter);
@@ -142,7 +149,7 @@ public class SettingRoomUI : MonoBehaviour
         pastTime = 0.0f;
         triggerMessage.text = message;
 
-        audioSource.volume = 0.5f;
+        audioSource.volume = 0.2f;
         audioSource.PlayOneShot(sound);
     }
 }

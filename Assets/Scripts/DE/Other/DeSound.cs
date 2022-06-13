@@ -19,14 +19,13 @@ public class DeSound : MonoBehaviour
 
     public void PlayShootingSound()
     {
-        //audioSource.clip = shootingSound;
-        //audioSource.Play();
+        audioSource.volume = Floats.Get(Floats.Item.volume_shooting);
         audioSource.PlayOneShot(shootingSound);
     }
 
     public void PlaySliderSound()
     {
-        audioSource.clip = sliderSound;
+        audioSource.volume = Floats.Get(Floats.Item.volume_shooting);
         audioSource.PlayOneShot(sliderSound);
     }
 }

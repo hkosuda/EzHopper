@@ -4,7 +4,7 @@ using UnityEngine;
 
 static public class DemoUtils
 {
-    static readonly int interpolationSize = 1;
+    static readonly int interpolationSize = 0;
 
     static public float[] Interpolate(List<float[]> dataList, float pastTime)
     {

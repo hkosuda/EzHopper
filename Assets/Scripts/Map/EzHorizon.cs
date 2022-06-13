@@ -27,13 +27,13 @@ public class EzHorizon : Map
     {
         if (indicator > 0)
         {
-            Timer.Updated += CheckFalling;
+            InGameTimer.Updated += CheckFalling;
             PM_Landing.Landed += UpdateLandingPosition;
         }
 
         else
         {
-            Timer.Updated -= CheckFalling;
+            InGameTimer.Updated -= CheckFalling;
             PM_Landing.Landed -= UpdateLandingPosition;
         }
     }

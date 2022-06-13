@@ -11,8 +11,8 @@ public class ChatArea : MonoBehaviour
 
     private void Awake()
     {
-        inputField = gameObject.transform.GetChild(0).gameObject;
-        messagesRect = gameObject.transform.GetChild(1).gameObject.GetComponent<RectTransform>();
+        inputField = gameObject.transform.GetChild(1).gameObject;
+        messagesRect = gameObject.transform.GetChild(0).gameObject.GetComponent<RectTransform>();
     }
 
     void Start()
@@ -33,8 +33,8 @@ public class ChatArea : MonoBehaviour
     {
         if (indicator > 0)
         {
-            Timer.Updated += UpdateMethod;
-            Timer.TimerResumed += SetSuspensionFlag;
+            InGameTimer.Updated += UpdateMethod;
+            InGameTimer.TimerResumed += SetSuspensionFlag;
 
             Console.ConsoleOpened += DeactivateFieldsOnConsoleOpened;
             Console.ConsoleClosed += DeactivateFieldsOnConsoleClosed;
@@ -42,8 +42,8 @@ public class ChatArea : MonoBehaviour
 
         else
         {
-            Timer.Updated -= UpdateMethod;
-            Timer.TimerResumed -= SetSuspensionFlag;
+            InGameTimer.Updated -= UpdateMethod;
+            InGameTimer.TimerResumed -= SetSuspensionFlag;
 
             Console.ConsoleOpened -= DeactivateFieldsOnConsoleOpened;
             Console.ConsoleClosed -= DeactivateFieldsOnConsoleClosed;

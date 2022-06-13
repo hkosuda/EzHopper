@@ -34,18 +34,14 @@ public class PlayerRecorder : IKernelManager
     {
         if (indicator > 0)
         {
-            Timer.Updated += UpdateMethod;
+            InGameTimer.Updated += UpdateMethod;
             MapsManager.Initialized += StopRecorderOnMapInitialized;
-
-            InvalidArea.CourseOut += StopRecordingOnCourseOut;
         }
 
         else
         {
-            Timer.Updated -= UpdateMethod;
+            InGameTimer.Updated -= UpdateMethod;
             MapsManager.Initialized -= StopRecorderOnMapInitialized;
-
-            InvalidArea.CourseOut -= StopRecordingOnCourseOut;
         }
     }
 
@@ -76,7 +72,7 @@ public class PlayerRecorder : IKernelManager
         if (pastTime > limitTime)
         {
             ChatMessages.SendChat(limitTime.ToString() + "秒が経過したため，レコーダーを停止します．", ChatMessages.Sender.system);
-            FinishRecording(false);
+            FinishRecording(true);
         }
 
         // - inner function
@@ -92,25 +88,16 @@ public class PlayerRecorder : IKernelManager
         dataList = new List<float[]>();
         Recording = true;
         pastTime = 0.0f;
-
-        ChatMessages.SendChat("レコーダーを起動しました．", ChatMessages.Sender.system);
     }
 
-    static public void FinishRecording(bool ghostReplay)
+    static public void FinishRecording(bool cache)
     {
         if (!Recording) { return; }
         Recording = false;
 
         if (dataList == null || dataList.Count == 0) { return; }
 
-        if (ghostReplay)
-        {
-            Ghost.BeginReplay(dataList);
-        }
-
-        ChatMessages.SendChat("レコーダーを停止しました．", ChatMessages.Sender.system);
         RecordingEnd?.Invoke(null, new List<float[]>(dataList));
-
         dataList = new List<float[]>();
     }
 
@@ -118,11 +105,6 @@ public class PlayerRecorder : IKernelManager
     {
         if (dataList == null) { return 0; }
         return dataList.Count;
-    }
-
-    static void StopRecordingOnCourseOut(object obj, Vector3 pos)
-    {
-        FinishRecording(true);
     }
 
     static void StopRecorderOnMapInitialized(object obj, bool mute)

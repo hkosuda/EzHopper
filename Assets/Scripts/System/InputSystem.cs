@@ -25,20 +25,20 @@ public class InputSystem : MonoBehaviour
     {
         if (indicator > 0)
         {
-            Timer.TimerPaused += InactivateOnTimerPaused;
-            Timer.TimerResumed += ActivateOnTimerResumed;
+            InGameTimer.TimerPaused += InactivateOnTimerPaused;
+            InGameTimer.TimerResumed += ActivateOnTimerResumed;
         }
 
         else
         {
-            Timer.TimerPaused -= InactivateOnTimerPaused;
-            Timer.TimerResumed -= ActivateOnTimerResumed;
+            InGameTimer.TimerPaused -= InactivateOnTimerPaused;
+            InGameTimer.TimerResumed -= ActivateOnTimerResumed;
         }
     }
 
     private void Update()
     {
-        if (Timer.Paused)
+        if (InGameTimer.Paused)
         {
             Active = false;
         }
@@ -58,7 +58,6 @@ public class InputSystem : MonoBehaviour
     static public bool CheckInput(Keyconfig.Key key, bool getKeyDown)
     {
         if (!Active) { return false; }
-
         
         if (key.keyCode != KeyCode.None)
         {

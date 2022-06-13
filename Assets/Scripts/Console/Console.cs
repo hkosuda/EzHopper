@@ -37,13 +37,13 @@ public class Console : MonoBehaviour
     {
         if (indicator > 0)
         {
-            Timer.Updated += UpdateMethod;
+            InGameTimer.Updated += UpdateMethod;
             DemoTimer.TimerResumed += CloseConsoleOnDemoBegin;
         }
 
         else
         {
-            Timer.Updated -= UpdateMethod;
+            InGameTimer.Updated -= UpdateMethod;
             DemoTimer.TimerResumed -= CloseConsoleOnDemoBegin;
         }
     }
@@ -52,7 +52,7 @@ public class Console : MonoBehaviour
     {
         if (canvas.activeSelf)
         {
-            Timer.Pause();
+            InGameTimer.Pause();
         }
     }
 
@@ -66,7 +66,7 @@ public class Console : MonoBehaviour
 
     static public void CloseConsole()
     {
-        Timer.Resume();
+        InGameTimer.Resume();
         canvas.SetActive(false);
 
         ConsoleClosed?.Invoke(null, false);
@@ -74,7 +74,7 @@ public class Console : MonoBehaviour
 
     static public void OpenConsole()
     {
-        Timer.Pause();
+        InGameTimer.Pause();
         canvas.SetActive(true);
 
         ConsoleInputField.ActivateInputField();

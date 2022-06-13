@@ -66,7 +66,10 @@ public class ReplayCommand : Command
             }
         }
 
-        AddMessage(ERROR_OverValues(2), Tracer.MessageLevel.error, tracer, options);
+        else
+        {
+            AddMessage(ERROR_OverValues(2), Tracer.MessageLevel.error, tracer, options);
+        }
 
         // - inner function
         static void BeginDemoFromParams(RecordCacheSystem.DataListParams param, Tracer tracer, List<string> options)

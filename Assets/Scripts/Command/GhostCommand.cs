@@ -9,7 +9,7 @@ public class GhostCommand : Command
         commandName = "ghost";
         description = "ゴーストを起動する機能を提供します．\n" +
             "単に'ghost'と入力すると，直前に記録したプレイヤーの動きを再現します．記録がなければ再現は行われません．\n" +
-            "保存したデータを呼び出して実行するときは，'ghost start <name>としてください（<name>の部分にデータ名）．\n" +
+            "保存したデータを呼び出して実行するときは，'ghost play <name>としてください（<name>の部分にデータ名）．\n" +
             "ゴーストを終了するには，'ghost end'を実行します．";
     }
 
@@ -21,7 +21,7 @@ public class GhostCommand : Command
         {
             return new List<string>()
             {
-                "start", "end"
+                "play", "end"
             };
         }
 
@@ -29,7 +29,7 @@ public class GhostCommand : Command
         {
             var value = values[1];
 
-            if (value == "start")
+            if (value == "play")
             {
                 var available = new List<string>();
 
@@ -78,7 +78,7 @@ public class GhostCommand : Command
         {
             var value = values[1];
 
-            if (value == "start")
+            if (value == "play")
             {
                 AddMessage("再生するデータの名前を指定してください．", Tracer.MessageLevel.error, tracer, options);
             }
@@ -91,7 +91,7 @@ public class GhostCommand : Command
 
             else
             {
-                AddMessage("1番目の値としては，'start'もしくは'end'のみ設定可能です．", Tracer.MessageLevel.error, tracer, options);
+                AddMessage("1番目の値としては，'play'もしくは'end'のみ設定可能です．", Tracer.MessageLevel.error, tracer, options);
             }
         }
 
@@ -100,7 +100,7 @@ public class GhostCommand : Command
             var value = values[1];
             var name = values[2];
 
-            if (value == "start")
+            if (value == "play")
             {
                 if (RecordCacheSystem.CachedDataList != null && RecordCacheSystem.CachedDataList.ContainsKey(name))
                 {
@@ -116,7 +116,7 @@ public class GhostCommand : Command
 
             else
             {
-                AddMessage("データ名を指定してゴーストを起動するには，'ghost start <name>'として実行してください．", Tracer.MessageLevel.error, tracer, options);
+                AddMessage("データ名を指定してゴーストを起動するには，'ghost play <name>'として実行してください．", Tracer.MessageLevel.error, tracer, options);
             }
         }
 
@@ -129,15 +129,10 @@ public class GhostCommand : Command
         // - inner function
         static void BeginGhostFromParams(RecordCacheSystem.DataListParams param, Tracer tracer, List<string> options)
         {
-            if (PlayerRecorder.Recording)
-            {
-                AddMessage("レコーダーが起動しているため，ゴーストを利用できません．", Tracer.MessageLevel.error, tracer, options);
-            }
-
             if (param.mapName != MapsManager.CurrentMap.MapName)
             {
-                AddMessage("現在のマップと異なるマップのデータであるため，マップを切り替えて実行します．", Tracer.MessageLevel.warning, tracer, options);
-                MapsManager.Begin(param.mapName);
+                AddMessage("現在のマップと異なるマップのデータであるため実行できません．", Tracer.MessageLevel.error, tracer, options);
+                return;
             }
 
             Ghost.BeginReplay(param.dataList);

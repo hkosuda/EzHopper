@@ -48,6 +48,11 @@ static public class Floats
         crosshair_length,
         crosshair_width,
         crosshair_gap,
+
+        volume_shooting,
+        volume_footstep,
+        volume_landing,
+        volume_message,
     }
 
     static public Dictionary<Item, FlSetting> Settings = new Dictionary<Item, FlSetting>()
@@ -72,33 +77,33 @@ static public class Floats
             Item.pm_max_speed_on_ground, new FlSetting(
                 7.7f, 
                 "地上でのプレイヤーの移動速度の大きさの最大値．", 
-                new List<FlValidation>(){ new Positive() })
+                new List<FlValidation>(){ new Positive(), new NSmallerThan(100.0f) })
         },
 
         { 
             Item.pm_max_speed_in_air, new FlSetting(
                 0.7f, 
                 "空中でのプレイヤーの移動速度の大きさの最大値．",
-                new List<FlValidation>() { new Positive() }) 
+                new List<FlValidation>() { new Positive(), new NSmallerThan(100.0f) }) 
         },
 
         { 
             Item.pm_accel_on_ground, new FlSetting(
                 55.0f, 
                 "地上でのプレイヤーの加速度の大きさ．",
-                new List<FlValidation>() { new NotNegative() })
+                new List<FlValidation>() { new NotNegative(), new NSmallerThan(1000.0f) })
         },
 
         {
             Item.pm_accel_in_air, new FlSetting(
                 100.0f, "空中でのプレイヤーの加速度の大きさ．",
-                new List<FlValidation>() { new NotNegative() })
+                new List<FlValidation>() { new NotNegative(), new NSmallerThan(1000.0f) })
         },
 
         { 
             Item.pm_jumping_velocity, new FlSetting(
                 5.85f, "ジャンプの初速度の大きさ", 
-                new List<FlValidation>() { new NotNegative() }) 
+                new List<FlValidation>() { new NotNegative(), new NSmallerThan(30.0f) }) 
         },
 
         {
@@ -112,13 +117,13 @@ static public class Floats
         {
             Item.observer_moving_speed, new FlSetting(
                 25.0f, "神視点モードでのカメラの移動速度の大きさ．",
-                new List<FlValidation>() { new Positive() })
+                new List<FlValidation>() { new Positive(), new NSmallerThan(1000.0f) })
         },
 
         {
             Item.observer_moving_accel, new FlSetting(
                 50.0f, "神視点モードでのカメラの加速度の大きさ．",
-                new List<FlValidation>() { new NotNegative() })
+                new List<FlValidation>() { new NotNegative(), new NSmallerThan(10000.0f) })
         },
 
         // crosshair 
@@ -138,7 +143,32 @@ static public class Floats
             Item.crosshair_gap, new FlSetting(
                 2.0f, "クロスヘアのギャップの大きさ．",
                 new List<FlValidation>() { new OnlyInteger(), new NotNegative(), new NSmallerThan(10.0f) })
-        }
+        },
+
+        // volume
+        {
+            Item.volume_shooting, new FlSetting(
+                0.15f, "射撃音の大きさ．",
+                new List<FlValidation>() { new ZeroToOne() })
+        },
+
+        {
+            Item.volume_footstep, new FlSetting(
+                0.4f, "足音の大きさ．",
+                new List<FlValidation>() { new ZeroToOne() })
+        },
+
+        {
+            Item.volume_landing, new FlSetting(
+                0.5f, "着地音の大きさ．",
+                new List<FlValidation>() { new ZeroToOne() })
+        },
+
+        {
+            Item.volume_message, new FlSetting(
+                0.3f, "メッセージの通知音の大きさ．",
+                new List<FlValidation>() { new ZeroToOne() })
+        },
     };
 
     class Positive : FlValidation
@@ -255,6 +285,28 @@ static public class Floats
         public override string GetDiscription()
         {
             return value.ToString() + "未満の値でなければなりません．";
+        }
+    }
+
+    class ZeroToOne : FlValidation
+    {
+        public override bool Check(float value, Tracer tracer = null, List<string> options = null)
+        {
+            if (0.0f <= value && value <= 1.0f)
+            {
+                return true;
+            }
+
+            else
+            {
+                if (tracer != null) { Command.AddMessage(GetDiscription(), Tracer.MessageLevel.error, tracer, options); }
+                return false;
+            }
+        }
+
+        public override string GetDiscription()
+        {
+            return "0以上1以下の値でなければなりません．";
         }
     }
 }

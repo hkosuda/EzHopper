@@ -46,7 +46,7 @@ public class FlyerUiText : MonoBehaviour
 
     static void UpdateContent(object ojb, Vector3 pos)
     {
-        if (Timer.Paused) { return; }
+        if (InGameTimer.Paused) { return; }
 
         var z = pos.z;
 

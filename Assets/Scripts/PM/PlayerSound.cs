@@ -40,8 +40,8 @@ public class PlayerSound : MonoBehaviour
             PM_Landing.Landed += PlayLandingSound;
             PM_Demo.Landed += PlayLandingSoundDemo;
 
-            Timer.Updated += UpdateMethod;
-            Timer.LateUpdated += LateUpdateMethod;
+            InGameTimer.Updated += UpdateMethod;
+            InGameTimer.LateUpdated += LateUpdateMethod;
         }
 
         else
@@ -49,8 +49,8 @@ public class PlayerSound : MonoBehaviour
             PM_Landing.Landed -= PlayLandingSound;
             PM_Demo.Landed -= PlayLandingSoundDemo;
 
-            Timer.Updated -= UpdateMethod;
-            Timer.LateUpdated -= LateUpdateMethod;
+            InGameTimer.Updated -= UpdateMethod;
+            InGameTimer.LateUpdated -= LateUpdateMethod;
         }
     }
 
@@ -58,19 +58,17 @@ public class PlayerSound : MonoBehaviour
     {
         if (landingSoundFrameBufferRemain > 0) { return; }
 
-        if (prevVy < -2.0f)
-        {
-            audioSource.volume = 0.5f;
-        }
+        var speed = Floats.Get(Floats.Item.pm_jumping_velocity);
+        var volume = Floats.Get(Floats.Item.volume_landing);
 
-        else if (prevVy < -0.1f)
+        if (prevVy < -speed * 0.5f)
         {
-            audioSource.volume = 0.3f;
+            audioSource.volume = volume;
         }
 
         else
         {
-            audioSource.volume = 0.1f;
+            audioSource.volume = volume * 0.5f;
         }
 
         audioSource.PlayOneShot(landingSound);
@@ -82,18 +80,25 @@ public class PlayerSound : MonoBehaviour
         landingSoundFrameBufferRemain--;
         if (landingSoundFrameBufferRemain < 0) { landingSoundFrameBufferRemain = 0; }
 
-        if (PM_Landing.LandingIndicator < 0)
+        if (PM_Landing.LandingIndicator <= 0)
         {
             footstepIntervalRemain = footstepInterval;
             return;
         }
 
-        if (PM_Main.Rb.velocity.magnitude < 6.0f) { return; }
+        var speed = Floats.Get(Floats.Item.pm_max_speed_on_ground);
+
+        if (PM_Main.Rb.velocity.magnitude < speed * 0.75f) 
+        {
+            footstepIntervalRemain = footstepInterval;
+            return;
+        }
 
         footstepIntervalRemain -= dt;
 
         if (footstepIntervalRemain < 0.0f)
         {
+            audioSource.volume = Floats.Get(Floats.Item.volume_footstep);
             footstepIntervalRemain = footstepInterval;
             audioSource.PlayOneShot(footstepSound);
         }
@@ -106,16 +111,7 @@ public class PlayerSound : MonoBehaviour
 
     static void PlayLandingSoundDemo(object obj, bool mute)
     {
-        if (PM_Main.Rb.velocity.y < -2.0f)
-        {
-            audioSource.volume = 0.5f;
-        }
-
-        else
-        {
-            audioSource.volume = 0.3f;
-        }
-
+        audioSource.volume = Floats.Get(Floats.Item.volume_landing);
         audioSource.PlayOneShot(landingSound);
     }
 }

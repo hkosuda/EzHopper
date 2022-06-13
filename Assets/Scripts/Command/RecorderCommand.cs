@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class RecorderCommand : Command
 {
+    static List<string> availables = new List<string>()
+    {
+        "start", "end", "stop", "save", "remove", "remove_last"
+    };
+
     public RecorderCommand()
     {
         commandName = "recorder";
@@ -22,7 +27,7 @@ public class RecorderCommand : Command
 
         if (values.Count < 3)
         {
-            return new List<string>() { "start", "end", "stop", "save", "remove" };
+            return availables;
         }
 
         return new List<string>();
@@ -59,6 +64,11 @@ public class RecorderCommand : Command
                 AddMessage("レコーダーによる記録を中断しました．", Tracer.MessageLevel.normal, tracer, options);
             }
 
+            else if (value == "remove_last")
+            {
+                RecordCacheSystem.RemoveLast(tracer, options);
+            }
+
             else if (value == "save")
             {
                 AddMessage("データを保存するには，名前を指定してください．", Tracer.MessageLevel.error, tracer, options);
@@ -71,7 +81,7 @@ public class RecorderCommand : Command
 
             else
             {
-                AddMessage("一番目の値としては，'start', 'end', 'stop', 'save', 'remove' のみ指定可能です．", Tracer.MessageLevel.error, tracer, options);
+                AddMessage(ERROR_AvailableOnly(1, availables), Tracer.MessageLevel.error, tracer, options);
             }
         }
         
@@ -92,7 +102,7 @@ public class RecorderCommand : Command
 
             else
             {
-                AddMessage("一番目の値としては，'start', 'end', 'stop', 'save', 'remove' のみ指定可能です．", Tracer.MessageLevel.error, tracer, options);
+                AddMessage("値を2個指定する場合，" + ERROR_AvailableOnly(1, new List<string>() { "save", "remove" }), Tracer.MessageLevel.error, tracer, options);
             }
         }
 

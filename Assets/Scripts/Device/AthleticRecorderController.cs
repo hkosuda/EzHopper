@@ -28,7 +28,7 @@ public class AthleticRecorderController : MonoBehaviour
     {
         if (indicator > 0)
         {
-            Timer.Updated += UpdateMethod;
+            InGameTimer.Updated += UpdateMethod;
             MapsManager.Initialized += StopRecorder;
 
             PM_Landing.Landed += UpdateLandingPoint;
@@ -37,7 +37,7 @@ public class AthleticRecorderController : MonoBehaviour
 
         else
         {
-            Timer.Updated -= UpdateMethod;
+            InGameTimer.Updated -= UpdateMethod;
             MapsManager.Initialized -= StopRecorder;
 
             PM_Landing.Landed -= UpdateLandingPoint;

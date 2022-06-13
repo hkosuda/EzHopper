@@ -68,35 +68,39 @@ public class BooleanCommand : Command
             var setting = Bools.Settings[item];
 
             var value = values[1];
-            
-            if (int.TryParse(value, out var num))
+
+            if (value == "default") 
+            {
+                setting.SetDefault();
+            }
+
+            else if (int.TryParse(value, out var num))
             {
                 if (num == 1)
                 {
                     setting.SetValue(true);
-                    return;
                 }
 
                 else if (num == 0)
                 {
                     setting.SetValue(false);
-                    return;
                 }
             }
 
-            if (value.ToLower() == "on")
+            else if (value.ToLower() == "on")
             {
                 setting.SetValue(true);
-                return;
             }
 
-            if (value.ToLower() == "off")
+            else if (value.ToLower() == "off")
             {
                 setting.SetValue(false);
-                return;
             }
 
-            AddMessage(value + "を有効な値に変換できません．'on'もしくは'off'を値として指定してください．", Tracer.MessageLevel.error, tracer, options);
+            else
+            {
+                AddMessage(value + "を有効な値に変換できません．'on(1)'もしくは'off(0)'を値として指定してください．", Tracer.MessageLevel.error, tracer, options);
+            }
         }
     }
 

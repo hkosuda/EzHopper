@@ -28,7 +28,7 @@ public class Keyconfig : MonoBehaviour
 
             else
             {
-                return keyCode.ToString();
+                return keyCode.ToString().ToLower();
             }
         }
     }
@@ -94,5 +94,65 @@ public class Keyconfig : MonoBehaviour
         var key = KeybindList[action];
 
         return InputSystem.CheckInput(key, getKeyDown);
+    }
+
+    static public Key StringToKey(string str)
+    {
+        str = str.ToLower();
+
+        if (int.TryParse(str, out var num))
+        {
+            if (num > 0)
+            {
+                return new Key(KeyCode.None, 1);
+            }
+
+            else if (num < 0)
+            {
+                return new Key(KeyCode.None, -1);
+            }
+
+            else
+            {
+                return null;
+            }
+        }
+
+        foreach(KeyCode keyCode in Enum.GetValues(typeof(KeyCode)))
+        {
+            if (keyCode == KeyCode.None) { continue; }
+
+            if (str == keyCode.ToString().ToLower())
+            {
+                return new Key(keyCode);
+            }
+        }
+
+        return null;
+    }
+
+    // for only keycheck command
+    private void Update()
+    {
+        if (!KeycheckCommand.Active) { return; }
+        if (!Input.anyKeyDown && Input.mouseScrollDelta.y == 0.0f) { return; }
+
+        foreach(KeyCode keyCode in Enum.GetValues(typeof(KeyCode)))
+        {
+            if (Input.GetKeyDown(keyCode))
+            {
+                KeycheckCommand.EchoInputKey(keyCode.ToString());
+            }
+        }
+
+        if (Input.mouseScrollDelta.y > 0)
+        {
+            KeycheckCommand.EchoInputKey("1");
+        }
+
+        if (Input.mouseScrollDelta.y < 0)
+        {
+            KeycheckCommand.EchoInputKey("-1");
+        }
     }
 }

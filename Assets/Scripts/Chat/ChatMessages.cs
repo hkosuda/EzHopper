@@ -6,7 +6,9 @@ using UnityEngine.UI;
 
 public class ChatMessages : MonoBehaviour
 {
-    static readonly int maxChats = 25;
+    static readonly int frameBuffer = 4;
+
+    static readonly int maxChats = 12;
     static readonly float chatExistsTime = 7.0f;
 
     public enum Sender
@@ -31,7 +33,7 @@ public class ChatMessages : MonoBehaviour
     static GameObject _chatMessage;
 
     static GameObject myself;
-    static int frameBuffer;
+    static int frameBufferRemain;
 
     static List<GameObject> messageList;
     static List<float> timeList;
@@ -83,6 +85,17 @@ public class ChatMessages : MonoBehaviour
 
         var message = values[0] + "というコマンドは存在しません．";
         ProcessMessages(message, sentence);
+
+        // - inner function
+        static void ProcessMessages(string message, string sentence)
+        {
+            var options = CommandReceiver.GetOptions(sentence);
+
+            if (Tracer.CheckOption(Tracer.Option.echo, options) || Tracer.CheckOption(Tracer.Option.flash, options))
+            {
+                SendChat(message, Sender.system);
+            }
+        }
     }
 
     static void WriteTracerMessages(object obj, Tracer tracer)
@@ -90,24 +103,15 @@ public class ChatMessages : MonoBehaviour
         var tracerMessage = tracer.ChatMessage();
         if (tracerMessage.Trim() == "") { return; }
 
-        SendChat(tracerMessage, Sender.system);
-    }
-
-    static void ProcessMessages(string message, string sentence)
-    {
-        var options = CommandReceiver.GetOptions(sentence);
-
-        if (Tracer.CheckOption(Tracer.Option.echo, options) || Tracer.CheckOption(Tracer.Option.flash, options))
-        {
-            SendChat(message, Sender.system);
-        }
+        SendChat(tracerMessage, Sender.system, tracer);
     }
 
     void Update()
     {
-        frameBuffer--;
+        frameBufferRemain--;
+        if (frameBufferRemain < 0) { frameBufferRemain = -1; }
 
-        if (frameBuffer == 0)
+        if (frameBufferRemain == 0)
         {
             vlGroup.CalculateLayoutInputHorizontal();
             vlGroup.CalculateLayoutInputVertical();
@@ -115,8 +119,6 @@ public class ChatMessages : MonoBehaviour
             vlGroup.SetLayoutHorizontal();
             vlGroup.SetLayoutVertical();
         }
-
-        if (frameBuffer < 0) { frameBuffer = 0; }
 
         for(var n = messageList.Count - 1; n > -1; n--)
         {
@@ -132,7 +134,7 @@ public class ChatMessages : MonoBehaviour
         }
     }
 
-    static public void SendChat(string message, Sender sender)
+    static public void SendChat(string message, Sender sender, Tracer tracer = null)
     {
         if (messageList == null) { messageList = new List<GameObject>(); timeList = new List<float>(); }
         if (timeList == null) { messageList = new List<GameObject>(); timeList = new List<float>(); }
@@ -140,8 +142,8 @@ public class ChatMessages : MonoBehaviour
         var chatMessage = Instantiate(_chatMessage);
         chatMessage.transform.SetParent(myself.transform);
 
-        chatMessage.GetComponent<Text>().text = SenderText(sender) + message;
-        frameBuffer = 2;
+        chatMessage.GetComponent<ChatMessage>().SetMessage(SenderText(sender, tracer) + message);
+        frameBufferRemain = frameBuffer;
 
         timeList.Add(0.0f);
         messageList.Add(chatMessage);
@@ -160,8 +162,13 @@ public class ChatMessages : MonoBehaviour
         ChatReceived?.Invoke(null, new MessageSender(message, sender));
 
         // - inner function
-        static string SenderText(Sender sender)
+        static string SenderText(Sender sender, Tracer tracer)
         {
+            if (tracer != null && !tracer.NoError)
+            {
+                return "<color=red>[" + tracer.Command.commandName + "] : </color>";
+            }
+
             if (sender == Sender.player)
             {
                 return "<color=yellow>● </color><color=orange>[Player] : </color>";
@@ -206,7 +213,7 @@ public class ChatMessages : MonoBehaviour
             message.SetActive(true);
         }
 
-        frameBuffer = 2;
+        frameBufferRemain = frameBuffer;
         dontHideMessages = true;
 
         InputSystem.Inactivate();
@@ -222,7 +229,7 @@ public class ChatMessages : MonoBehaviour
             }
         }
 
-        frameBuffer = 2;
+        frameBufferRemain = 2;
         dontHideMessages = false;
 
         InputSystem.Activate();

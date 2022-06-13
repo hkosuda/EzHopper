@@ -11,7 +11,10 @@ public abstract class Command
     }
 
     public string commandName;
-    public string description;
+    public string description = "";
+    public string detail = "";
+    public int counter = 0;
+
     public CommandType commandType = CommandType.normal;
 
     public virtual void OnMapInitialized() { }
@@ -61,6 +64,21 @@ public abstract class Command
         message += "のみ利用可能です．";
         return message;
     }
+
+    static protected string ERROR_InvalidKey(string keyString)
+    {
+        return keyString + "を有効なキーに変換できません．";
+    }
+
+    static protected string ERROR_InvalidKeyAlert()
+    {
+        return "ゲーム内で使用できるキーの名称を調べるには，'keycheck'コマンドを使用してください．";
+    }
+
+    static protected string ERROR_NeedValue(int values)
+    {
+        return values.ToString() + "以上の値が必要です．";
+    }
 }
 
 public class Tracer
@@ -70,6 +88,7 @@ public class Tracer
         normal,
         warning,
         error,
+        emphasis,
     }
 
     public enum Option
@@ -80,12 +99,14 @@ public class Tracer
     }
 
     public bool NoError { get; private set; }
+    public Command Command { get; }
 
     List<MsgLv> consoleMessageList;
     List<MsgLv> chatMessageList;
 
-    public Tracer()
+    public Tracer(Command command)
     {
+        Command = command;
         NoError = true;
 
         consoleMessageList = new List<MsgLv>();
@@ -140,7 +161,7 @@ public class Tracer
 
         var fullMessage = "";
 
-        for(var n = messageList.Count - 1; n > -1; n--)
+        for(var n = 0; n < messageList.Count; n++)
         {
             var msgLv = messageList[n];
 
@@ -149,7 +170,8 @@ public class Tracer
 
             if (level == MessageLevel.normal) { fullMessage += message + "\n"; continue; }
             if (level == MessageLevel.warning) { fullMessage += "<color=orange>" + message + "</color>\n"; continue; }
-            if (level == MessageLevel.error) { fullMessage += "<color=red>" + message + "</color>\n"; }
+            if (level == MessageLevel.error) { fullMessage += "<color=red>" + message + "</color>\n"; continue; }
+            if (level == MessageLevel.emphasis) { fullMessage += "<color=lime>" + message + "</color>\n"; }
         }
 
         return fullMessage.TrimEnd(new char[] { '\n' });

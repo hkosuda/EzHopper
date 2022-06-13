@@ -56,7 +56,7 @@ public class SettingItemsManager : MonoBehaviour
 
     private void Update()
     {
-        Timer.Pause();
+        InGameTimer.Pause();
         if (!settingMode) { return; }
 
         if (Input.anyKey)

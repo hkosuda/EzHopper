@@ -22,6 +22,8 @@ public class Ghost : MonoBehaviour
     static GameObject ghostLineObject;
     static LineRenderer ghostLine;
 
+    static Vector3 prevLinePos;
+
     private void Awake()
     {
         ghostBox = gameObject.transform.GetChild(0).gameObject;
@@ -41,14 +43,14 @@ public class Ghost : MonoBehaviour
     {
         if (indicator > 0)
         {
-            Timer.Updated += UpdateMethod;
-            Timer.TimerPaused += OnTimerPaused;
+            InGameTimer.Updated += UpdateMethod;
+            InGameTimer.TimerPaused += OnTimerPaused;
         }
 
         else
         {
-            Timer.Updated -= UpdateMethod;
-            Timer.TimerPaused -= OnTimerPaused;
+            InGameTimer.Updated -= UpdateMethod;
+            InGameTimer.TimerPaused -= OnTimerPaused;
         }
     }
 
@@ -60,8 +62,6 @@ public class Ghost : MonoBehaviour
         if (pastTime > dataList.Last()[0]) { Repeat(); return; }
 
         InterpolatedData = DemoUtils.Interpolate(dataList, pastTime);
-
-        if (PlayerRecorder.DataListSize() > 0) { SetVisibility(false); return; }
 
         SetVisibility(true);
         UpdateTransform();
@@ -76,12 +76,26 @@ public class Ghost : MonoBehaviour
 
     static void UpdateLine()
     {
-        ghostLine.positionCount++;
-        ghostLine.SetPosition(ghostLine.positionCount - 1, Vec3(InterpolatedData, -PM_Main.centerY));
+        var pos = Vec3(InterpolatedData, -PM_Main.centerY);
+        
+        if ((prevLinePos - pos).magnitude > 1.0f)
+        {
+            InitializeLine(pos);
+        }
+
+        else
+        {
+            ghostLine.positionCount++;
+            ghostLine.SetPosition(ghostLine.positionCount - 1, pos);
+        }
+
+        prevLinePos = pos;
     }
 
     static public void BeginReplay(List<float[]> _dataList)
     {
+        Debug.Log(_dataList.Count);
+
         EndReplay();
 
         if (_ghost == null) { _ghost = Resources.Load<GameObject>("Ghost/Ghost"); }
@@ -103,8 +117,7 @@ public class Ghost : MonoBehaviour
         GameSystem.SetChildOfRoot(ghost);
         GameSystem.SetChildOfRoot(ghostLineObject);
 
-        ghostLine.positionCount = 1;
-        ghostLine.SetPosition(0, Vec3(dataList[0], -PM_Main.centerY));
+        InitializeLine(Vec3(dataList[0], -PM_Main.centerY));
     }
 
     static public void EndReplay()
@@ -137,6 +150,12 @@ public class Ghost : MonoBehaviour
         SetVisibility(false);
     }
 
+    static public Vector3 Position()
+    {
+        if (ghost == null) { return new Vector3(); }
+        return ghost.transform.position;
+    }
+
     //
     // utilities
     static Vector3 Vec3(float[] data, float dy = 0.0f)
@@ -146,9 +165,17 @@ public class Ghost : MonoBehaviour
 
     static void SetVisibility(bool visibility)
     {
-        if (Timer.Paused) { visibility = false; }
+        if (InGameTimer.Paused) { visibility = false; }
 
         if (ghostBox != null) { ghostBox.SetActive(visibility); }
         if (ghostLineObject != null) { ghostLineObject.SetActive(visibility); }
+    }
+
+    static void InitializeLine(Vector3 pos)
+    {
+        ghostLine.positionCount = 1;
+        ghostLine.SetPosition(0, pos);
+
+        prevLinePos = pos;
     }
 }

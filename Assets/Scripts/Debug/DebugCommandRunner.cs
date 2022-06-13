@@ -17,17 +17,39 @@ public class DebugCommandRunner : MonoBehaviour
 
     static void RunCommand()
     {
-        CommandReceiver.RequestCommand("ignite add on_course_out \"back -m\"");
-        CommandReceiver.RequestCommand("ignite add on_exit_checkpoint \"timer start -f\"");
-        CommandReceiver.RequestCommand("ignite add on_enter_checkpoint \"timer stop -f\"");
-
 #if UNITY_EDITOR
-        CommandReceiver.RequestCommand("bind p anchor set -echo");
-        CommandReceiver.RequestCommand("bind v anchor back -echo");
-        CommandReceiver.RequestCommand("bind 1 recorder start -echo");
-        CommandReceiver.RequestCommand("bind -1 recorder end -echo");
-        CommandReceiver.RequestCommand("bind r drecorder save -echo");
-        CommandReceiver.RequestCommand("bind z ghost end -echo");
+        Standard();
 #endif
+    }
+
+    static void Standard()
+    {
+        // 異なるチェックポイントに到達したらレコーダーを停止．
+        // 
+
+        CommandReceiver.RequestCommand("invoke add on_course_out \"back -m\"");
+
+        CommandReceiver.RequestCommand("invoke add on_exit_checkpoint \"recorder start -f\"");
+        CommandReceiver.RequestCommand("invoke add on_enter_checkpoint \"recorder end -f\"");
+        CommandReceiver.RequestCommand("invoke add on_enter_another_checkpoint \"recorder save %map%_%now% -f\"");
+        CommandReceiver.RequestCommand("invoke add on_course_out \"recorder stop -f\"");
+
+        CommandReceiver.RequestCommand("invoke add on_exit_checkpoint \"timer start -f\"");
+        CommandReceiver.RequestCommand("invoke add on_enter_checkpoint \"timer stop -m\"");
+        CommandReceiver.RequestCommand("invoke add on_enter_checkpoint \"timer now -f\"");
+
+        CommandReceiver.RequestCommand("invoke add on_enter_checkpoint \"ghost\" -m");
+        CommandReceiver.RequestCommand("invoke add on_exit_checkpoint \"ghost end -m\"");
+
+        CommandReceiver.RequestCommand("toggle t \"observer start -f\" \"observer end -f\"");
+
+        CommandReceiver.RequestCommand("bind p \"anchor set -echo\"");
+        CommandReceiver.RequestCommand("bind v \"anchor back -echo\"");
+        CommandReceiver.RequestCommand("bind r \"recorder start -echo\"");
+        CommandReceiver.RequestCommand("bind f \"recorder end -echo\"");
+        CommandReceiver.RequestCommand("bind z \"ghost end -echo\"");
+
+        CommandReceiver.RequestCommand("write_events 1");
+        CommandReceiver.RequestCommand("override echo");
     }
 }

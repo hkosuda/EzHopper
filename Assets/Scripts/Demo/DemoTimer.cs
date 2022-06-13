@@ -17,7 +17,7 @@ public class DemoTimer : MonoBehaviour
 
     void Update()
     {
-        if (!Timer.Paused) { return; }
+        if (!InGameTimer.Paused) { return; }
         if (Paused) { return; }
 
         lateUpdate = true;
@@ -28,7 +28,7 @@ public class DemoTimer : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (!Timer.Paused) { return; }
+        if (!InGameTimer.Paused) { return; }
         if (Paused) { return; }
 
         if (!lateUpdate) { return; }
@@ -47,7 +47,7 @@ public class DemoTimer : MonoBehaviour
 
     static public void Resume()
     {
-        Timer.Pause();
+        InGameTimer.Pause();
         Paused = false;
 
         Time.timeScale = 1.0f;
