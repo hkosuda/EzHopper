@@ -7,12 +7,26 @@ using UnityEngine.Video;
 public class StreamingVideoLoader : MonoBehaviour
 {
     [SerializeField] string relativePath = "";
+    [SerializeField] int frameBuffer = 1;
 
-    void Start()
+    int frameBufferRemain = 1;
+
+    private void Awake()
     {
+        frameBufferRemain = frameBuffer;
+    }
+
+    void Update()
+    {
+        frameBufferRemain--;
+        if (frameBufferRemain < 0) { frameBufferRemain = -1; return; }
+        if (frameBufferRemain != 0) { return; }
+
+        frameBufferRemain = -1;
+
         var player = GetComponent<VideoPlayer>();
         player.source = VideoSource.Url;
-        player.url = Application.streamingAssetsPath + "/" + relativePath + ".mp4";
+        player.url = Application.streamingAssetsPath + "/" + relativePath.Trim() + ".mp4";
         player.prepareCompleted += PrepareCompleted;
         player.Prepare();
     }

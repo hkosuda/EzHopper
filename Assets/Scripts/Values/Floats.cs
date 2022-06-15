@@ -118,13 +118,13 @@ static public class Floats
         // observer
         {
             Item.observer_moving_speed, new FlSetting(
-                25.0f, "神視点モードでのカメラの移動速度の大きさ．",
+                50.0f, "神視点モードでのカメラの移動速度の大きさ．",
                 new List<FlValidation>() { new Positive(), new NSmallerThan(1000.0f) })
         },
 
         {
             Item.observer_moving_accel, new FlSetting(
-                50.0f, "神視点モードでのカメラの加速度の大きさ．",
+                100.0f, "神視点モードでのカメラの加速度の大きさ．",
                 new List<FlValidation>() { new NotNegative(), new NSmallerThan(10000.0f) })
         },
 
