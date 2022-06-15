@@ -58,4 +58,66 @@
  * ・デモのかくつきの改善．
  * ・最初のマップに，おすすめバインド設定の追加．
  * ・設定をコピー，ペーストできる機能．
+ * 
+ * 【おすすめ設定について】
+ * ・おすすめキーバインド，トグル設定
+ *      バインド
+ *          P : anchor set -f
+ *          V : anchor back -m
+ *          Z : ghost end -m
+ *          Q : timer now -f
+ *          R : replay -m
+ *          L : recorder remove_last
+ *      トグル
+ *          O : observer start -f | observer end -f
+ *          E : recorder start -f | recorder end -f
+ *          Q : timer start -f | timer stop -f
+ *          
+ * ・おすすめ通知機能
+ *      次のチェックポイントに到達したときに，回数に関するメッセージを表示する．
+ *          invoke add on_map_changed "counter set 0"
+ *          invoke add on_enter_next_checkpoint "chat/クリアに要した回数：%counter%"
+ *          invoke add on_enter_next_checkpoint "counter set 0"
+ *          
+ *      ゴールに到達したときに，メッセージを表示する．
+ *          invoke add on_map_chanted "counter "
+ *          
+ *  ・ネタ設定
+ *      ミスするたびに，味方に罵られる
+ *          invoke add on_course_out "delayedchat 0.5 1.5 ..."
+ *          invoke add on_course_out "delayedchat 0.5 1.5 ?"
+ *          ... など
+ *      
+ *      トグルで，クロスヘアを投げ物用に切り替える
+ *          toggle crosshair_length 6 | crosshair length 999
+ *          
+ *  おすすめInvoke設定
+ *      スタートからゴールまでのタイムアタック
+ *          invoke add on_course_out "back 0 -m"
+ *          invoke add on_exit_start "recorder start -f"
+ *          invoke add on_enter_goal "recorder end -f"
+ *          invoke add on_enter_goal "recorder save %map%_%now% -f"
+ *          invoke add on_exit_start "timer start -f"
+ *          invoke add on_enter_goal "timer stop -m"
+ *          invoke add on_enter_goal "timer now -f"
+ *          recorder_limit_time 599
+ *      
+ *      デフォルト設定
+ *          invoke add on_course_out "back -m"
+ *          
+ *          invoke add on_exit_checkpoint "recorder start -f"
+ *          invoke add on_enter_checkpoint "recorder end -f"
+ *          invoke add on_enter_next_checkpoint "recorder save %map%_%now% -f"
+ *          invoke add on_course_out "recorder stop -f"
+ *          
+ *          invoke add on_exit_checkpoint "timer start -f"
+ *          invoke add on_enter_next_checkpoint "timer stop -m"
+ *          invoke add on_enter_next_checkpoint "timer now -f"
+ *          
+ *          invoke add on_enter_checkpoint "ghost -m"
+ *          invoke add on_exit_checkpoint "ghost end -m"
+ *          
+ *  【やるべきこと（残り）】
+ *  ・おすすめ設定の配置
+ *  ・遊び方の説明の改善（もっと動画を活用しよう）
  */

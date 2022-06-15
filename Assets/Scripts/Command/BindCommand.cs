@@ -6,17 +6,20 @@ using UnityEngine;
 
 public class BindCommand : Command
 {
+    static public EventHandler<bool> BindingUpdated { get; set; }
     static public List<Binding> KeyBindingList { get; private set; }
 
     public BindCommand()
     {
         commandName = "bind";
-        description = "特定のキーにコマンドを割り当てる機能を提供します．\n" +
-            "たとえば，'bind c anchor back'とコンソールで入力すると，Cキーを押した際に'begin ez_athletic'が実行されるようになります．" +
+        description = "特定のキーにコマンドを割り当てる機能を提供します．";
+        detail = "単に'bind'を実行すると，現在の設定を確認することができます．\n" +
+            "1番目の値にキーの名称，2番目の値に実行したいコードを二重引用符（\"）で囲んで指定すると，そのキーを押したときに指定したコードが実行されます．" +
+            " たとえば，'bind c \"anchor back -m\"'とコンソールで入力すると，Cキーを押した際に'anchor back -m'が実行されるようになります．" +
             "これにより，記録された座標に素早く戻ることができるようになります．\n" +
-            "バインドを解除するには，unbindコマンドを使用します．\n" +
-            "値を指定せずに，ただ単に'bind'と入力すると現在のバインドの設定をみることができます．" +
-            "unbindコマンドでバインドを削除するまえに確認するようにしましょう．";
+            "バインドを削除するには，unbindコマンドを使用します．" +
+            "unbindでバインドを削除するには，削除したいバインドの番号を把握する必要があります．" +
+            "番号を確認するには'bind'を実行しましょう．";
 
         // initialize method
         KeyBindingList = new List<Binding>();
@@ -94,6 +97,8 @@ public class BindCommand : Command
         {
             AddMessage(ERROR_OverValues(2), Tracer.MessageLevel.error, tracer, options);
         }
+
+        BindingUpdated?.Invoke(null, false);
 
         // - inner function
         static string CurrentBindings()

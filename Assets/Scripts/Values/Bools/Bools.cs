@@ -38,6 +38,8 @@ static  public class Bools
         show_velocity,
         show_vector,
         show_weapon,
+        show_timer,
+        show_roof,
 
         left_hand,
         write_events,
@@ -67,6 +69,14 @@ static  public class Bools
 
         {
             Item.show_weapon, new BlSetting(true, "所持している武器を表示する．")
+        },
+
+        {
+            Item.show_timer, new BlSetting(true, "タイマーを表示する．")
+        },
+
+        {
+            Item.show_roof, new BlSetting(true, "屋根を表示する．")
         },
 
         {

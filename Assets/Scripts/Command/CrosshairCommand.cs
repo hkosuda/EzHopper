@@ -15,6 +15,13 @@ public class CrosshairCommand : Command
     public CrosshairCommand()
     {
         commandName = "crosshair";
+        description = "クロスヘアの設定を行います．";
+        detail = "'crosshair <profile>' を実行すると，プロファイルに基づきクロスヘアの設定を一括で変更できます（<profile>は長さ10の数字の文字列です）．" +
+            "プロファイルは，'crosshair' を実行することで取得できます．\n" +
+            "'crosshair length <value>' を実行すると，クロスヘアの長さを指定できます（<value>には任意の整数を指定してください）．" +
+            "'crosshair width <value>' はクロスヘアの幅，'crosshair gap <value>' はクロスヘアの間隔，'crosshair color <value>' はクロスヘアの色を指定できます．" +
+            "なお，クロスヘアの色は1から6までの整数が利用可能で，その値は色に対応しています．値と色の対応は下記の通りです．\n" +
+            "1: 白，2: 赤，3: マゼンタ，4: 黄色，5: 緑，6: シアン";
     }
 
     enum CrosshairColor
@@ -79,7 +86,12 @@ public class CrosshairCommand : Command
             var gap = Floats.Get(Floats.Item.crosshair_gap);
             var colorIndex = (int)currentColor;
 
-            var profile = length.ToString() + width.ToString() + gap.ToString() + colorIndex.ToString();
+            var lengthStr = PaddingZeros(Mathf.RoundToInt(length));
+            var widthStr = PaddingZeros(Mathf.RoundToInt(width));
+            var gapStr = PaddingZeros(Mathf.RoundToInt(gap));
+            var colorStr = Mathf.RoundToInt(colorIndex).ToString();
+
+            var profile = lengthStr + widthStr + gapStr + colorStr;
 
             AddMessage("現在のクロスヘアのプロファイル：" + profile, Tracer.MessageLevel.normal, tracer, options);
         }
@@ -172,14 +184,32 @@ public class CrosshairCommand : Command
         }
     }
 
+    static string PaddingZeros(int num)
+    {
+        if (num < 10)
+        {
+            return "00" + num.ToString();
+        }
+
+        else if (num < 100)
+        {
+            return "0" + num.ToString();
+        }
+
+        else
+        {
+            return num.ToString();
+        }
+    }
+
     static void ApplyCrosshairSettings(string profile, Tracer tracer, List<string> options)
     {
-        if (profile.Length == 4)
+        if (profile.Length == 10)
         {
-            var length = profile[0].ToString();
-            var width = profile[1].ToString();
-            var gap = profile[2].ToString();
-            var color = profile[3].ToString();
+            var length = profile[0].ToString() + profile[1].ToString() + profile[2].ToString();
+            var width = profile[3].ToString() + profile[4].ToString() + profile[5].ToString();
+            var gap = profile[6].ToString() + profile[7].ToString() + profile[8].ToString();
+            var color = profile[9].ToString();
 
             TryUpdate(Floats.Item.crosshair_length, length, tracer, options);
             TryUpdate(Floats.Item.crosshair_width, width, tracer, options);
@@ -209,7 +239,7 @@ public class CrosshairCommand : Command
 
         else
         {
-            AddMessage("プロファイルは長さ4の文字列でなければなりません．", Tracer.MessageLevel.error, tracer, options);
+            AddMessage("プロファイルは長さ10の文字列でなければなりません．", Tracer.MessageLevel.error, tracer, options);
         }
 
         // - inner function

@@ -7,7 +7,11 @@ public class BackCommand : Command
     public BackCommand()
     {
         commandName = "back";
-        description = "最後に到達したチェックポイントまで戻ります";
+        description = "最後に到達したチェックポイントまで戻ります．値を指定すると，その値に対応するチェックポイントまで戻ります．";
+        detail = "単に'back'として実行すると，最後に到達したチェックポイントまで戻ります．\n" +
+            "'back 1'など，値を指定して実行するとその値に対応するチェックポイントまで戻ります．チェックポイントの番号は，" +
+            "スタート位置となるチェックポイントが0，その次が1...といったように，0から始まるので注意してください．\n" +
+            "主にon_course_outが発生したときに自動実行させるか，手動で特定のチェックポイントに移動したいときに使用します．";
     }
 
     public override List<string> AvailableValues(List<string> values)

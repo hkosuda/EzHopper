@@ -49,6 +49,8 @@ static public class Floats
         crosshair_width,
         crosshair_gap,
 
+        recorder_limit_time,
+
         volume_shooting,
         volume_footstep,
         volume_landing,
@@ -108,9 +110,9 @@ static public class Floats
 
         {
             Item.pm_gravity, new FlSetting(
-                -16.0f,
-                "重力加速度の値．",
-                new List<FlValidation>(){ new Negative() })
+                16.0f,
+                "重力加速度の大きさ．",
+                new List<FlValidation>(){ new NotNegative(), new NSmallerThan(100.0f) })
         },
 
         // observer
@@ -130,19 +132,25 @@ static public class Floats
         {
             Item.crosshair_length, new FlSetting(
                 6.0f, "クロスヘアの長さ．",
-                new List<FlValidation>() { new OnlyInteger(), new NotNegative(), new NSmallerThan(10.0f) })
+                new List<FlValidation>() { new OnlyInteger(), new NotNegative(), new NSmallerThan(1000.0f) })
         },
 
         {
             Item.crosshair_width, new FlSetting(
                 2.0f, "クロスヘアの幅．",
-                new List<FlValidation>() { new OnlyInteger(), new NotNegative(), new NSmallerThan(10.0f) })
+                new List<FlValidation>() { new OnlyInteger(), new NotNegative(), new NSmallerThan(1000.0f) })
         },
 
         {
             Item.crosshair_gap, new FlSetting(
                 2.0f, "クロスヘアのギャップの大きさ．",
-                new List<FlValidation>() { new OnlyInteger(), new NotNegative(), new NSmallerThan(10.0f) })
+                new List<FlValidation>() { new OnlyInteger(), new NotNegative(), new NSmallerThan(1000.0f) })
+        },
+
+        {
+            Item.recorder_limit_time, new FlSetting(
+                120.0f, "レコーダーが自動で停止するまでの時間．",
+                new List<FlValidation>() { new NLargerThan(10.0f), new NSmallerThan(600.0f) })
         },
 
         // volume
@@ -285,6 +293,35 @@ static public class Floats
         public override string GetDiscription()
         {
             return value.ToString() + "未満の値でなければなりません．";
+        }
+    }
+
+    class NLargerThan : FlValidation
+    {
+        float value;
+
+        public NLargerThan(float value)
+        {
+            this.value = value;
+        }
+
+        public override bool Check(float value, Tracer tracer = null, List<string> options = null)
+        {
+            if (value > this.value)
+            {
+                return true;
+            }
+
+            else
+            {
+                if (tracer != null) { Command.AddMessage(GetDiscription(), Tracer.MessageLevel.error, tracer, options); }
+                return false;
+            }
+        }
+
+        public override string GetDiscription()
+        {
+            return value.ToString() + "よりも大きな値でなければなりません．";
         }
     }
 

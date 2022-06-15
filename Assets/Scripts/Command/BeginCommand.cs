@@ -8,9 +8,18 @@ public class BeginCommand : Command
     public BeginCommand()
     {
         commandName = "begin";
-
-        description = "マップを切り替える機能を提供します．\n" +
-            "マップを切り替えるには，'begin'のあとにマップの名称を指定してください．";
+        description = "マップを切り替える機能を提供します．";
+        detail = "マップを切り替えるには，'begin'のあとにマップの名称を指定してください．" +
+            "たとえば，最初のマップに移動したい場合は 'begin ez_athletic' を実行します．\n" +
+            "※マップの名称の一覧：\n" +
+            "\tez_athletic\n" +
+            "\tez_square\n" +
+            "\tez_square2\n" +
+            "\tez_nostalgia\n" +
+            "\tez_horizon\n" +
+            "\tez_training\n" +
+            "\tez_flyer\n" +
+            "\tez_settingroom";
     }
 
     public override List<string> AvailableValues(List<string> values)

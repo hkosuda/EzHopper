@@ -7,7 +7,7 @@ public class OverrideCommand : Command
 {
     static readonly List<string> available = new List<string>()
     {
-        "echo", "flash", "mute", "none"
+        "echo", "flash", "mute", "silent", "none"
     };
 
     enum OverrideOption
@@ -24,6 +24,16 @@ public class OverrideCommand : Command
     public OverrideCommand()
     {
         commandName = "override";
+        description = "システムが内部的に実行するコードを含め，実行されるコードのオプションをすべて書き換える機能を提供します．";
+        detail = "メッセージを一括で '-mute' にする場合や，'bind' などで自動実行に指定しているコードが正しく機能しない際に，確認するための機能として使用することができます．" +
+            "たとえば，'override flash' を実行することでオプションに '-mute' を指定しているコードも '-flash' で実行されるため，" +
+            "正しく機能していないコマンドのメッセージを見てその原因を調べることができるようになります．\n" +
+            "利用できるオーバーライドは以下の通りです．\n" +
+            "echo  : すべてのコードを '-echo' つきで実行します．オプションに '-echo' を付けることで，コンソールとチャットの両方にメッセージが表示されます．\n" +
+            "flash : すべてのコードを '-flash' つきで実行します．オプションに '-flash' を付けることで，チャットにのみメッセージが表示されます．\n" +
+            "mute  : すべてのコードを '-mute' つきで実行します．オプションに '-mute' を付けることで，コンソール，チャットのどちらにもメッセージが表示されません．\n" +
+            "silent: すべてのコードのメッセージをコンソールにのみ表示します．\n" +
+            "none  : オーバーライドの利用を停止します．";
     }
 
     public override List<string> AvailableValues(List<string> values)

@@ -7,9 +7,9 @@ public class UnbindCommand : Command
     public UnbindCommand()
     {
         commandName = "unbind";
-        description = "作成したキーバインドを削除する機能を提供します．\n" +
-            "特定のキーバインドを指定するには，キーバインドの番号を使用します．そのため，いちどコンソールで'bind'と入力し" +
-            "削除したいキーバインドが何番に指定されているかを確認してから実行しましょう．";
+        description = "作成したバインドを削除する機能を提供します．";
+        detail = "バインドを指定するには，'unbind 0' のように 'bind' のあとに番号を指定します．" +
+            "そのため，事前にコンソールで'bind'と入力し削除したいバインドが何番に指定されているかを確認しましょう．";
     }
 
     public override List<string> AvailableValues(List<string> values)

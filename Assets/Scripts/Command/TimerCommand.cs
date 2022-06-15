@@ -16,6 +16,8 @@ public class TimerCommand : Command
     {
         commandName = "timer";
         description = "ゲーム内での経過時間を計測する機能を提供します．";
+        detail = "'timer start' でタイマーを起動し，'timer stop' でタイマーを停止します．'timer now' は現在の経過時間を表示する場合に使用できます．\n" +
+            "'timer restart' はタイマーを初期化することなくタイマーを起動できます．";
 
         SetEvent(1);
     }
@@ -71,7 +73,7 @@ public class TimerCommand : Command
 
             if(value == "now")
             {
-                var info = "経過時間：【" + TimeString(PastTime) + "】";
+                var info = TimeString(PastTime);
                 AddMessage(info, Tracer.MessageLevel.normal, tracer, options);
             }
 
@@ -88,13 +90,13 @@ public class TimerCommand : Command
             {
                 Active = false;
 
-                var info = "タイマーを停止しました．";
+                var info = "タイマーを停止しました【" + TimeString(PastTime) + "】";
                 AddMessage(info, Tracer.MessageLevel.normal, tracer, options);
             }
 
             else if (value == "restart")
             {
-                var info = "タイマーを再起動しました．現在の経過時間は【" + TimeString(PastTime) + "】です．";
+                var info = "タイマーを再起動しました【" + TimeString(PastTime) + "】";
                 AddMessage(info, Tracer.MessageLevel.normal, tracer, options);
             }
 

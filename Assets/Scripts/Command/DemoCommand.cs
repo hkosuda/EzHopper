@@ -35,6 +35,9 @@ public class DemoCommand : Command
     {
         commandName = "demo";
         description = "デモを再生する機能を提供します．\n";
+        detail = "デモとは，あらかじめ用意されたデータのことです．主にそのマップの攻略方法を確認する際に活用します．\n" +
+            "'replay'と同様に，データのマップ情報が現在のマップと異なる場合，実行時にマップが切り替わってしまうので注意してください．\n" +
+            "なお，デモの再生と同時にゴーストも起動します．";
 
 #if UNITY_EDITOR
         foreach(var value in availableValues)
@@ -99,7 +102,7 @@ public class DemoCommand : Command
                     AddMessage("現在のマップと異なるマップのデモデータであるため，マップを切り替えて実行します．", Tracer.MessageLevel.warning, tracer, options);
                 }
 
-                Ghost.BeginReplay(new List<float[]>(dataList));
+                Ghost.BeginReplay(new List<float[]>(dataList), mapName);
                 DemoManager.BeginDemo(new List<float[]>(dataList));
                 
                 AddMessage("デモを起動しました．", Tracer.MessageLevel.normal, tracer, options);

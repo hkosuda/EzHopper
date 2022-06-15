@@ -124,7 +124,12 @@ public class ConsoleMessage : MonoBehaviour
         if (consoleLogText != null) { UpdateLogText(); }
     }
 
-    
+    static public void ClearLog()
+    {
+        consoleLog = "";
+
+        UpdateLogText();
+    }
 
     static string consoleLog = "<color=lime> - EzHopper ver 1.0 - </color>\n" +
         "<color=orange>" +

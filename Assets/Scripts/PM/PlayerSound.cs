@@ -88,7 +88,7 @@ public class PlayerSound : MonoBehaviour
 
         var speed = Floats.Get(Floats.Item.pm_max_speed_on_ground);
 
-        if (PM_Main.Rb.velocity.magnitude < speed * 0.75f) 
+        if (PM_Main.Rb.velocity.magnitude < speed * 0.6f) 
         {
             footstepIntervalRemain = footstepInterval;
             return;

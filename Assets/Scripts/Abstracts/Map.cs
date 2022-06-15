@@ -56,7 +56,7 @@ public abstract class Map : MonoBehaviour
 
     public void Back(int index = -1)
     {
-        if (0 <= index && index < respawnPositions.Length - 1)
+        if (0 <= index && index < respawnPositions.Length)
         {
             Index = index;
         }

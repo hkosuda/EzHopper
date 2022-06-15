@@ -50,8 +50,8 @@ public class Keyconfig : MonoBehaviour
 
     static public Dictionary<KeyAction, Key> DefaultKeybindList { get; } = new Dictionary<KeyAction, Key>()
     {
-        { KeyAction.jump, new Key(KeyCode.Space) },
-        { KeyAction.autoJump, new Key(KeyCode.Mouse1) },
+        { KeyAction.jump, new Key(KeyCode.None, 1) },
+        { KeyAction.autoJump, new Key(KeyCode.Space) },
         { KeyAction.forward, new Key(KeyCode.W) },
         { KeyAction.backward, new Key(KeyCode.S) },
         { KeyAction.right, new Key(KeyCode.D) },

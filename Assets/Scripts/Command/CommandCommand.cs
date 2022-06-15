@@ -7,7 +7,10 @@ public class CommandCommand : Command
     public CommandCommand()
     {
         commandName = "command";
-        description = "コマンドの一覧を表示します．詳細付きで一覧を表示するときは，'command description'を実行してください．";
+        description = "コマンドの一覧を表示します．";
+        detail = "コマンドの一覧を表示するには'command'を実行します．簡単な説明付きで一覧を表示するときは，'command description'を実行してください．" +
+            "詳細つきでコマンドの一覧を表示するには'command detail'を実行します．\n" +
+            "ただしコンソールでは読みにくいでしょうから，詳細まで見たい場合はメニューからコマンド一覧を参照することをお勧めします．";
     }
 
     public override List<string> AvailableValues(List<string> values)
@@ -31,30 +34,33 @@ public class CommandCommand : Command
 
         if (values.Count == 1)
         {
-            AddMessage(GetHelpText(false), Tracer.MessageLevel.normal, tracer, options);
-            return;
+            AddMessage(GetHelpText(false), Tracer.MessageLevel.normal, tracer, options, 0);
         }
 
-        if (values.Count == 2)
+        else if (values.Count == 2)
         {
             var value = values[1];
 
             if (value == "description")
             {
-                AddMessage(GetHelpText(true), Tracer.MessageLevel.normal, tracer, options);
-                return;
+                AddMessage(GetHelpText(true), Tracer.MessageLevel.normal, tracer, options, 0);
+            }
+
+            else if (value == "detail")
+            {
+                AddMessage(CommandsWithDetail(), Tracer.MessageLevel.normal, tracer, options, 0);
             }
 
             else
             {
-                AddMessage("詳細つきで一覧を表示するときは'command description'，詳細を省いて一覧を表示するときは'command'を実行してください．", Tracer.MessageLevel.error, tracer, options);
-                return;
+                AddMessage("簡単な説明つきで一覧を表示するときは'command description'，" +
+                    "詳細付きで一覧を表示するときは'command detail'を実行してください．", Tracer.MessageLevel.error, tracer, options);
             }
         }
 
         else
         {
-            AddMessage("2個以上の値を指定することはできません．", Tracer.MessageLevel.error, tracer, options);
+            AddMessage(ERROR_OverValues(1), Tracer.MessageLevel.error, tracer, options);
         }
     }
 
@@ -69,7 +75,7 @@ public class CommandCommand : Command
             if (showDescription)
             {
                 text += "【" + command.Key + "】\n";
-                text += command.Value.description + "\n\n";
+                text += Paragraph(command.Value.description) + "\n\n";
             }
 
             else
@@ -78,11 +84,39 @@ public class CommandCommand : Command
             }
         }
 
-        if (!showDescription)
+        return text.TrimEnd(new char[1] { '\n' });
+    }
+
+    static public string CommandsWithDetail()
+    {
+        var info = "";
+
+        foreach (var command in CommandReceiver.CommandList)
         {
-            text += "\n" + "詳細付きで一覧を表示するときは，'command description'を実行してください．";
+            if (command.Value.commandType == CommandType.values) { continue; }
+
+            info += "【" + command.Key + "】\n";
+            info += "・概要\n";
+            info += Paragraph(command.Value.description) + "\n";
+            info += "・詳細\n";
+            info += Paragraph(command.Value.detail) + "\n\n";
         }
 
-        return text.TrimEnd(new char[1] { '\n' });
+        return info.TrimEnd(new char[] { '\n' });
+    }
+
+    static public string Paragraph(string content)
+    {
+        var splitted = content.Split(new char[] { '\n' });
+        if (splitted == null || splitted.Length == 0) { return ""; }
+
+        var paragraph = "";
+
+        foreach (var s in splitted)
+        {
+            paragraph += " " + s + "\n";
+        }
+
+        return paragraph.TrimEnd(new char[] { '\n' });
     }
 }

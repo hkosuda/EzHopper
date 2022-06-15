@@ -8,6 +8,7 @@ public class PrevCommand : Command
     {
         commandName = "prev";
         description = "中間地点が複数設定されているマップで，ひとつ前の中間地点に移動する機能を提供します．";
+        detail = "中間地点がひとつしか設定されていなマップでは，常に決まった位置に移動します．";
     }
 
     public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)

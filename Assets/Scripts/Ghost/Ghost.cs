@@ -10,6 +10,8 @@ public class Ghost : MonoBehaviour
 
     // params
     static List<float[]> dataList;
+    static MapName mapName = MapName.none;
+
     static float pastTime;
 
     // objects
@@ -56,7 +58,8 @@ public class Ghost : MonoBehaviour
 
     static void UpdateMethod(object obj, float dt)
     {
-        if (dataList == null || dataList.Count == 0) { return; }
+        if (dataList == null || dataList.Count == 0) { SetVisibility(false); return; }
+        if (mapName != MapsManager.CurrentMap.MapName) { SetVisibility(false); return; }
 
         pastTime += dt;
         if (pastTime > dataList.Last()[0]) { Repeat(); return; }
@@ -78,7 +81,7 @@ public class Ghost : MonoBehaviour
     {
         var pos = Vec3(InterpolatedData, -PM_Main.centerY);
         
-        if ((prevLinePos - pos).magnitude > 1.0f)
+        if ((prevLinePos - pos).magnitude > 10.0f)
         {
             InitializeLine(pos);
         }
@@ -92,10 +95,8 @@ public class Ghost : MonoBehaviour
         prevLinePos = pos;
     }
 
-    static public void BeginReplay(List<float[]> _dataList)
+    static public void BeginReplay(List<float[]> _dataList, MapName _mapName)
     {
-        Debug.Log(_dataList.Count);
-
         EndReplay();
 
         if (_ghost == null) { _ghost = Resources.Load<GameObject>("Ghost/Ghost"); }
@@ -104,6 +105,8 @@ public class Ghost : MonoBehaviour
         if (GameSystem.Root == null) { return; }
 
         dataList = _dataList;
+        mapName = _mapName;
+
         pastTime = 0.0f;
 
         if (dataList == null || dataList.Count == 0) { return; }

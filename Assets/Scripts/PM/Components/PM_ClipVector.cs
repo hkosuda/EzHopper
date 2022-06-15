@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PM_ClipVector : ControllerComponent
 {
-    static readonly float dyOnSlope = 1.062f;
+    static readonly float dyOnSlope = 1.070f;
 
     static public Vector3 ClipVector { get; private set; }
 
@@ -41,6 +41,8 @@ public class PM_ClipVector : ControllerComponent
 
     static void CalcClipVector(Vector3 v)
     {
+        Debug.Log("Clip");
+
         var normal = PM_Landing.HitInfo.normal;
         var backoff = Vector3.Dot(v, normal);
 

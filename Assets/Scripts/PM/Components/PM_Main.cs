@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class PM_Main : MonoBehaviour
 {
+    static readonly Floats.Item gravityItem = Floats.Item.pm_gravity;
+
     static public EventHandler<bool> Initialized { get; set; }
 
     static public readonly float centerY = 0.9f;
@@ -51,6 +53,7 @@ public class PM_Main : MonoBehaviour
 
     void Start()
     {
+        UpdateGravity(null, 0.0f);
         SetEvent(1);
     }
 
@@ -67,6 +70,7 @@ public class PM_Main : MonoBehaviour
             InGameTimer.LateUpdated += LateUpdateMethod;
 
             DemoTimer.Updated += DemoUpdateMethod;
+            Floats.Settings[gravityItem].ValueUpdated += UpdateGravity;
         }
 
         else
@@ -75,7 +79,13 @@ public class PM_Main : MonoBehaviour
             InGameTimer.LateUpdated -= LateUpdateMethod;
 
             DemoTimer.Updated -= DemoUpdateMethod;
+            Floats.Settings[gravityItem].ValueUpdated -= UpdateGravity;
         }
+    }
+
+    static void UpdateGravity(object obj, float prev)
+    {
+        Physics.gravity = new Vector3(0.0f, -Floats.Get(gravityItem), 0.0f);
     }
 
     static void UpdateMethod(object obj, float dt)

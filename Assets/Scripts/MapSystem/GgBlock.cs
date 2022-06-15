@@ -42,8 +42,7 @@ public class GgBlock : MonoBehaviour
         if (glhfFlag)
         {
             glhfFlag = false;
-
-            ToxicSystem.SendDelayedToxicChat("glhf");
+            CommandReceiver.RequestCommand("delayedchat 0.5 1.0 glhf -m");
         }
     }
 
@@ -58,8 +57,7 @@ public class GgBlock : MonoBehaviour
         if (ggFlag)
         {
             ggFlag = false;
-
-            ToxicSystem.SendDelayedToxicChat("gg", 1.0f, 3.0f);
+            CommandReceiver.RequestCommand("delayedchat 0.5 1.0 gg -m");
         }
     }
 }

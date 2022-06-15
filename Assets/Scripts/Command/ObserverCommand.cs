@@ -19,14 +19,14 @@ public class ObserverCommand : Command
     public ObserverCommand()
     {
         commandName = "observer";
-        description = "神視点モードを起動し，プレイヤーがマップ上を自由に移動する機能を提供します．\n" +
-            "'observer start'で神視点モードを起動し，'observer end'で神視点モードを起動した場所まで戻ります．" +
-            "また，神視点モード中にジャンプ入力を行うと，任意の場所に着地できます．\n" +
-            "ただし，着地すると中間地点まで戻されるような場所では，すぐに中間地点まで戻されるので注意しましょう．\n" +
-            "悪用しないようにしましょう．";
+        description = "神視点モードを起動し，プレイヤーがマップ上を自由に移動する機能を提供します．";
+        detail = "'observer start'で神視点モードを起動し，'observer end'で神視点モードを起動した場所まで戻ります．" +
+            "また，神視点モード中にジャンプ入力を行うか 'observer land' を実行すると，任意の場所に着地できます．\n" +
+            "ただし，着地すると中間地点まで戻されるような場所では，すぐに中間地点まで戻されるので注意しましょう．" +
+            "また，オブジェクトの内側などでは着地に失敗する場合があります．\n" +
+            "悪用はしないようにしましょう．";
 
         _virtualPlayer = Resources.Load<GameObject>("God/VirtualPlayer");
-
         SetEvent(1);
     }
 
@@ -129,7 +129,7 @@ public class ObserverCommand : Command
                     var pos = PM_Main.Myself.transform.position;
                     var posString = "x : " + pos.x.ToString() + ", y: " + pos.y.ToString() + ", z : " + pos.z.ToString();
 
-                    AddMessage("神視点モードを終了しました．現在の座標は " + posString + " です．", Tracer.MessageLevel.normal, tracer, options);
+                    AddMessage("神視点モードを終了しました．", Tracer.MessageLevel.normal, tracer, options);
                 }
 
                 else

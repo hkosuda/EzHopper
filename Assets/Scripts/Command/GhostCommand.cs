@@ -7,10 +7,12 @@ public class GhostCommand : Command
     public GhostCommand()
     {
         commandName = "ghost";
-        description = "ゴーストを起動する機能を提供します．\n" +
-            "単に'ghost'と入力すると，直前に記録したプレイヤーの動きを再現します．記録がなければ再現は行われません．\n" +
-            "保存したデータを呼び出して実行するときは，'ghost play <name>としてください（<name>の部分にデータ名）．\n" +
-            "ゴーストを終了するには，'ghost end'を実行します．";
+        description = "ゴーストを起動する機能を提供します．";
+        detail = "単に'ghost'と入力すると，直前に記録したプレイヤーの動きに関するデータを再現します．データがなければ再現は行われません．" +
+            "データの作成は'recorder'コマンドを使用して行います．'ghost' を自動で実行する場合は，必ず 'recorder end' を実行してから行うようにしましょう．\n" +
+            "保存したデータを呼び出して実行するときは，'ghost play <name>' を実行してください（<name>は任意のデータ名）．" +
+            "ゴーストを終了するには，'ghost end'を実行します．\n" +
+            "ゴーストは，'demo' や 'replay' と異なり，データのマップ情報が現在のマップと異なる場合は再生が行われないため注意してください．";
     }
 
     public override List<string> AvailableValues(List<string> values)
@@ -63,7 +65,7 @@ public class GhostCommand : Command
         {
             var dataParams = RecordCacheSystem.CachedData;
 
-            if (dataParams == null) 
+            if (dataParams == null)
             {
                 AddMessage("データが存在しないため，利用できません．", Tracer.MessageLevel.error, tracer, options);
             }
@@ -135,7 +137,7 @@ public class GhostCommand : Command
                 return;
             }
 
-            Ghost.BeginReplay(param.dataList);
+            Ghost.BeginReplay(param.dataList, param.mapName);
             AddMessage("ゴーストを起動しました．", Tracer.MessageLevel.normal, tracer, options);
         }
     }

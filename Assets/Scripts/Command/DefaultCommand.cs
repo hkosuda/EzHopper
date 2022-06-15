@@ -7,7 +7,8 @@ public class DefaultCommand : Command
     public DefaultCommand()
     {
         commandName = "default";
-        description = "値に関する設定をデフォルト値に戻します．";
+        description = "'pm_' で始まる設定をデフォルト値に戻します．";
+        detail = "'pm_' で始まる設定は，プレイヤーの動きに関する設定を示します．";
     }
 
     public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)
@@ -18,6 +19,7 @@ public class DefaultCommand : Command
         {
             foreach(var setting in Floats.Settings)
             {
+                if (!setting.Key.ToString().StartsWith("pm_")) { continue; }
                 setting.Value.SetDefault();
             }
 

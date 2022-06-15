@@ -51,6 +51,8 @@ public class CheckPoint : MonoBehaviour
 
     private void Start()
     {
+        SetEvent(1);
+
 #if UNITY_EDITOR
         if (map == null)
         {
@@ -67,6 +69,24 @@ public class CheckPoint : MonoBehaviour
             Debug.LogError("Current map is not same.");
         }
 #endif
+    }
+
+    private void SetEvent(int indicator)
+    {
+        if (indicator > 0)
+        {
+            MapsManager.Initialized += SetEnterFlag;
+        }
+
+        else
+        {
+            MapsManager.Initialized -= SetEnterFlag;
+        }
+    }
+
+    void SetEnterFlag(object obj, bool mute)
+    {
+        enterFlag = true;
     }
 
     private void OnTriggerEnter(Collider other)

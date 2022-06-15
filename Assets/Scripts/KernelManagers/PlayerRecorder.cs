@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class PlayerRecorder : IKernelManager
 {
-    static public readonly float limitTime = 120.0f;
     static public readonly int dataSize = 10;
 
     static public EventHandler<List<float[]>> RecordingEnd { get; set; }
@@ -68,6 +67,8 @@ public class PlayerRecorder : IKernelManager
         data[9] = CheckInput(Keyconfig.CheckInput(Keyconfig.KeyAction.left, false));
 
         dataList.Add(data);
+
+        var limitTime = Floats.Get(Floats.Item.recorder_limit_time);
 
         if (pastTime > limitTime)
         {

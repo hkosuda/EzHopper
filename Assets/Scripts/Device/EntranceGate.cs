@@ -16,10 +16,12 @@ public class EntranceGate : MonoBehaviour
 
     private void Start()
     {
+#if UNITY_EDITOR
         if (exitGate == null)
         {
             Debug.LogError("No Exit Gate");
         }
+#endif
     }
 
     private void OnTriggerStay(Collider other)

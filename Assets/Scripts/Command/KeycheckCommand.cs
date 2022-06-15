@@ -9,7 +9,11 @@ public class KeycheckCommand : Command
     public KeycheckCommand()
     {
         commandName = "keycheck";
-        description = "入力したキーが，ゲーム内でどんな文字列として扱われるかを確認する機能を提供します．";
+        description = "入力したキーが，ゲーム内でどのような文字列として扱われるかを確認する機能を提供します．";
+        detail = "使い方としては，'keycheck' を実行したあとで任意のキーを押します．ゲームが入力を受け付けると，" +
+            "コンソールに押したキーに対応する文字列が表示されます．'bind' などを使用したいもののキーの名称がわからないときに使用しましょう．\n" +
+            "なお，キーの名称の多くはUnity（このゲームの作成に使用したゲームエンジンの名称）のKeyCodeをすべて小文字になおしたものとなっています．" +
+            "そのため，keycheckコマンドによる確認以外にもUnityのスクリプトリファレンスが役に立つかもしれません．";
     }
 
     public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)

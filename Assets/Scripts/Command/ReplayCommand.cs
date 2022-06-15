@@ -7,6 +7,9 @@ public class ReplayCommand : Command
     public ReplayCommand()
     {
         commandName = "replay";
+        description = "記録したデータを再生する機能を提供します．";
+        detail = "'replay <name>' のように，'replay' のあとにデータ名を指定することでデータを再生できます．" +
+            "データを作成するには，'recorder' を使用してください．なお，データのマップ情報が現在のマップと異なる場合，マップが切り替わってしまうので注意してください．";
     }
 
     public override List<string> AvailableValues(List<string> values)

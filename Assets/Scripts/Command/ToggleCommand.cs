@@ -5,12 +5,18 @@ using UnityEngine;
 
 public class ToggleCommand : Command
 {
+    static public EventHandler<bool> ToggleUpdated { get; set; }
     static public List<ToggleGroup> ToggleGroupList = new List<ToggleGroup>();
 
     public ToggleCommand()
     {
         commandName = "toggle";
         description = "ふたつのコマンドを，トグルで実行する機能を提供します．";
+        detail = "使用方法としては，'toggle r \"recorder start\" \"recorder end\"' のように 'toggle' の後にキーの名前，" +
+            "そのあとにトグルで実行するコードをふたつ指定します．\n" +
+            "上記を実行することで，Rキーを押すことで 'recorder start' と 'recorder end' を交互に実行することができます．\n" +
+            "トグルの設定を削除するには，'toggle remove 0' のように 'toggle remove' の後に削除したい設定の番号を指定します．" +
+            "番号およびトグルの設定を確認するには，'toggle' を実行してください．";
 
         SetEvent(1);
     }
@@ -160,6 +166,8 @@ public class ToggleCommand : Command
         {
             AddMessage(ERROR_OverValues(3), Tracer.MessageLevel.error, tracer, options);
         }
+
+        ToggleUpdated?.Invoke(null, false);
 
         // - inner function
         static string ERROR_InvalidValues()

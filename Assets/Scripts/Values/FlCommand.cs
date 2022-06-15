@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class FlCommand : Command
 {
-    Floats.Item item;
+    Floats.Item item = Floats.Item.none;
+    FlSetting setting;
 
     public FlCommand(Floats.Item item)
     {
@@ -13,8 +14,27 @@ public class FlCommand : Command
         commandName = item.ToString();
         commandType = CommandType.values;
 
-        var setting = Floats.Settings[item];
+        setting = Floats.Settings[item];
 
+        UpdateDescription(null, 0.0f);
+        SetEvent(1);
+    }
+
+    void SetEvent(int indicator)
+    {
+        if (indicator > 0)
+        {
+            Floats.Settings[item].ValueUpdated += UpdateDescription;
+        }
+
+        else
+        {
+            Floats.Settings[item].ValueUpdated -= UpdateDescription;
+        }
+    }
+
+    void UpdateDescription(object obj, float prev)
+    {
         description = setting.Description;
         description += "\n現在の値：" + CurrentValue() + ", デフォルト値：" + DefaultValue();
     }

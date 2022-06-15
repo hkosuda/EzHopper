@@ -128,7 +128,7 @@ public class ConsoleInputField : MonoBehaviour
         }
 
         corrected = AddOptions(corrected, options);
-        inputField.text = corrected;
+        inputField.text = corrected.TrimStart();
         inputField.caretPosition = inputField.text.Length;
 
         // - inner function

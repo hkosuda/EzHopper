@@ -16,6 +16,7 @@ public class FrontView : MonoBehaviour
 
     void Start()
     {
+        UpdateMaterial(null, false);
         SetEvent(1);
     }
 

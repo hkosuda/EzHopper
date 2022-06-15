@@ -15,9 +15,11 @@ public class AnchorCommand : Command
     public AnchorCommand()
     {
         commandName = "anchor";
-        description = "プレイヤーの座標を記録し，その場所に戻る機能を提供します．\n" +
-            "'anchor " + Values.set.ToString() + "'で座標を記録し，'anchor " + Values.back.ToString() + "'でその座標まで戻ります．\n" +
-            "なお，マップが変更されると座標のデータは削除されます．";
+        description = "プレイヤーの座標を記録し，その場所に戻る機能を提供します．";
+        detail = "'anchor set'で座標を記録し，'anchor back' でその座標まで戻ります." +
+            "マップが変更されると座標のデータは削除されてしまうので注意してください．\n" +
+            "毎回，自身がスタートしたい位置に移動するのが面倒だというときや，" +
+            "コースアウトと判定される前にリトライしたいときなどにこの機能を利用しましょう．";
     }
 
     public override void OnMapInitialized()

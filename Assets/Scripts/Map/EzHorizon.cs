@@ -55,6 +55,7 @@ public class EzHorizon : Map
             var rotY = respawnPositions[0].transform.eulerAngles.y;
 
             PM_Main.ResetPosition(pos, rotY);
+            InvalidArea.CourseOut?.Invoke(null, pos);
         }
     }
 }

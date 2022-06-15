@@ -9,7 +9,11 @@ public class CopyCommand : Command
     public CopyCommand()
     {
         commandName = "copy";
-        description = "現在の設定を再現するためのコマンドをクリップボードにコピーします．";
+        description = "現在の設定を再現するためのコードをクリップボードにコピーします．";
+        detail = "'copy' を実行することで，クリップボードに現在の設定を再現するためのコードがコピーされます．" +
+            "メモ帳などに保存しておくことで，次回から設定を素早く設定できるようになります．なお，コードを一括で実行するには，" +
+            "メモ帳などに記載されたコードをクリップボードにコピーしてから'paste' を実行します．\n" +
+            "コピーされる内容は，値に関する設定，'bind'の設定，'toggle'の設定，'invoke'の設定を復元するためのコードです．";
     }
 
     public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)

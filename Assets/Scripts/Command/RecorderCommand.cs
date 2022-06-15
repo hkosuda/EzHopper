@@ -13,12 +13,14 @@ public class RecorderCommand : Command
     public RecorderCommand()
     {
         commandName = "recorder";
-        description = "プレイヤーの動きを記録する機能（レコーダー）を提供します．\n" +
-            "レコーダーは，無効なエリアに侵入したとき，もしくは" + ((int)PlayerRecorder.limitTime).ToString() + "秒経過すると自動で停止します．\n" +
-            "'recorder start'で記録を開始し，'recorder end'で記録を停止します．記録したデータは，次の記録が終了するまで一時的に保存されます．\n" +
-            "一時的に保存されている間に'recorder save <name>'を実行すると，ゲームを起動している間だけ名前付きでデータを保持し続けます（<name>の部分に任意の名前を入力します．" +
-            "ここで作成した名前付きデータは，demoコマンドやghostコマンドで利用可能となります．\n" +
-            "保存したデータを削除するには，'recorder start <name>'を実行してください．";
+        description = "プレイヤーの動きを記録する機能（レコーダー）を提供します．\n";
+        detail = "'recorder start' で記録を開始し，'recorder end' で記録を停止します．記録したデータは，次の記録が終了するまで一時的に保存されます．" + 
+            "'ghost' や 'replay' の実行時に利用されるデータは，この一時的に保存されたデータです．\n" +
+            "'recorder stop' を実行すると，一時的な保存データを書き換えることなくレコーダーを停止できます．" + 
+            "一時的に保存されている間に'recorder save <name>'を実行すると，ゲームを起動している間だけ名前付きでデータを保持し続けます（<name>の部分に任意の名前を入力します）．" +
+            "ここで作成した名前付きデータは，'replay' コマンドや 'ghost' コマンドで利用可能となります．\n" +
+            "レコーダーは，" + Floats.Item.recorder_limit_time.ToString() + "で指定された時間が経過すると自動で停止します．\n" +
+            "保存したデータを削除するには，'recorder remove <name>'を実行してください．また，'remove_last' で最後に保存が行われたデータ名を持つデータを削除することができます．";
     }
 
     public override List<string> AvailableValues(List<string> values)

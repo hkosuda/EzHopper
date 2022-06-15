@@ -6,11 +6,15 @@ using UnityEngine.UI;
 public class MenuButtonGroup : MonoBehaviour
 {
     static GameObject _howToPlayWindow;
+    static GameObject _commandWindow;
+    static GameObject _commandIndexWindow;
     static GameObject _settingWindow;
 
     private void Awake()
     {
         if (_howToPlayWindow == null) { _howToPlayWindow = Resources.Load<GameObject>("UI/HowToPlayWindow"); }
+        if (_commandWindow == null) { _commandWindow = Resources.Load<GameObject>("UI/CommandWindow"); }
+        if (_commandIndexWindow == null) { _commandIndexWindow = Resources.Load<GameObject>("UI/CommandIndexWindow"); }
         if (_settingWindow == null) { _settingWindow = Resources.Load<GameObject>("UI/SettingWindow"); }
     }
 
@@ -22,13 +26,19 @@ public class MenuButtonGroup : MonoBehaviour
         var settingButton = GetButton(1);
         settingButton.onClick.AddListener(OpenSettingWindow);
 
-        var restartButton = GetButton(2);
+        var commandButton = GetButton(2);
+        commandButton.onClick.AddListener(OpenCommandWindow);
+
+        var commandIndexWindow = GetButton(3);
+        commandIndexWindow.onClick.AddListener(OpenCommandIndexWindow);
+
+        var restartButton = GetButton(4);
         restartButton.onClick.AddListener(Restart);
 
-        var backToStartButton = GetButton(3);
+        var backToStartButton = GetButton(5);
         backToStartButton.onClick.AddListener(BackToStart);
 
-        var finishGameButton = GetButton(4);
+        var finishGameButton = GetButton(6);
         finishGameButton.onClick.AddListener(FinishTheGame);
     }
 
@@ -46,6 +56,16 @@ public class MenuButtonGroup : MonoBehaviour
     static void OpenSettingWindow()
     {
         Instantiate(_settingWindow);
+    }
+
+    static void OpenCommandWindow()
+    {
+        Instantiate(_commandWindow);
+    }
+
+    static void OpenCommandIndexWindow()
+    {
+        Instantiate(_commandIndexWindow);
     }
 
     static void Restart()

@@ -8,6 +8,7 @@ public class CurrentVelocity : MonoBehaviour
     static readonly Bools.Item _show = Bools.Item.show_velocity;
 
     static Text velocityText;
+    static string currentVelocity = "";
 
     private void Awake()
     {
@@ -48,8 +49,12 @@ public class CurrentVelocity : MonoBehaviour
     static void UpdateMethod(object obj, float dt)
     {
         var v = PM_Main.Rb.velocity;
-        var pv = new Vector2(v.x, v.z);
+        var pv = new Vector2(v.x, v.z).magnitude.ToString("f2");
 
-        velocityText.text = pv.magnitude.ToString("f2") + " [m/s]";
+        if (pv != currentVelocity)
+        {
+            currentVelocity = pv;
+            velocityText.text = pv + " [m/s]";
+        }
     }
 }

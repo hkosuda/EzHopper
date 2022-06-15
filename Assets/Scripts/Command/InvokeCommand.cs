@@ -21,6 +21,7 @@ public class InvokeCommand : Command
         on_enter_start,
         on_exit_start,
         on_enter_goal,
+        on_map_changed,
     }
 
     static public Dictionary<GameEvent, List<SwitchCommand>> BindingListList { get; private set; } = new Dictionary<GameEvent, List<SwitchCommand>>();
@@ -28,8 +29,26 @@ public class InvokeCommand : Command
     public InvokeCommand()
     {
         commandName = "invoke";
-        description = "ゲーム内の特定のイベントが発生したときにコマンドを呼び出す機能を提供します．\n" +
-            "";
+        description = "ゲーム内の特定のイベントが発生したときにコマンドを呼び出す機能を提供します．";
+        detail = "新たに自動実行するコードを追加する場合は'add'，指定した位置にコードを挿入するには'insert'，" +
+            "指定した番号のコードを書き換えるには'replace'，番号を入れ替えるには'swap'，削除するには'remove'，" +
+            "指定した番号のコードの自動実行を停止するには'inactivate'，停止を解除するには'activate' を1番目の値に指定します．\n" +
+            "'add' を使用した追加の方法としては，'invoke add on_course_out \"back 0\"' のように，'add' のあとにイベントの名称を指定し，" +
+            "その次に自動実行するコードを二重引用符で囲んで指定します．\n" +
+            "'insert' を使用したコードの挿入方法としては，'invoke insert on_enter_checkpoint 0 \"recorder end\"' のように 'insert' のあとにイベント名，" +
+            "その次に挿入する位置を示す番号を指定します．番号を確認するには，'invoke' を実行して一覧を参照してください．\n" +
+            "'replace' を使用したコードの書き換え方法は，'invoke replace on_course_out 0 \"back 0\"' のように，'replace' のあとにイベント名，" +
+            "その次に書き換えを行うコードの番号を指定します．\n" +
+            "'swap' を使用したコードの入れ替え方法としては，'invoke swap on_enter_checkpoint 0 1' のように 'swap' の後に入れ替える番号をふたつ指定します．\n" +
+            "'remove' を使用したコードの削除の方法としては，'invoke remove on_enter_checkpoint 0' のように，'remove' の後にイベント名，" +
+            "その次に削除するコードの番号を指定します．\n" +
+            "'inactivate' を使用したコードの実行の停止方法としては，'invoke inactivate on_course_out 0' のように，'inactivate' のあとにイベント名，" +
+            "その次に番号を指定します．\n" +
+            "'activate' を使用したコードの停止の解除方法としては，'invoke activate on_course_out 0' のように，'activate' のあとにイベント名，" +
+            "その次に番号を指定します．\n" +
+            "'remove_all' を使用したコードの一括削除の方法としては，'invoke remove_all on_enter_checkpoint' のように 'remove_all' のあとにイベント名を指定します．" +
+            "あるいは，'remove_all' のあとに 'all' を指定することで，inovoke の設定をすべて削除できます．\n" +
+            "なお，'on_map_changed' と 'begin' コマンドの組み合わせは設定できません．";
 
         InitializeList();
         SetEvent(1);
@@ -58,6 +77,7 @@ public class InvokeCommand : Command
             CheckPoint.EnterStart += IgniteEnterStart;
             CheckPoint.ExitStart += IgniteExitStart;
             CheckPoint.EnterGoal += IgniteEnterGoal;
+            MapsManager.Initialized += IgniteMapChanged;
         }
 
         else
@@ -69,6 +89,7 @@ public class InvokeCommand : Command
             CheckPoint.EnterStart -= IgniteEnterStart;
             CheckPoint.ExitStart -= IgniteExitStart;
             CheckPoint.EnterGoal -= IgniteEnterGoal;
+            MapsManager.Initialized -= IgniteMapChanged;
         }
     }
 
@@ -107,6 +128,11 @@ public class InvokeCommand : Command
         Ignite(GameEvent.on_enter_goal);
     }
 
+    static void IgniteMapChanged(object obj, bool mute)
+    {
+        Ignite(GameEvent.on_map_changed);
+    }
+
     static void Ignite(GameEvent igniter)
     {
         var commandList = BindingListList[igniter];
@@ -115,6 +141,8 @@ public class InvokeCommand : Command
         foreach (var command in commandList)
         {
             if (!command.active) { continue; }
+            if (igniter == GameEvent.on_map_changed && command.command.StartsWith("begin")) { continue; }
+
             CommandReceiver.RequestCommand(command.command);
         }
     }
@@ -186,6 +214,14 @@ public class InvokeCommand : Command
                 var group = values[3];
                 var command = CommandReceiver.UnpackGrouping(group);
 
+                var commandValues = CommandReceiver.GetValues(command);
+
+                if (commandValues == null || commandValues.Count == 0)
+                {
+                    AddMessage(ERROR_VoidCode(), Tracer.MessageLevel.error, tracer, options);
+                    return;
+                }
+
                 if (CheckDuplication(command, igniter))
                 {
                     AddMessage(ERROR_Duplication(), Tracer.MessageLevel.error, tracer, options);
@@ -194,8 +230,16 @@ public class InvokeCommand : Command
 
                 else
                 {
-                    BindingListList[igniter].Add(new SwitchCommand(command));
-                    AddMessage("コマンドを追加しました．", Tracer.MessageLevel.normal, tracer, options);
+                    if (igniter == GameEvent.on_map_changed && commandValues[0] == "begin")
+                    {
+                        AddMessage(ERROR_BeginOnMapChanged(), Tracer.MessageLevel.error, tracer, options);
+                    }
+
+                    else
+                    {
+                        BindingListList[igniter].Add(new SwitchCommand(command));
+                        AddMessage(igniter.ToString() + "にコマンドを追加しました：" + command, Tracer.MessageLevel.normal, tracer, options);
+                    }
                 }
             }
 
@@ -238,6 +282,13 @@ public class InvokeCommand : Command
                 else if (int.TryParse(indexString, out var index))
                 {
                     var command = CommandReceiver.UnpackGrouping(values[4]);
+                    var commandValues = CommandReceiver.GetValues(command);
+
+                    if (commandValues == null || commandValues.Count == 0)
+                    {
+                        AddMessage(ERROR_VoidCode(), Tracer.MessageLevel.error, tracer, options);
+                        return;
+                    }
 
                     if (CheckDuplication(command, igniter))
                     {
@@ -291,11 +342,18 @@ public class InvokeCommand : Command
                 else if (int.TryParse(indexString, out var index))
                 {
                     var command = CommandReceiver.UnpackGrouping(values[4]);
+                    var commandValues = CommandReceiver.GetValues(command);
+
+                    if (commandValues == null || commandValues.Count == 0)
+                    {
+                        AddMessage(ERROR_VoidCode(), Tracer.MessageLevel.error, tracer, options);
+                        return;
+                    }
 
                     if (CheckDuplication(command, igniter, index))
                     {
-                        AddMessage(ERROR_DuplicationAlert(), Tracer.MessageLevel.warning, tracer, options);
                         AddMessage(ERROR_Duplication(), Tracer.MessageLevel.error, tracer, options);
+                        AddMessage(ERROR_DuplicationAlert(), Tracer.MessageLevel.warning, tracer, options);
                     }
 
                     else
@@ -491,7 +549,7 @@ public class InvokeCommand : Command
                 }
 
                 BindingListList[igniter] = new List<SwitchCommand>();
-                AddMessage(igniter + "に結びつけられたコマンドをすべて削除しました．", Tracer.MessageLevel.normal, tracer, options);
+                AddMessage(igniter.ToString() + "に結びつけられたコマンドをすべて削除しました．", Tracer.MessageLevel.normal, tracer, options);
             }
         }
 
@@ -523,6 +581,18 @@ public class InvokeCommand : Command
         {
             return "※ 重複の判定は，オプションの有無を無視して行われます．";
         }
+
+        // - inner function
+        static string ERROR_VoidCode()
+        {
+            return "コードが空です．";
+        }
+    }
+
+    // - inner function
+    static string ERROR_BeginOnMapChanged()
+    {
+        return "'on_map_changed' と 'begin' コマンドの組み合わせは無効です．";
     }
 
     static GameEvent GetIgniter(string name)
@@ -548,8 +618,18 @@ public class InvokeCommand : Command
             return;
         }
 
-        list[index].command = command;
-        AddMessage(index.ToString() + "番目のコマンドを" + command + "に置換しました．", Tracer.MessageLevel.normal, tracer, options);
+        var commandValues = CommandReceiver.GetValues(command);
+
+        if (igniter == GameEvent.on_map_changed && commandValues[0] == "begin")
+        {
+            AddMessage(ERROR_BeginOnMapChanged(), Tracer.MessageLevel.error, tracer, options);
+        }
+
+        else
+        {
+            list[index].command = command;
+            AddMessage(index.ToString() + "番目のコマンドを" + command + "に置換しました．", Tracer.MessageLevel.normal, tracer, options);
+        }
     }
 
     static void TryInsert(int index, GameEvent igniter, string command, Tracer tracer, List<string> options)
@@ -562,8 +642,18 @@ public class InvokeCommand : Command
             return;
         }
 
-        BindingListList[igniter] = NewList(index, command, list);
-        AddMessage(index + "番に" + command + "を挿入しました．", Tracer.MessageLevel.normal, tracer, options);
+        var commandValues = CommandReceiver.GetValues(command);
+
+        if (igniter == GameEvent.on_map_changed && commandValues[0] == "begin")
+        {
+            AddMessage(ERROR_BeginOnMapChanged(), Tracer.MessageLevel.error, tracer, options);
+        }
+
+        else
+        {
+            BindingListList[igniter] = NewList(index, command, list);
+            AddMessage(igniter.ToString() + "の" + index + "番に" + command + "を挿入しました．", Tracer.MessageLevel.normal, tracer, options);
+        }
         
         // - inner function
         static List<SwitchCommand> NewList(int index, string insertContent, List<SwitchCommand> originalList)
@@ -577,7 +667,7 @@ public class InvokeCommand : Command
                     newList.Add(new SwitchCommand(insertContent));
                 }
 
-                newList.Add(originalList[n]);
+                newList.Add(new SwitchCommand(originalList[n].command, originalList[n].active));
             }
 
             return newList;
@@ -696,7 +786,7 @@ public class InvokeCommand : Command
 
             foreach(var command in pair.Value)
             {
-                message += "\t\t【" + counter.ToString() + "】 " + command + "\n";
+                message += "\t\t【" + counter.ToString() + "】 " + command.command + "\n";
                 counter++;
             }
         }
@@ -715,10 +805,10 @@ public class InvokeCommand : Command
         public string command;
         public bool active;
 
-        public SwitchCommand(string command, bool suspended = true)
+        public SwitchCommand(string command, bool active = true)
         {
             this.command = command;
-            this.active = suspended;
+            this.active = active;
         }
     }
 }

@@ -8,6 +8,10 @@ public class ChatCommand : Command
     {
         commandName = "chat";
         description = "チャットでメッセージを送信します．";
+        detail = "たとえば'chat \"hello\"を実行すると，画面の左下に'hello'が表示されます．\n" +
+            "シンボルと組み合わせることで，特定のイベントが発生したときにカスタムメッセージを表示できます．" +
+            "たとえば，'invoke add on_enter_next_checkpoint \"chat 経過時間：%time%\"' を実行すると，" +
+            "次のチェックポイントに到達したときに経過時間を表示できます．";
     }
 
     public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)

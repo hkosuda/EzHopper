@@ -8,6 +8,9 @@ public class DelayedchatCommand : Command
     {
         commandName = "delayedchat";
         description = "遅延を入れてチャットを送信します．";
+        detail = "メッセージを送信するには，delayedchat 0.5 1.5 \"hello\"' のように，1番目の値に遅延させる時間の最小値，" +
+            "2番目の値に遅延させる時間の最大値を指定します．3番目の値に送信するメッセージを指定します．\n" +
+            "メッセージは，マップが切り替わると破棄されます．";
     }
 
     // ex) delayedchat(0) 0.8(1) 2.0(2) "noob"(3)
@@ -32,6 +35,12 @@ public class DelayedchatCommand : Command
 
             if (!float.TryParse(minString, out var min)) { AddMessage(minString + "を数値に変換できません．", Tracer.MessageLevel.error, tracer, options); return; }
             if (!float.TryParse(maxString, out var max)) { AddMessage(maxString + "を数値に変換できません．", Tracer.MessageLevel.error, tracer, options); return; }
+
+            if (min < 0 || max < 0)
+            {
+                AddMessage("負の値を指定することはできません．", Tracer.MessageLevel.error, tracer, options);
+                return;
+            }
 
             if (min > max)
             {

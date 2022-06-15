@@ -7,7 +7,7 @@ using UnityEngine;
 
 static public class CommandReceiver
 {
-    static readonly List<string> symbols = new List<string>() { "now", "time", "map", "section", "count" };
+    static readonly List<string> symbols = new List<string>() { "now", "time", "map", "section", "counter" };
 
     static public EventHandler<string> CommandRequestBegin { get; set; }
     static public EventHandler<string> UnknownCommandRequest { get; set; }
@@ -118,6 +118,7 @@ static public class CommandReceiver
         sentence = Regex.Replace(sentence, "%time%", ReplaceTime);
         sentence = Regex.Replace(sentence, "%map%", ReplaceMap);
         sentence = Regex.Replace(sentence, "%section%", ReplaceSection);
+        sentence = Regex.Replace(sentence, "%counter%", ReplaceCounter);
 
         return sentence;
 
@@ -143,6 +144,12 @@ static public class CommandReceiver
         static string ReplaceSection(Match match)
         {
             return TimerCommand.PaddingZero(MapsManager.CurrentMap.Index);
+        }
+
+        // - inner function
+        static string ReplaceCounter(Match match)
+        {
+            return CounterCommand.Counter.ToString();
         }
     }
 

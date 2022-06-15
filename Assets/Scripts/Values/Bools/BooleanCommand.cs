@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class BooleanCommand : Command
 {
-    Bools.Item item;
+    Bools.Item item = Bools.Item.none;
+    BlSetting setting;
 
     public BooleanCommand(Bools.Item item)
     {
@@ -13,7 +14,28 @@ public class BooleanCommand : Command
         commandName = item.ToString();
         commandType = CommandType.values;
 
-        description = Bools.Settings[item].Description;
+        setting = Bools.Settings[item];
+
+        UpdateDescription(null, false);
+        SetEvent(1);
+    }
+
+    void SetEvent(int indicator)
+    {
+        if (indicator > 0)
+        {
+            Bools.Settings[item].ValueUpdated += UpdateDescription;
+        }
+
+        else
+        {
+            Bools.Settings[item].ValueUpdated -= UpdateDescription;
+        }
+    }
+
+    void UpdateDescription(object obj, bool prev)
+    {
+        description = setting.Description;
         description += "\n現在の値：" + CurrentValue() + ", デフォルト値：" + DefaultValue();
     }
 

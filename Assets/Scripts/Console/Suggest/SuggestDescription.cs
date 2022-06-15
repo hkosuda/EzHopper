@@ -72,21 +72,17 @@ public class SuggestDescription : MonoBehaviour
             description = AddLine(description, "[" + command.commandName + "]", true);
             description = AddLine(description, "-----------------------------------------------------", false);
 
-            var availableValues = command.AvailableValues(values);
-
-            if (availableValues != null && availableValues.Count > 0)
-            {
-                description = AddLine(description, "使用可能な値", true);
-                foreach(var availableValue in availableValues)
-                {
-                    description = AddLine(description, availableValue);
-                }
-            }
 
             if (command.description != "")
             {
-                description = AddLine(description, "詳細", true);
+                description = AddLine(description, "概要", true);
                 description = AddLine(description, command.description);
+            }
+
+            if (command.detail != "")
+            {
+                description = AddLine(description, "詳細", true);
+                description = AddLine(description, command.detail);
             }
 
             return description;

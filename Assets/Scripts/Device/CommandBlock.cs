@@ -8,15 +8,11 @@ public class CommandBlock : MonoBehaviour
 
     [SerializeField] string command;
 
-    bool initialized = false;
-
     GameObject canvas;
 
     private void Awake()
     {
         canvas = gameObject.transform.parent.GetChild(1).gameObject;
-
-        initialized = false;
     }
 
     void Start()
@@ -28,21 +24,6 @@ public class CommandBlock : MonoBehaviour
     private void OnDestroy()
     {
         SetEvent(-1);
-    }
-
-    private void Update()
-    {
-#if UNITY_EDITOR
-        //if (!initialized)
-        //{
-        //    initialized = true;
-
-        //    if (!CommandReceiver.RequestCommand(command, false, false))
-        //    {
-        //        Debug.LogError("Command Failed : " + command);
-        //    }
-        //}
-#endif
     }
 
     void SetEvent(int indicator)

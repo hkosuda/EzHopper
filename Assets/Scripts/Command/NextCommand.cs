@@ -7,7 +7,8 @@ public class NextCommand : Command
     public NextCommand()
     {
         commandName = "next";
-        description = "中間地点が複数設定されているマップで，次の中間地点に移動する機能を提供します．";
+        description = "中間地点が複数設定されているマップで，次のチェックポイントに移動する機能を提供します．";
+        detail = "チェックポイントがひとつしかないマップでは，つねに同じ場所に移動します．";
     }
 
     public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)

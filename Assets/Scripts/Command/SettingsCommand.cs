@@ -8,6 +8,7 @@ public class SettingsCommand : Command
     {
         commandName = "settings";
         description = "設定に関するコマンドの一覧を表示します．";
+        detail = "単に 'settings' を実行すると，設定の名称のみの一覧を表示します．説明付きで表示するには 'settings description' を実行してください．";
     }
 
     public override List<string> AvailableValues(List<string> values)

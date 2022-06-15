@@ -9,8 +9,11 @@ public class PasteCommand : Command
     public PasteCommand()
     {
         commandName = "paste";
-        description = "クリップボードにコピーされたコマンドを実行します．コマンドは複数行にわたって一括で実行できます．\n" +
-            "なお，'//'以降の文字列はコメントとして無視されます．";
+        description = "クリップボードにコピーされたコマンドを実行します．";
+        detail = "具体的な使用方法としては，'copy' を使用して得られたコードあるいは自ら作成したコードをメモ帳などに記載しておき，" +
+            "それを範囲選択->コピーします．これにより，コードがクリップボードにコピーされた状態となります．" +
+            "この状態で 'paste' を実行することで，クリップボードの内容が読み込まれ，コードが自動的に実行されます．\n" +
+            "コードは複数行にわたって一括で実行できます．また，同一行の '//' 以降の文字列はコメントとして無視されます．";
     }
 
     public override void CommandMethod(Tracer tracer, List<string> values, List<string> options)
@@ -59,6 +62,11 @@ public class PasteCommand : Command
             if (values == null || values.Count == 0) { continue; }
 
             var commandName = values[0];
+            if (commandName == "paste")
+            {
+                AddMessage("'paste'を自動実行することはできません．", Tracer.MessageLevel.error, tracer, options);
+                return;
+            }
 
             if (normalCommandNameList.Contains(commandName))
             {

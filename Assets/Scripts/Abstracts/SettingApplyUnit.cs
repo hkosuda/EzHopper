@@ -6,13 +6,6 @@ using TMPro;
 
 public abstract class SettingApplyUnit : MonoBehaviour
 {
-    static protected readonly List<string> initializer = new List<string>()
-    {
-        "unbind all",
-        "toggle remove all",
-        "invoke remove_all all",
-    };
-
     protected GameObject applyButtonBody;
 
     private void Start()
@@ -29,24 +22,16 @@ public abstract class SettingApplyUnit : MonoBehaviour
     {
         if (indicator > 0)
         {
-            DE_Shooter.ShootingHit += RunCommands;
+            DE_Shooter.ShootingHit += OnShot;
         }
 
         else
         {
-            DE_Shooter.ShootingHit -= RunCommands;
+            DE_Shooter.ShootingHit -= OnShot;
         }
     }
 
-    protected virtual void RunCommands(object obj, RaycastHit hit)
-    {
-        ConsoleMessage.WriteLog("<color=lime>コマンドの自動実行を開始しました．</color>");
-
-        foreach (var initCommand in initializer)
-        {
-            CommandReceiver.RequestCommand(initCommand);
-        }
-    }
+    protected abstract void OnShot(object obj, RaycastHit hit);
 
     protected void Initialize(string description, List<string> commandList)
     {
@@ -67,16 +52,8 @@ public abstract class SettingApplyUnit : MonoBehaviour
         // - inner function
         string CommandText(List<string> commandList)
         {
-            var text = "// init\n";
-
-            foreach(var initCommand in initializer)
-            {
-                text += "> " + initCommand + "\n";
-            }
-
+            var text = "";
             if (commandList == null) { return text; }
-
-            text += "\n// settings\n";
 
             foreach(var command in commandList)
             {
@@ -90,11 +67,6 @@ public abstract class SettingApplyUnit : MonoBehaviour
     static protected string RunCommandText(List<string> commandList)
     {
         var text = "";
-
-        foreach(var initCommand in initializer)
-        {
-            text += "> " + initCommand + "\n";
-        }
 
         foreach(var command in commandList)
         {

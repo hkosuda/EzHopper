@@ -29,8 +29,8 @@ public class CommandInitializer : IKernelManager
             new OverrideCommand(),
             new InvokeCommand(),
             new TimerCommand(),
-            new CopyCommand(),
-            new PasteCommand(),
+            //new CopyCommand(),
+            //new PasteCommand(),
             new DefaultCommand(),
             new KeyCommand(),
             new ToggleCommand(),
@@ -38,6 +38,7 @@ public class CommandInitializer : IKernelManager
             new ChatCommand(),
             new DelayedchatCommand(),
             new CounterCommand(),
+            new ClearCommand(),
         };
 
 #if UNITY_EDITOR

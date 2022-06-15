@@ -52,6 +52,7 @@ public class MapsManager : MonoBehaviour
         CurrentMap.gameObject.SetActive(true);
         CurrentMap.Initialize();
 
+        if (Bools.Get(Bools.Item.write_events)) { CheckPoint.WriteToLog(InvokeCommand.GameEvent.on_map_changed); }
         Initialized?.Invoke(null, false);
     }
 
