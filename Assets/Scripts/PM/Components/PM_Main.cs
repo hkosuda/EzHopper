@@ -34,6 +34,7 @@ public class PM_Main : MonoBehaviour
             new PM_God(),
 
             new PM_Landing(),
+            //new PM_StoppingDetector(),
             new PM_Jumping(),
 
             

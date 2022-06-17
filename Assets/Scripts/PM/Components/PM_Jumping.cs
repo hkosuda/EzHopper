@@ -49,7 +49,7 @@ public class PM_Jumping : ControllerComponent
 
         if (PM_Main.Suspend) { return true; }
 
-        if (JumpingFrameBufferRemain <= 0)
+        if (JumpingFrameBufferRemain <= 0 && !PM_StoppingDetector.Stopped)
         {
             if (Keyconfig.CheckInput(Keyconfig.KeyAction.jump, true) || AutoJump)
             {
