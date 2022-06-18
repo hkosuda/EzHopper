@@ -39,13 +39,14 @@ public class CommandInitializer : IKernelManager
             new DelayedchatCommand(),
             new CounterCommand(),
             new ClearCommand(),
+            new VerCommand(),
         };
 
 #if UNITY_EDITOR
         commandList.Add(new DRecorderCommand());
 #endif
 
-        foreach(var command in commandList)
+        foreach (var command in commandList)
         {
             CommandReceiver.AddCommand(command);
         }

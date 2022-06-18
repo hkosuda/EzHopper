@@ -21,6 +21,7 @@ public class DemoCommand : Command
         "nostalgia_0203_shortcut",
         "nostalgia_0301",
         "nostalgia_0302",
+        "nostalgia_surf",
         "square_0101_01",
         "square_0102_01",
         "square_0103_01",
@@ -28,7 +29,22 @@ public class DemoCommand : Command
         "square_0103_03",
         "square_0103_04",
         "training",
-
+        "square2_lv01",
+        "square2_lv02",
+        "square2_lv03",
+        "square2_lv04",
+        "square2_lv05",
+        "square2_lv06",
+        "square2_lv07",
+        "square2_lv08",
+        "square2_lv09",
+        "square2_lv10",
+        "square2_lv11",
+        "square2_lv12",
+        "square2_lv13",
+        "square2_lv14",
+        "square2_lv15",
+        "square2_lv16",
     };
 
     public DemoCommand()

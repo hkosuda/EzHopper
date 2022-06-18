@@ -98,7 +98,7 @@ public class PlayerRecorder : IKernelManager
 
         if (dataList == null || dataList.Count == 0) { return; }
 
-        RecordingEnd?.Invoke(null, new List<float[]>(dataList));
+        if (cache) { RecordingEnd?.Invoke(null, new List<float[]>(dataList)); }
         dataList = new List<float[]>();
     }
 

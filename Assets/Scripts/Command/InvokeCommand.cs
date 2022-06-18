@@ -10,6 +10,16 @@ public class InvokeCommand : Command
         "add", "insert", "replace", "swap", "remove", "inactivate", "activate", "remove_all"
     };
 
+    static readonly List<string> notAvailableOnMapChanged = new List<string>()
+    {
+        "begin", "replay", "demo"
+    };
+
+    static readonly List<string> notAvailableOnEnterCheckpoint = new List<string>()
+    {
+        "begin", "replay", "demo", "next", "prev", "back",
+    };
+
     public enum GameEvent
     {
         none,
@@ -230,9 +240,9 @@ public class InvokeCommand : Command
 
                 else
                 {
-                    if (igniter == GameEvent.on_map_changed && commandValues[0] == "begin")
+                    if (!AvailabilityCheck(igniter, command, tracer, options))
                     {
-                        AddMessage(ERROR_BeginOnMapChanged(), Tracer.MessageLevel.error, tracer, options);
+                        return;
                     }
 
                     else
@@ -620,9 +630,9 @@ public class InvokeCommand : Command
 
         var commandValues = CommandReceiver.GetValues(command);
 
-        if (igniter == GameEvent.on_map_changed && commandValues[0] == "begin")
+        if (!AvailabilityCheck(igniter, command, tracer, options))
         {
-            AddMessage(ERROR_BeginOnMapChanged(), Tracer.MessageLevel.error, tracer, options);
+            return;
         }
 
         else
@@ -644,9 +654,9 @@ public class InvokeCommand : Command
 
         var commandValues = CommandReceiver.GetValues(command);
 
-        if (igniter == GameEvent.on_map_changed && commandValues[0] == "begin")
+        if (!AvailabilityCheck(igniter, command, tracer, options))
         {
-            AddMessage(ERROR_BeginOnMapChanged(), Tracer.MessageLevel.error, tracer, options);
+            return;
         }
 
         else
@@ -711,7 +721,16 @@ public class InvokeCommand : Command
         foreach(var index in indexes)
         {
             list[index].active = active;
-            AddMessage(index.ToString() + "”Ô–Ú‚ÌƒRƒ}ƒ“ƒh‚ğ’â~‚µ‚Ü‚µ‚½", Tracer.MessageLevel.normal, tracer, options);
+
+            if (active)
+            {
+                AddMessage(index.ToString() + "”Ô–Ú‚ÌƒRƒ}ƒ“ƒh‚ğ‹N“®‚µ‚Ü‚µ‚½", Tracer.MessageLevel.normal, tracer, options);
+            }
+
+            else
+            {
+                AddMessage(index.ToString() + "”Ô–Ú‚ÌƒRƒ}ƒ“ƒh‚ğ’â~‚µ‚Ü‚µ‚½", Tracer.MessageLevel.normal, tracer, options);
+            }
         }
     }
 
@@ -786,7 +805,16 @@ public class InvokeCommand : Command
 
             foreach(var command in pair.Value)
             {
-                message += "\t\ty" + counter.ToString() + "z " + command.command + "\n";
+                if (command.active)
+                {
+                    message += "\t\ty" + counter.ToString() + "z " + command.command + "\n";
+                }
+
+                else
+                {
+                    message += "\t\ty" + counter.ToString() + "z " + command.command + "<color=lime> (inactive)</color>\n";
+                }
+                
                 counter++;
             }
         }
@@ -798,6 +826,54 @@ public class InvokeCommand : Command
         }
 
         AddMessage("Œ»İ‚ÌŠ„‚è“–‚Ä‚ÍŸ‚Ì’Ê‚è‚Å‚·\n" + message, Tracer.MessageLevel.normal, tracer, options);
+    }
+
+    static bool AvailabilityCheck(GameEvent gameEvent, string command, Tracer tracer, List<string> options)
+    {
+        if (gameEvent == GameEvent.on_map_changed)
+        {
+            if (notAvailableOnMapChanged.Contains(command))
+            {
+                AddMessage(ErrorMessage(gameEvent, notAvailableOnMapChanged), Tracer.MessageLevel.error, tracer, options);
+                return false;
+            }
+
+            return true;
+        }
+
+        var enterGroup = new List<GameEvent>()
+        {
+            GameEvent.on_enter_checkpoint, GameEvent.on_enter_next_checkpoint, GameEvent.on_enter_start, GameEvent.on_enter_goal
+        };
+
+        if (enterGroup.Contains(gameEvent))
+        {
+            if (notAvailableOnEnterCheckpoint.Contains(command))
+            {
+                AddMessage(ErrorMessage(gameEvent, notAvailableOnEnterCheckpoint), Tracer.MessageLevel.error, tracer, options);
+                return false;
+            }
+        }
+
+        return true;
+
+        // - inner function
+        static string ErrorMessage(GameEvent gameEvent, List<string> notAvailables)
+        {
+            var message = "";
+
+            foreach(var a in notAvailables)
+            {
+                message += a + ", ";
+            }
+
+            message = message.TrimEnd();
+            message = message.TrimEnd(new char[] { ',' });
+
+            message += " ‚ğ " + gameEvent.ToString() + " ‚ÉŠ„‚è“–‚Ä‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñD";
+
+            return message;
+        }
     }
 
     public class SwitchCommand

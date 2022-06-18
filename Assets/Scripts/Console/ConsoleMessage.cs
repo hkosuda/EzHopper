@@ -131,7 +131,7 @@ public class ConsoleMessage : MonoBehaviour
         UpdateLogText();
     }
 
-    static string consoleLog = "<color=lime> - EzHopper ver 1.0 - </color>\n" +
+    static string consoleLog = "<color=lime> - ez_bhop - ver " + VerCommand.currentVersion + "</color>\n\n" +
         "<color=orange>" +
         "Tips：\n" +
         "\tコマンドの一覧を確認するには，'command'を実行してください．\n" +
