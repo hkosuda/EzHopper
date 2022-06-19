@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class VerCommand : Command
 {
-    static public readonly string currentVersion = "1.1";
+    static public readonly string currentVersion = "1.2";
 
     static readonly List<string> availableOnly = new List<string>()
     {
@@ -89,6 +89,7 @@ public class VerCommand : Command
     {
         v1_0,
         v1_1,
+        v1_2,
     }
 
     static Dictionary<Version, List< string>> history = new Dictionary<Version, List<string>>()
@@ -102,6 +103,12 @@ public class VerCommand : Command
                 "invokeコマンドのメッセージを修正しました．" ,
                 "デモデータを追加しました．",
                 "コンソールのデフォルトのメッセージを一部修正しました．",
+            }
+        },
+
+        { Version.v1_2, new List<string>()
+            {
+                "invokeのデフォルト設定から，'invoke add on_course_out \"recorder stop -m\" -e' を削除しました．",
             }
         }
     };

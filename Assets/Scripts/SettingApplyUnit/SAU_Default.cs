@@ -18,7 +18,6 @@ public class SAU_Default : SettingApplyUnit
         "invoke add on_exit_checkpoint \"recorder start -f\" -e",
         "invoke add on_enter_checkpoint \"recorder end -f\"",
         "invoke add on_enter_next_checkpoint \"recorder save %map%_%now% -f\" -e",
-        "invoke add on_course_out \"recorder stop -f\" -e",
 
         "invoke add on_exit_checkpoint \"timer start -f\" -e",
         "invoke add on_enter_checkpoint \"timer stop -m\" -e",
