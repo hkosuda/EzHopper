@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PM_Camera : ControllerComponent
 {
-    static float omegaThreshold = 1800.0f;
+    static readonly float omegaThreshold = 1800.0f;
 
     static public Camera Camera;
     static public Transform CameraTr;

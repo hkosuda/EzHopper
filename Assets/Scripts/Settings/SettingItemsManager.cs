@@ -99,7 +99,7 @@ public class SettingItemsManager : MonoBehaviour
             var item = Instantiate(_keySettingItem);
             item.transform.SetParent(myself.transform);
 
-            var component = item.GetComponent<KeySettingItem>(); Debug.Log(component);
+            var component = item.GetComponent<KeySettingItem>();
             component.Initialize(keybind.Key);
         }
     }

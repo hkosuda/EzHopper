@@ -23,8 +23,6 @@ public class PM_StoppingDetector : ControllerComponent
         {
             Stopped = true;
             stoppingFrameBufferRemain = stoppingFrameBuffer;
-
-            Debug.Log("Stopped");
         }
 
         prevVelocity = velocity;

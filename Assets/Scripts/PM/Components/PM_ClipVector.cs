@@ -41,8 +41,6 @@ public class PM_ClipVector : ControllerComponent
 
     static void CalcClipVector(Vector3 v)
     {
-        Debug.Log("Clip");
-
         var normal = PM_Landing.HitInfo.normal;
         var backoff = Vector3.Dot(v, normal);
 

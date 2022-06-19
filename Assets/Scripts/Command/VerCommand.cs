@@ -109,6 +109,7 @@ public class VerCommand : Command
         { Version.v1_2, new List<string>()
             {
                 "invokeのデフォルト設定から，'invoke add on_course_out \"recorder stop -m\" -e' を削除しました．",
+                "グラフィクス等のクオリティを低下させ，パフォーマンスを改善しました．"
             }
         }
     };
